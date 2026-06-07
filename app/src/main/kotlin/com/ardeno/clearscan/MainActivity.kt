@@ -4,12 +4,15 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.biometric.BiometricManager
+import androidx.biometric.BiometricPrompt
 import androidx.core.content.FileProvider
+import androidx.core.content.ContextCompat
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ardeno.clearscan.model.ScanDocument
 import com.ardeno.clearscan.scanner.ScannerImport
@@ -20,7 +23,7 @@ import com.google.mlkit.vision.documentscanner.GmsDocumentScanning
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanningResult
 import java.io.File
 
-class MainActivity : ComponentActivity() {
+class MainActivity : FragmentActivity() {
     private val viewModel by viewModels<ClearScanViewModel>()
 
     private val scannerLauncher = registerForActivityResult(
@@ -59,10 +62,22 @@ class MainActivity : ComponentActivity() {
                     onScanClick = ::startDocumentScanner,
                     onImportClick = ::startDocumentScanner,
                     onQueryChange = viewModel::updateQuery,
+                    onSignatureTextChange = viewModel::updateSignatureText,
+                    onPdfPasswordChange = viewModel::updatePdfPassword,
                     onToggleDocumentExpanded = viewModel::toggleDocumentExpanded,
                     onShareDocument = ::shareDocument,
                     onDeleteDocument = viewModel::deleteDocument,
                     onRetryOcr = viewModel::retryOcr,
+                    onMergeAllDocuments = viewModel::mergeAllDocuments,
+                    onSplitDocument = viewModel::splitDocument,
+                    onRotateDocument = viewModel::rotateDocument,
+                    onSignDocument = viewModel::signDocument,
+                    onRedactDocument = viewModel::redactDocument,
+                    onPasswordProtectDocument = viewModel::passwordProtectDocument,
+                    onToggleVault = ::toggleVault,
+                    onUnlockVault = ::unlockVault,
+                    onLockVault = viewModel::lockVault,
+                    onRunOcrBenchmark = viewModel::runSinhalaTamilBenchmarkSelfCheck,
                     onDismissMessage = viewModel::clearMessage
                 )
             }
@@ -113,5 +128,72 @@ class MainActivity : ComponentActivity() {
         }
 
         startActivity(Intent.createChooser(shareIntent, "Share scan"))
+    }
+
+    private fun toggleVault() {
+        val state = viewModel.uiState.value
+        if (state.vaultEnabled) {
+            viewModel.setVaultEnabled(false)
+            return
+        }
+
+        authenticateForVault(
+            title = "Enable ClearScan vault",
+            subtitle = "Confirm your identity before enabling vault lock.",
+            onSuccess = { viewModel.setVaultEnabled(true) }
+        )
+    }
+
+    private fun unlockVault() {
+        authenticateForVault(
+            title = "Unlock ClearScan",
+            subtitle = "Use biometrics or device credentials to unlock your scans.",
+            onSuccess = viewModel::unlockVault
+        )
+    }
+
+    private fun authenticateForVault(
+        title: String,
+        subtitle: String,
+        onSuccess: () -> Unit
+    ) {
+        val authenticators = BiometricManager.Authenticators.BIOMETRIC_STRONG or
+            BiometricManager.Authenticators.DEVICE_CREDENTIAL
+        val biometricManager = BiometricManager.from(this)
+        when (biometricManager.canAuthenticate(authenticators)) {
+            BiometricManager.BIOMETRIC_SUCCESS -> Unit
+            BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED -> {
+                viewModel.reportMessage("Set up a screen lock or biometric first.")
+                return
+            }
+            else -> {
+                viewModel.reportMessage("Biometric vault is unavailable on this device.")
+                return
+            }
+        }
+
+        val prompt = BiometricPrompt(
+            this,
+            ContextCompat.getMainExecutor(this),
+            object : BiometricPrompt.AuthenticationCallback() {
+                override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                    super.onAuthenticationSucceeded(result)
+                    onSuccess()
+                }
+
+                override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
+                    super.onAuthenticationError(errorCode, errString)
+                    viewModel.reportMessage(errString.toString())
+                }
+            }
+        )
+
+        val promptInfo = BiometricPrompt.PromptInfo.Builder()
+            .setTitle(title)
+            .setSubtitle(subtitle)
+            .setAllowedAuthenticators(authenticators)
+            .build()
+
+        prompt.authenticate(promptInfo)
     }
 }

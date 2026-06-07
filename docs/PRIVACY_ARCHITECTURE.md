@@ -11,6 +11,8 @@ ClearScan treats scanned documents as sensitive by default.
 - Scanner output is copied into app-private storage.
 - OCR runs locally against saved page images.
 - Searchable PDFs are generated locally before explicit export.
+- PDF merge/split/rotate/sign/redact/password operations generate new local copies and do not overwrite the original scan.
+- Vault mode gates the scan library behind Android biometric/device credential prompt and verifies Android Keystore AES/GCM availability.
 - Android system backup excludes stored documents.
 
 ## Permission Strategy
@@ -24,8 +26,8 @@ ClearScan treats scanned documents as sensitive by default.
 - Store documents under `filesDir/documents`.
 - Store metadata in a local `index.json` until Room is introduced.
 - Store OCR text and searchable PDF paths in the local index.
-- Move to encrypted file storage and Android Keystore-managed keys before release.
-- Add biometric/device-credential app lock before public beta.
+- Current vault build gates app access with biometrics/device credential and maintains a Keystore AES/GCM key health check.
+- Planned hardening: migrate existing document files into encrypted blobs and decrypt only into app-private cache for explicit export.
 
 ## Network Strategy
 
@@ -42,3 +44,4 @@ Before Play Store submission:
 - Confirm no billing/subscription SDKs are present.
 - Run a proxy/network test while scanning and browsing the local library.
 - Confirm backup exclusions and app-lock behavior on a real device.
+- Confirm generated password-protected PDFs open with the password in an external PDF viewer before release.

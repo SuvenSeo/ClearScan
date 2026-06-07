@@ -20,6 +20,8 @@ data class ScanDocument(
     val searchablePdfPath: String? = null,
     val pageImagePaths: List<String>,
     val tags: List<String> = emptyList(),
+    val toolName: String? = null,
+    val sourceDocumentIds: List<String> = emptyList(),
     val ocrText: String = "",
     val ocrStatus: OcrStatus = OcrStatus.NotStarted,
     val searchablePdfReady: Boolean = false

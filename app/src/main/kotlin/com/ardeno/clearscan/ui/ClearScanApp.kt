@@ -21,6 +21,7 @@ import androidx.compose.material.icons.outlined.CloudOff
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Description
 import androidx.compose.material.icons.outlined.Lock
+import androidx.compose.material.icons.outlined.LockOpen
 import androidx.compose.material.icons.outlined.PictureAsPdf
 import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.icons.outlined.Search
@@ -54,6 +55,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.ardeno.clearscan.ClearScanUiState
@@ -69,10 +71,22 @@ fun ClearScanApp(
     onScanClick: () -> Unit,
     onImportClick: () -> Unit,
     onQueryChange: (String) -> Unit,
+    onSignatureTextChange: (String) -> Unit,
+    onPdfPasswordChange: (String) -> Unit,
     onToggleDocumentExpanded: (ScanDocument) -> Unit,
     onShareDocument: (ScanDocument) -> Unit,
     onDeleteDocument: (ScanDocument) -> Unit,
     onRetryOcr: (ScanDocument) -> Unit,
+    onMergeAllDocuments: () -> Unit,
+    onSplitDocument: (ScanDocument) -> Unit,
+    onRotateDocument: (ScanDocument) -> Unit,
+    onSignDocument: (ScanDocument) -> Unit,
+    onRedactDocument: (ScanDocument) -> Unit,
+    onPasswordProtectDocument: (ScanDocument) -> Unit,
+    onToggleVault: () -> Unit,
+    onUnlockVault: () -> Unit,
+    onLockVault: () -> Unit,
+    onRunOcrBenchmark: () -> Unit,
     onDismissMessage: () -> Unit
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
@@ -104,6 +118,18 @@ fun ClearScanApp(
             }
         }
     ) { padding ->
+        if (state.vaultEnabled && !state.vaultUnlocked) {
+            VaultLockScreen(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.background)
+                    .padding(padding)
+                    .padding(20.dp),
+                onUnlockVault = onUnlockVault
+            )
+            return@Scaffold
+        }
+
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
@@ -114,7 +140,7 @@ fun ClearScanApp(
         ) {
             item {
                 Header(
-                    isWorking = state.isSaving || state.isOcrRunning,
+                    isWorking = state.isSaving || state.isOcrRunning || state.isPdfToolRunning,
                     onScanClick = onScanClick,
                     onImportClick = onImportClick
                 )
@@ -125,11 +151,26 @@ fun ClearScanApp(
             }
 
             item {
+                VaultPanel(
+                    vaultEnabled = state.vaultEnabled,
+                    onToggleVault = onToggleVault,
+                    onLockVault = onLockVault
+                )
+            }
+
+            item {
                 WhyClearScan()
             }
 
             item {
                 ToolGrid()
+            }
+
+            item {
+                BenchmarkPanel(
+                    summary = state.benchmarkSummary,
+                    onRunOcrBenchmark = onRunOcrBenchmark
+                )
             }
 
             item {
@@ -165,7 +206,17 @@ fun ClearScanApp(
                         onToggle = { onToggleDocumentExpanded(document) },
                         onShare = { onShareDocument(document) },
                         onDelete = { onDeleteDocument(document) },
-                        onRetryOcr = { onRetryOcr(document) }
+                        onRetryOcr = { onRetryOcr(document) },
+                        signatureText = state.signatureText,
+                        pdfPassword = state.pdfPassword,
+                        onSignatureTextChange = onSignatureTextChange,
+                        onPdfPasswordChange = onPdfPasswordChange,
+                        onMergeAllDocuments = onMergeAllDocuments,
+                        onSplit = { onSplitDocument(document) },
+                        onRotate = { onRotateDocument(document) },
+                        onSign = { onSignDocument(document) },
+                        onRedact = { onRedactDocument(document) },
+                        onPasswordProtect = { onPasswordProtectDocument(document) }
                     )
                 }
             }
@@ -173,6 +224,58 @@ fun ClearScanApp(
             item {
                 Spacer(modifier = Modifier.height(76.dp))
             }
+        }
+    }
+}
+
+@Composable
+private fun VaultLockScreen(
+    modifier: Modifier = Modifier,
+    onUnlockVault: () -> Unit
+) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Box(
+            modifier = Modifier
+                .size(72.dp)
+                .clip(RoundedCornerShape(18.dp))
+                .background(MaterialTheme.colorScheme.primary),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.Lock,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onPrimary,
+                modifier = Modifier.size(34.dp)
+            )
+        }
+        Spacer(modifier = Modifier.height(18.dp))
+        Text(
+            text = "ClearScan vault",
+            style = MaterialTheme.typography.headlineSmall,
+            fontWeight = FontWeight.Bold
+        )
+        Text(
+            text = "Unlock to view your local scan library.",
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        Spacer(modifier = Modifier.height(20.dp))
+        Button(
+            onClick = onUnlockVault,
+            shape = RoundedCornerShape(8.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.LockOpen,
+                contentDescription = null
+            )
+            Text(
+                modifier = Modifier.padding(start = 8.dp),
+                text = "Unlock"
+            )
         }
     }
 }
@@ -234,6 +337,62 @@ private fun Header(
                     modifier = Modifier.padding(start = 8.dp),
                     text = "Import"
                 )
+            }
+        }
+    }
+}
+
+@Composable
+private fun VaultPanel(
+    vaultEnabled: Boolean,
+    onToggleVault: () -> Unit,
+    onLockVault: () -> Unit
+) {
+    Card(
+        shape = RoundedCornerShape(8.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(14.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = "Biometric vault",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold
+                )
+                Text(
+                    text = if (vaultEnabled) "Enabled with Android Keystore crypto check" else "Off until you enable it",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+            FilledTonalButton(
+                onClick = onToggleVault,
+                shape = RoundedCornerShape(8.dp)
+            ) {
+                Icon(
+                    imageVector = if (vaultEnabled) Icons.Outlined.LockOpen else Icons.Outlined.Lock,
+                    contentDescription = null
+                )
+                Text(
+                    modifier = Modifier.padding(start = 8.dp),
+                    text = if (vaultEnabled) "Disable" else "Enable"
+                )
+            }
+            if (vaultEnabled) {
+                IconButton(onClick = onLockVault) {
+                    Icon(
+                        imageVector = Icons.Outlined.Lock,
+                        contentDescription = "Lock vault"
+                    )
+                }
             }
         }
     }
@@ -378,6 +537,18 @@ private fun ToolGrid() {
                 icon = Icons.Outlined.Search
             )
         }
+        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            ToolCard(
+                modifier = Modifier.weight(1f),
+                title = "PDF editor",
+                icon = Icons.Outlined.PictureAsPdf
+            )
+            ToolCard(
+                modifier = Modifier.weight(1f),
+                title = "SI/TA benchmark",
+                icon = Icons.Outlined.TextFields
+            )
+        }
     }
 }
 
@@ -430,6 +601,46 @@ private fun SearchBox(
             )
         }
     )
+}
+
+@Composable
+private fun BenchmarkPanel(
+    summary: String?,
+    onRunOcrBenchmark: () -> Unit
+) {
+    Card(
+        shape = RoundedCornerShape(8.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+    ) {
+        Column(
+            modifier = Modifier.padding(14.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            Text(
+                text = "Sinhala/Tamil OCR benchmark",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold
+            )
+            Text(
+                text = summary ?: "Run the harness self-check, then add real labeled Sinhala and Tamil scans for measured OCR accuracy.",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            FilledTonalButton(
+                onClick = onRunOcrBenchmark,
+                shape = RoundedCornerShape(8.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.TextFields,
+                    contentDescription = null
+                )
+                Text(
+                    modifier = Modifier.padding(start = 8.dp),
+                    text = "Run check"
+                )
+            }
+        }
+    }
 }
 
 @Composable
@@ -536,7 +747,17 @@ private fun DocumentRow(
     onToggle: () -> Unit,
     onShare: () -> Unit,
     onDelete: () -> Unit,
-    onRetryOcr: () -> Unit
+    onRetryOcr: () -> Unit,
+    signatureText: String,
+    pdfPassword: String,
+    onSignatureTextChange: (String) -> Unit,
+    onPdfPasswordChange: (String) -> Unit,
+    onMergeAllDocuments: () -> Unit,
+    onSplit: () -> Unit,
+    onRotate: () -> Unit,
+    onSign: () -> Unit,
+    onRedact: () -> Unit,
+    onPasswordProtect: () -> Unit
 ) {
     Card(
         modifier = Modifier
@@ -641,9 +862,114 @@ private fun DocumentRow(
                             }
                         }
                     }
+                    PdfToolPanel(
+                        signatureText = signatureText,
+                        pdfPassword = pdfPassword,
+                        onSignatureTextChange = onSignatureTextChange,
+                        onPdfPasswordChange = onPdfPasswordChange,
+                        onMergeAllDocuments = onMergeAllDocuments,
+                        onSplit = onSplit,
+                        onRotate = onRotate,
+                        onSign = onSign,
+                        onRedact = onRedact,
+                        onPasswordProtect = onPasswordProtect
+                    )
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun PdfToolPanel(
+    signatureText: String,
+    pdfPassword: String,
+    onSignatureTextChange: (String) -> Unit,
+    onPdfPasswordChange: (String) -> Unit,
+    onMergeAllDocuments: () -> Unit,
+    onSplit: () -> Unit,
+    onRotate: () -> Unit,
+    onSign: () -> Unit,
+    onRedact: () -> Unit,
+    onPasswordProtect: () -> Unit
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Text(
+            text = "PDF editor",
+            style = MaterialTheme.typography.titleSmall,
+            fontWeight = FontWeight.SemiBold
+        )
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            SmallToolButton(
+                modifier = Modifier.weight(1f),
+                label = "Merge",
+                onClick = onMergeAllDocuments
+            )
+            SmallToolButton(
+                modifier = Modifier.weight(1f),
+                label = "Split",
+                onClick = onSplit
+            )
+            SmallToolButton(
+                modifier = Modifier.weight(1f),
+                label = "Rotate",
+                onClick = onRotate
+            )
+        }
+        OutlinedTextField(
+            modifier = Modifier.fillMaxWidth(),
+            value = signatureText,
+            onValueChange = onSignatureTextChange,
+            singleLine = true,
+            shape = RoundedCornerShape(8.dp),
+            label = { Text("Signature text") }
+        )
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            SmallToolButton(
+                modifier = Modifier.weight(1f),
+                label = "Sign",
+                onClick = onSign
+            )
+            SmallToolButton(
+                modifier = Modifier.weight(1f),
+                label = "Redact",
+                onClick = onRedact
+            )
+        }
+        OutlinedTextField(
+            modifier = Modifier.fillMaxWidth(),
+            value = pdfPassword,
+            onValueChange = onPdfPasswordChange,
+            singleLine = true,
+            shape = RoundedCornerShape(8.dp),
+            visualTransformation = PasswordVisualTransformation(),
+            label = { Text("PDF password") }
+        )
+        SmallToolButton(
+            modifier = Modifier.fillMaxWidth(),
+            label = "Password protect",
+            onClick = onPasswordProtect
+        )
+    }
+}
+
+@Composable
+private fun SmallToolButton(
+    modifier: Modifier = Modifier,
+    label: String,
+    onClick: () -> Unit
+) {
+    FilledTonalButton(
+        modifier = modifier,
+        onClick = onClick,
+        shape = RoundedCornerShape(8.dp),
+        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp)
+    ) {
+        Text(
+            text = label,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
     }
 }
 

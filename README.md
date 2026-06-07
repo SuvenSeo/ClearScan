@@ -21,6 +21,9 @@ ClearScan is an Android-first, local-first document scanner planned as a free Ca
 - Local OCR over saved page images.
 - OCR text search across saved documents.
 - Searchable PDF export generated locally from page images plus OCR text.
+- PDF editor actions: merge all scans, split into page PDFs, rotate pages, add typed signature, redact a header band, and create password-protected PDFs.
+- Biometric/device-credential vault gate with Android Keystore crypto health check.
+- Sinhala/Tamil OCR benchmark harness for CER/WER scoring.
 - Android share-sheet export through FileProvider.
 - Delete saved scans from app-private storage.
 - Offline-first UI with document list, scan/import actions, OCR status, and free-feature surface.
@@ -30,7 +33,7 @@ ClearScan is an Android-first, local-first document scanner planned as a free Ca
 ClearScan is not trying to beat CamScanner by copying its brand or UI. It competes on trust and freedom:
 
 - No ads in the scanner core.
-- No subscriptions for core scanning, OCR, PDF tools, folders, search, signatures, or export.
+- No subscriptions for core scanning, OCR, PDF tools, folders, search, signatures, redaction, password export, or export.
 - No watermark on exported files.
 - No forced account or forced cloud upload.
 - Local-first document storage by default.
@@ -50,11 +53,11 @@ Run:
 
 ## Final Debug Build
 
-The verified debug APK is published on GitHub Releases:
+The verified debug APKs are published on GitHub Releases:
 
-- Release: https://github.com/SuvenSeo/ClearScan/releases/tag/v0.1.0-phase2
-- APK: `ClearScan-phase2-debug.apk`
-- SHA256: `B3980830E213369521409BA48004CBCC07933FC63966F3CED505BC61BC2A2CDC`
+- Latest advanced build: https://github.com/SuvenSeo/ClearScan/releases/tag/v0.2.0-advanced
+- APK: `ClearScan-v0.2.0-debug.apk`
+- SHA256: `CBDB600397F02DE841B58F889A61813BDA5607B2ABCCFB6825A564D65E5CA32D`
 
 Free-policy guard:
 
@@ -69,3 +72,4 @@ Free-policy guard:
 - No billing/subscription SDKs in the scanner core.
 - No document upload unless the user explicitly chooses an export/sync action.
 - Keep expensive cloud AI outside the free core unless implemented through local models, self-hosting, donations, or user-provided API keys.
+- Keep password-protected PDFs and vault behavior local-first; do not add forced cloud recovery.

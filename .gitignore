@@ -13,5 +13,6 @@ captures/
 
 outputs/*
 !outputs/ClearScan-phase2-debug.sha256.txt
+!outputs/ClearScan-v0.2.0-debug.sha256.txt
 !outputs/ClearScan-phase2-final-device-top.png
 !outputs/ClearScan-*.md

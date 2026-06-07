@@ -11,8 +11,8 @@ android {
         applicationId = "com.ardeno.clearscan"
         minSdk = 26
         targetSdk = 36
-        versionCode = 1
-        versionName = "0.1.0"
+        versionCode = 2
+        versionName = "0.2.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -47,6 +47,7 @@ dependencies {
     implementation(platform(libs.compose.bom))
     implementation(libs.activity.compose)
     implementation(libs.androidx.core.ktx)
+    implementation(libs.biometric)
     implementation(libs.compose.foundation)
     implementation(libs.compose.material.icons.extended)
     implementation(libs.compose.material3)
@@ -57,6 +58,7 @@ dependencies {
     implementation(libs.lifecycle.viewmodel.compose)
     implementation(libs.mlkit.document.scanner)
     implementation(libs.mlkit.text.recognition)
+    implementation(libs.pdfbox.android)
 
     debugImplementation(libs.compose.ui.tooling)
 

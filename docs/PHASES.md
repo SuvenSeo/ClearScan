@@ -44,14 +44,19 @@ Done when:
 
 ## Phase 3 - Free PDF Tools
 
-Status: export/delete/no-monetization foundation implemented; advanced editor tools planned.
+Status: implemented foundation plus first advanced editor tools.
 
 - Share/export via Android FileProvider.
 - Delete scans from app-private storage.
 - Free-policy script checks for ad, billing, and common monetization SDK markers.
-- Planned: merge, split, reorder, rotate, compress.
-- Planned: signatures, highlight, notes, redaction.
-- Planned: password-protected PDF export.
+- Merge all scans in the local library into a new PDF.
+- Split a scan into single-page PDFs.
+- Rotate pages into a new PDF.
+- Add a typed signature to a new PDF copy.
+- Apply a header-band redaction to a new PDF copy.
+- Create a password-protected PDF using PDFBox-Android.
+- Planned: reorder, compress.
+- Planned: freehand signatures, highlight, notes, arbitrary-area redaction.
 - Planned: tags, folders, favorites, duplicate detection.
 
 Done when:
@@ -62,9 +67,10 @@ Done when:
 
 ## Phase 4 - Language And Platform Expansion
 
-Planned.
+Status: benchmarking harness implemented; model evaluation planned.
 
-- Sinhala/Tamil OCR evaluation.
+- Sinhala/Tamil OCR CER/WER benchmark scoring harness.
+- Planned: real Sinhala/Tamil scan corpus and OCR engine comparison.
 - iOS SwiftUI/VisionKit parity plan.
 - Optional self-host export targets such as paperless-ngx/WebDAV.
 - Optional local or BYO-key AI classification.

@@ -40,6 +40,9 @@ Sources:
 - Local OCR text extraction over saved page images.
 - OCR text search.
 - Locally generated searchable PDF export.
+- Free local PDF editor actions: merge, split, rotate, typed signature, header redaction, and password-protected PDF copy.
+- Biometric/device-credential vault gate.
+- Sinhala/Tamil OCR benchmark harness for measured CER/WER scoring.
 - Android share-sheet export with no cloud account.
 - Delete from local storage.
 - Free-policy script for ad, billing, and monetization SDK checks.

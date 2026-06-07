@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import com.ardeno.clearscan.model.OcrStatus
 import com.ardeno.clearscan.model.ScanDocument
+import com.ardeno.clearscan.pdf.PdfToolOutput
 import com.ardeno.clearscan.scanner.ScannerImport
 import java.io.File
 import java.time.Instant
@@ -56,6 +57,49 @@ class LocalDocumentRepository(
 
         writeIndex(listOf(document) + readIndex())
         document
+    }
+
+    suspend fun createGeneratedDocument(
+        output: PdfToolOutput,
+        sourceDocuments: List<ScanDocument>
+    ): ScanDocument = withContext(Dispatchers.IO) {
+        val createdAt = Instant.now()
+        val id = "${createdAt.toEpochMilli()}-${UUID.randomUUID().toString().take(8)}"
+        val documentDir = File(documentsRoot, id).apply { mkdirs() }
+        val pageFiles = output.pageImageFiles.mapIndexed { index, source ->
+            val target = File(documentDir, "page-${index + 1}.jpg")
+            source.copyTo(target, overwrite = true)
+            target.absolutePath
+        }
+        val pdfPath = output.pdfFile?.let { source ->
+            val target = File(documentDir, output.pdfFileName)
+            source.copyTo(target, overwrite = true)
+            target.absolutePath
+        }
+        val document = ScanDocument(
+            id = id,
+            title = output.title,
+            pageCount = output.pageCount,
+            createdAt = createdAt,
+            pdfPath = pdfPath,
+            searchablePdfPath = pdfPath.takeIf { output.searchablePdfReady },
+            pageImagePaths = pageFiles,
+            tags = output.tags,
+            toolName = output.toolName,
+            sourceDocumentIds = sourceDocuments.map { it.id },
+            ocrText = output.ocrText,
+            ocrStatus = if (output.ocrText.isBlank()) OcrStatus.NotStarted else OcrStatus.Ready,
+            searchablePdfReady = output.searchablePdfReady
+        )
+
+        writeIndex(listOf(document) + readIndex())
+        output.deleteWorkingFiles()
+        document
+    }
+
+    fun newWorkingDirectory(prefix: String): File {
+        val safePrefix = prefix.filter { it.isLetterOrDigit() || it == '-' }.ifBlank { "tool" }
+        return File(context.cacheDir, "pdf-tools/$safePrefix-${UUID.randomUUID()}").apply { mkdirs() }
     }
 
     suspend fun updateOcrResult(
@@ -165,6 +209,8 @@ class LocalDocumentRepository(
         .put("searchablePdfPath", searchablePdfPath)
         .put("pageImagePaths", JSONArray(pageImagePaths))
         .put("tags", JSONArray(tags))
+        .put("toolName", toolName)
+        .put("sourceDocumentIds", JSONArray(sourceDocumentIds))
         .put("ocrText", ocrText)
         .put("ocrStatus", ocrStatus.name)
         .put("searchablePdfReady", searchablePdfReady)
@@ -179,6 +225,8 @@ class LocalDocumentRepository(
         searchablePdfPath = optString("searchablePdfPath").takeUnless { it.isBlank() || it == "null" },
         pageImagePaths = getJSONArray("pageImagePaths").toStringList(),
         tags = optJSONArray("tags")?.toStringList().orEmpty(),
+        toolName = optString("toolName").takeUnless { it.isBlank() || it == "null" },
+        sourceDocumentIds = optJSONArray("sourceDocumentIds")?.toStringList().orEmpty(),
         ocrText = optString("ocrText"),
         ocrStatus = runCatching { OcrStatus.valueOf(getString("ocrStatus")) }.getOrDefault(OcrStatus.NotStarted),
         searchablePdfReady = optBoolean("searchablePdfReady", false)
