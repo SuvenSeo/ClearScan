@@ -1,0 +1,17 @@
+.gradle/
+.kotlin/
+build/
+local.properties
+work/
+
+app/build/
+captures/
+*.apk
+*.aab
+*.jks
+*.keystore
+
+outputs/*
+!outputs/ClearScan-phase2-debug.sha256.txt
+!outputs/ClearScan-phase2-final-device-top.png
+!outputs/ClearScan-*.md
