@@ -48,6 +48,14 @@ Run:
 .\gradlew.bat :app:lintDebug :app:testDebugUnitTest :app:assembleDebug
 ```
 
+## Final Debug Build
+
+The verified debug APK is published on GitHub Releases:
+
+- Release: https://github.com/SuvenSeo/ClearScan/releases/tag/v0.1.0-phase2
+- APK: `ClearScan-phase2-debug.apk`
+- SHA256: `B3980830E213369521409BA48004CBCC07933FC63966F3CED505BC61BC2A2CDC`
+
 Free-policy guard:
 
 ```powershell
