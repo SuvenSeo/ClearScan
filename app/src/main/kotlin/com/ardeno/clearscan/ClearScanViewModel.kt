@@ -3,7 +3,9 @@ package com.ardeno.clearscan
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.ardeno.clearscan.data.AppPreferences
 import com.ardeno.clearscan.data.LocalDocumentRepository
+import com.ardeno.clearscan.model.LibraryViewMode
 import com.ardeno.clearscan.model.OcrStatus
 import com.ardeno.clearscan.model.ScanDocument
 import com.ardeno.clearscan.ocr.BenchmarkLanguage
@@ -33,7 +35,9 @@ data class ClearScanUiState(
     val vaultEnabled: Boolean = false,
     val vaultUnlocked: Boolean = true,
     val benchmarkSummary: String? = null,
-    val message: String? = null
+    val message: String? = null,
+    val hasCompletedOnboarding: Boolean = false,
+    val libraryViewMode: LibraryViewMode = LibraryViewMode.List
 )
 
 class ClearScanViewModel(application: Application) : AndroidViewModel(application) {
@@ -43,12 +47,20 @@ class ClearScanViewModel(application: Application) : AndroidViewModel(applicatio
     private val searchablePdfWriter = SearchablePdfWriter()
     private val vaultSettings = VaultSettings(application)
     private val vaultCrypto = VaultCrypto()
+    private val appPreferences = AppPreferences(application)
     private val _uiState = MutableStateFlow(ClearScanUiState())
     private var activeOcrJobs = 0
 
     val uiState: StateFlow<ClearScanUiState> = _uiState.asStateFlow()
 
     init {
+        _uiState.update { current ->
+            current.copy(
+                hasCompletedOnboarding = appPreferences.hasCompletedOnboarding,
+                libraryViewMode = appPreferences.libraryViewMode
+            )
+        }
+
         viewModelScope.launch {
             val documents = repository.loadDocuments()
             _uiState.update { current ->
@@ -70,6 +82,16 @@ class ClearScanViewModel(application: Application) : AndroidViewModel(applicatio
     override fun onCleared() {
         ocrEngine.close()
         super.onCleared()
+    }
+
+    fun completeOnboarding() {
+        appPreferences.setOnboardingComplete()
+        _uiState.update { it.copy(hasCompletedOnboarding = true) }
+    }
+
+    fun setLibraryViewMode(mode: LibraryViewMode) {
+        appPreferences.setLibraryViewMode(mode)
+        _uiState.update { it.copy(libraryViewMode = mode) }
     }
 
     fun updateQuery(query: String) {

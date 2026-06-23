@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.compose.setContent
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -51,6 +52,7 @@ class MainActivity : FragmentActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen()
         super.onCreate(savedInstanceState)
 
         setContent {
@@ -78,6 +80,8 @@ class MainActivity : FragmentActivity() {
                     onUnlockVault = ::unlockVault,
                     onLockVault = viewModel::lockVault,
                     onRunOcrBenchmark = viewModel::runSinhalaTamilBenchmarkSelfCheck,
+                    onCompleteOnboarding = viewModel::completeOnboarding,
+                    onLibraryViewModeChange = viewModel::setLibraryViewMode,
                     onDismissMessage = viewModel::clearMessage
                 )
             }
