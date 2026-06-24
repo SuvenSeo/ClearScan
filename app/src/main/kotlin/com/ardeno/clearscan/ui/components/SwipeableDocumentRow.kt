@@ -1,5 +1,7 @@
 package com.ardeno.clearscan.ui.components
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,11 +16,15 @@ import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.ardeno.clearscan.model.ScanDocument
+import com.ardeno.clearscan.ui.theme.ClearScanMotion
+import com.ardeno.clearscan.ui.theme.ClearScanSpacing
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -27,11 +33,31 @@ fun SwipeableDocumentRow(
     onClick: () -> Unit,
     onDelete: () -> Unit,
     modifier: Modifier = Modifier,
-    showDivider: Boolean = false
+    showDivider: Boolean = false,
+    selectionMode: Boolean = false,
+    isSelected: Boolean = false,
+    isDuplicate: Boolean = false,
+    onSelectionToggle: (() -> Unit)? = null
 ) {
+    if (selectionMode) {
+        DocumentCard(
+            document = document,
+            onClick = onClick,
+            showDivider = showDivider,
+            selectionMode = true,
+            isSelected = isSelected,
+            isDuplicate = isDuplicate,
+            onSelectionToggle = onSelectionToggle,
+            modifier = modifier
+        )
+        return
+    }
+
+    val performHaptic = rememberClearScanHaptics()
     val dismissState = rememberSwipeToDismissBoxState(
         confirmValueChange = { value ->
             if (value == SwipeToDismissBoxValue.EndToStart) {
+                performHaptic(ClearScanHaptic.Reject)
                 onDelete()
                 true
             } else {
@@ -40,30 +66,47 @@ fun SwipeableDocumentRow(
         }
     )
 
+    val isDeleting = dismissState.dismissDirection == SwipeToDismissBoxValue.EndToStart
+    val backgroundColor by animateColorAsState(
+        targetValue = if (isDeleting) {
+            MaterialTheme.colorScheme.error
+        } else {
+            Color.Transparent
+        },
+        animationSpec = ClearScanMotion.springStiffColor,
+        label = "swipeBackground"
+    )
+    val iconScale by animateFloatAsState(
+        targetValue = if (isDeleting) 1f else 0.6f,
+        animationSpec = ClearScanMotion.springSnappy,
+        label = "deleteIconScale"
+    )
+
     SwipeToDismissBox(
         modifier = modifier,
         state = dismissState,
         enableDismissFromStartToEnd = false,
         enableDismissFromEndToStart = true,
         backgroundContent = {
-            val isDeleting = dismissState.dismissDirection == SwipeToDismissBoxValue.EndToStart
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(
-                        if (isDeleting) MaterialTheme.colorScheme.error else Color.Transparent
-                    )
-                    .padding(horizontal = 24.dp),
+                    .background(backgroundColor)
+                    .padding(horizontal = ClearScanSpacing.xxl),
                 contentAlignment = Alignment.CenterEnd
             ) {
-                if (isDeleting) {
-                    Icon(
-                        imageVector = Icons.Outlined.Delete,
-                        contentDescription = "Delete ${document.title}",
-                        tint = MaterialTheme.colorScheme.onError,
-                        modifier = Modifier.size(24.dp)
-                    )
-                }
+                Icon(
+                    imageVector = Icons.Outlined.Delete,
+                    contentDescription = "Delete ${document.title}",
+                    tint = if (isDeleting) {
+                        MaterialTheme.colorScheme.onError
+                    } else {
+                        MaterialTheme.colorScheme.error.copy(alpha = 0.5f)
+                    },
+                    modifier = Modifier
+                        .size(24.dp)
+                        .scale(iconScale)
+                )
             }
         },
         content = {
@@ -71,6 +114,7 @@ fun SwipeableDocumentRow(
                 document = document,
                 onClick = onClick,
                 showDivider = showDivider,
+                isDuplicate = isDuplicate,
                 modifier = Modifier.background(MaterialTheme.colorScheme.surface)
             )
         }

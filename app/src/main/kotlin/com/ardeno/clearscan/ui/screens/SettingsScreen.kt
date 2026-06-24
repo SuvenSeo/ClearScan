@@ -10,10 +10,17 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Backup
 import androidx.compose.material.icons.outlined.CloudOff
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.LockOpen
+import androidx.compose.material.icons.outlined.Restore
+import androidx.compose.material.icons.outlined.Shield
 import androidx.compose.material.icons.outlined.TextFields
+import androidx.compose.material3.Switch
+import androidx.compose.material.icons.outlined.AutoMode
+import androidx.compose.material.icons.outlined.SystemUpdate
+import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
@@ -31,18 +38,38 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.ardeno.clearscan.BuildConfig
+import com.ardeno.clearscan.data.SelfHostConfig
+import com.ardeno.clearscan.ocr.OcrLanguage
 import com.ardeno.clearscan.ui.components.GroupedRowDivider
 import com.ardeno.clearscan.ui.components.GroupedSection
+import com.ardeno.clearscan.ui.components.OcrLanguagePicker
 import com.ardeno.clearscan.ui.components.PrivacyBadgeRow
+import com.ardeno.clearscan.ui.theme.ClearScanSpacing
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
     vaultEnabled: Boolean,
     benchmarkSummary: String?,
+    isBackupRunning: Boolean,
+    autoPageTurnEnabled: Boolean,
+    imageEnhancementEnabled: Boolean,
+    defaultOcrLanguage: OcrLanguage,
+    selfHostConfig: SelfHostConfig,
+    onSelfHostConfigChange: (SelfHostConfig) -> Unit,
+    onSaveSelfHostConfig: () -> Unit,
     onToggleVault: () -> Unit,
     onLockVault: () -> Unit,
     onRunOcrBenchmark: () -> Unit,
+    onOpenPrivacyDashboard: () -> Unit,
+    onExportBackup: () -> Unit,
+    onImportBackup: () -> Unit,
+    onAutoPageTurnChange: (Boolean) -> Unit,
+    onImageEnhancementChange: (Boolean) -> Unit,
+    onDefaultOcrLanguageChange: (OcrLanguage) -> Unit,
+    isUpdateChecking: Boolean,
+    onCheckForAppUpdate: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
@@ -72,14 +99,68 @@ fun SettingsScreen(
                 .fillMaxSize()
                 .padding(padding)
                 .verticalScroll(rememberScrollState())
-                .padding(vertical = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(24.dp)
+                .padding(vertical = ClearScanSpacing.sm),
+            verticalArrangement = Arrangement.spacedBy(ClearScanSpacing.xxl)
         ) {
+            GroupedSection(
+                title = "Capture",
+                footer = "All intelligence runs on-device. No cloud AI is used."
+            ) {
+                CaptureSettingsSection(
+                    autoPageTurnEnabled = autoPageTurnEnabled,
+                    imageEnhancementEnabled = imageEnhancementEnabled,
+                    onAutoPageTurnChange = onAutoPageTurnChange,
+                    onImageEnhancementChange = onImageEnhancementChange
+                )
+                GroupedRowDivider(startIndent = 16.dp)
+                OcrLanguageSettingsSection(
+                    defaultOcrLanguage = defaultOcrLanguage,
+                    onDefaultOcrLanguageChange = onDefaultOcrLanguageChange
+                )
+            }
+
             GroupedSection(title = "Security") {
                 VaultSettingsRow(
                     vaultEnabled = vaultEnabled,
                     onToggleVault = onToggleVault,
                     onLockVault = onLockVault
+                )
+            }
+
+            GroupedSection(
+                title = "Backup",
+                footer = "Exports an encrypted backup via the system file picker. Restore replaces local scans on this device."
+            ) {
+                BackupGroupedRow(
+                    isBackupRunning = isBackupRunning,
+                    onExportBackup = onExportBackup,
+                    onImportBackup = onImportBackup
+                )
+            }
+
+            GroupedSection(title = "Privacy") {
+                PrivacyDashboardEntryRow(onOpenPrivacyDashboard = onOpenPrivacyDashboard)
+            }
+
+            GroupedSection(
+                title = "Self-host export",
+                footer = "Credentials are stored with EncryptedSharedPreferences on this device only."
+            ) {
+                SelfHostSettingsSection(
+                    config = selfHostConfig,
+                    onConfigChange = onSelfHostConfigChange,
+                    onSave = onSaveSelfHostConfig
+                )
+            }
+
+            GroupedSection(
+                title = "App updates",
+                footer = "Checks GitHub Releases only when you tap the button. No background tracking."
+            ) {
+                AppUpdateSettingsRow(
+                    installedVersionName = BuildConfig.VERSION_NAME,
+                    isChecking = isUpdateChecking,
+                    onCheckForAppUpdate = onCheckForAppUpdate
                 )
             }
 
@@ -102,7 +183,7 @@ fun SettingsScreen(
             }
 
             Text(
-                text = "ClearScan v0.2.0 · Local-first · No ads · No subscriptions",
+                text = "ClearScan v${BuildConfig.VERSION_NAME} · Local-first · No ads · No subscriptions",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(horizontal = 32.dp, vertical = 8.dp)
@@ -229,6 +310,78 @@ private fun PromiseChip(
 }
 
 @Composable
+private fun BackupGroupedRow(
+    isBackupRunning: Boolean,
+    onExportBackup: () -> Unit,
+    onImportBackup: () -> Unit
+) {
+    Column(
+        modifier = Modifier.padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
+        Text(
+            text = "Encrypted local backup",
+            style = MaterialTheme.typography.bodyLarge,
+            fontWeight = FontWeight.SemiBold
+        )
+        Text(
+            text = "Save or restore scans without enabling Android auto-backup.",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            FilledTonalButton(
+                onClick = onExportBackup,
+                enabled = !isBackupRunning,
+                modifier = Modifier.weight(1f),
+                shape = MaterialTheme.shapes.medium
+            ) {
+                Icon(imageVector = Icons.Outlined.Backup, contentDescription = null)
+                Text(modifier = Modifier.padding(start = 8.dp), text = "Export")
+            }
+            FilledTonalButton(
+                onClick = onImportBackup,
+                enabled = !isBackupRunning,
+                modifier = Modifier.weight(1f),
+                shape = MaterialTheme.shapes.medium
+            ) {
+                Icon(imageVector = Icons.Outlined.Restore, contentDescription = null)
+                Text(modifier = Modifier.padding(start = 8.dp), text = "Restore")
+            }
+        }
+    }
+}
+
+@Composable
+private fun PrivacyDashboardEntryRow(onOpenPrivacyDashboard: () -> Unit) {
+    Column(
+        modifier = Modifier.padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
+        Text(
+            text = "Privacy dashboard",
+            style = MaterialTheme.typography.bodyLarge,
+            fontWeight = FontWeight.SemiBold
+        )
+        Text(
+            text = "Review offline policy, storage location, export audit log, and ad SDK status.",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        FilledTonalButton(
+            onClick = onOpenPrivacyDashboard,
+            shape = MaterialTheme.shapes.medium
+        ) {
+            Icon(imageVector = Icons.Outlined.Shield, contentDescription = null)
+            Text(modifier = Modifier.padding(start = 8.dp), text = "Open dashboard")
+        }
+    }
+}
+
+@Composable
 private fun BenchmarkGroupedRow(
     summary: String?,
     onRunOcrBenchmark: () -> Unit
@@ -262,5 +415,111 @@ private fun BenchmarkGroupedRow(
                 text = "Run self-check"
             )
         }
+    }
+}
+
+@Composable
+private fun AppUpdateSettingsRow(
+    installedVersionName: String,
+    isChecking: Boolean,
+    onCheckForAppUpdate: () -> Unit
+) {
+    Column(
+        modifier = Modifier.padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
+        Text(
+            text = "Installed version $installedVersionName",
+            style = MaterialTheme.typography.bodyLarge,
+            fontWeight = FontWeight.SemiBold
+        )
+        Text(
+            text = "Download newer APKs from GitHub Releases when a version.json entry is published.",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        FilledTonalButton(
+            onClick = onCheckForAppUpdate,
+            enabled = !isChecking,
+            shape = MaterialTheme.shapes.medium
+        ) {
+            Icon(imageVector = Icons.Outlined.SystemUpdate, contentDescription = null)
+            Text(
+                modifier = Modifier.padding(start = 8.dp),
+                text = if (isChecking) "Checking…" else "Check for updates"
+            )
+        }
+    }
+}
+
+@Composable
+private fun CaptureSettingsSection(
+    autoPageTurnEnabled: Boolean,
+    imageEnhancementEnabled: Boolean,
+    onAutoPageTurnChange: (Boolean) -> Unit,
+    onImageEnhancementChange: (Boolean) -> Unit
+) {
+    Column(
+        modifier = Modifier.padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        CaptureToggleRow(
+            title = "Auto page-turn capture",
+            description = "Uses CameraX frame analysis to auto-capture when a page flip settles.",
+            icon = Icons.Outlined.AutoMode,
+            checked = autoPageTurnEnabled,
+            onCheckedChange = onAutoPageTurnChange
+        )
+        CaptureToggleRow(
+            title = "Shadow & glare reduction",
+            description = "Lightweight on-device tone adjustment before pages are saved.",
+            icon = Icons.Outlined.Tune,
+            checked = imageEnhancementEnabled,
+            onCheckedChange = onImageEnhancementChange
+        )
+    }
+}
+
+@Composable
+private fun OcrLanguageSettingsSection(
+    defaultOcrLanguage: OcrLanguage,
+    onDefaultOcrLanguageChange: (OcrLanguage) -> Unit
+) {
+    OcrLanguagePicker(
+        modifier = Modifier.padding(16.dp),
+        selectedLanguage = defaultOcrLanguage,
+        onLanguageSelected = onDefaultOcrLanguageChange,
+        title = "Default OCR language"
+    )
+}
+
+@Composable
+private fun CaptureToggleRow(
+    title: String,
+    description: String,
+    icon: ImageVector,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.size(22.dp)
+        )
+        Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+            Text(text = title, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.SemiBold)
+            Text(
+                text = description,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+        Switch(checked = checked, onCheckedChange = onCheckedChange)
     }
 }

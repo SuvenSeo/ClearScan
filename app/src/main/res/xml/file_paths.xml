@@ -3,4 +3,7 @@
     <files-path
         name="documents"
         path="documents/" />
+    <external-files-path
+        name="updates"
+        path="Download/" />
 </paths>

@@ -7,12 +7,23 @@ android {
     namespace = "com.ardeno.clearscan"
     compileSdk = 36
 
+    buildFeatures {
+        compose = true
+        buildConfig = true
+    }
+
     defaultConfig {
         applicationId = "com.ardeno.clearscan"
         minSdk = 26
         targetSdk = 36
-        versionCode = 2
-        versionName = "0.2.0"
+        versionCode = 3
+        versionName = "0.2.1"
+
+        buildConfigField(
+            "String",
+            "UPDATE_MANIFEST_URL",
+            "\"https://raw.githubusercontent.com/SuvenSeo/ClearScan/main/distribution/version.json\""
+        )
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -38,8 +49,23 @@ android {
         }
     }
 
-    buildFeatures {
-        compose = true
+    packaging {
+        jniLibs {
+            pickFirsts += listOf(
+                "lib/arm64-v8a/libjpeg.so",
+                "lib/armeabi-v7a/libjpeg.so",
+                "lib/x86/libjpeg.so",
+                "lib/x86_64/libjpeg.so"
+            )
+        }
+    }
+
+    androidResources {
+        noCompress += "traineddata"
+    }
+
+    testOptions {
+        unitTests.isReturnDefaultValues = true
     }
 }
 
@@ -48,6 +74,10 @@ dependencies {
     implementation(libs.activity.compose)
     implementation(libs.androidx.core.ktx)
     implementation(libs.biometric)
+    implementation(libs.camera.camera2)
+    implementation(libs.camera.core)
+    implementation(libs.camera.lifecycle)
+    implementation(libs.camera.view)
     implementation(libs.coil.compose)
     implementation(libs.compose.foundation)
     implementation(libs.compose.material.icons.extended)
@@ -62,6 +92,8 @@ dependencies {
     implementation(libs.mlkit.document.scanner)
     implementation(libs.mlkit.text.recognition)
     implementation(libs.pdfbox.android)
+    implementation(libs.tesseract4android)
+    implementation(libs.security.crypto)
 
     debugImplementation(libs.compose.ui.tooling)
 

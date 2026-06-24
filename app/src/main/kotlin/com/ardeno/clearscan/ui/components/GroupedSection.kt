@@ -1,5 +1,6 @@
 package com.ardeno.clearscan.ui.components
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,15 +13,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.ardeno.clearscan.ui.theme.ClearScanElevation
+import com.ardeno.clearscan.ui.theme.ClearScanSpacing
+import com.ardeno.clearscan.ui.theme.GroupedSectionShape
 
 @Composable
 fun GroupedSection(
     modifier: Modifier = Modifier,
     title: String? = null,
     footer: String? = null,
-    horizontalPadding: Dp = 16.dp,
+    horizontalPadding: Dp = ClearScanSpacing.groupedInset,
     content: @Composable ColumnScope.() -> Unit
 ) {
+    val isDark = isSystemInDarkTheme()
+    val sectionElevation = if (isDark) ClearScanElevation.none else ClearScanElevation.card
+
     Column(modifier = modifier.fillMaxWidth()) {
         title?.let {
             Text(
@@ -28,9 +35,9 @@ fun GroupedSection(
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(
-                    start = horizontalPadding + 16.dp,
+                    start = horizontalPadding + ClearScanSpacing.lg,
                     end = horizontalPadding,
-                    bottom = 8.dp
+                    bottom = ClearScanSpacing.sm
                 )
             )
         }
@@ -39,10 +46,10 @@ fun GroupedSection(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = horizontalPadding),
-            shape = MaterialTheme.shapes.large,
+            shape = GroupedSectionShape,
             color = MaterialTheme.colorScheme.surface,
             tonalElevation = 0.dp,
-            shadowElevation = 0.dp
+            shadowElevation = sectionElevation
         ) {
             Column(content = content)
         }
@@ -53,9 +60,9 @@ fun GroupedSection(
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(
-                    start = horizontalPadding + 16.dp,
+                    start = horizontalPadding + ClearScanSpacing.lg,
                     end = horizontalPadding,
-                    top = 8.dp
+                    top = ClearScanSpacing.sm
                 )
             )
         }

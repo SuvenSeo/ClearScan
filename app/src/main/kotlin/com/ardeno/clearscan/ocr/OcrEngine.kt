@@ -1,18 +1,14 @@
 package com.ardeno.clearscan.ocr
 
 import android.content.Context
-import android.graphics.BitmapFactory
-import android.net.Uri
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.Typeface
 import com.ardeno.clearscan.model.ScanDocument
-import com.google.mlkit.vision.common.InputImage
-import com.google.mlkit.vision.text.Text
-import com.google.mlkit.vision.text.TextRecognition
-import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import java.io.File
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 
 data class DocumentOcrResult(
@@ -39,12 +35,16 @@ data class OcrLine(
 class OcrEngine(
     private val context: Context
 ) {
-    private val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
+    private val latinRecognizer = LatinOcrRecognizer(context)
+    private val tesseractRecognizer = TesseractOcrRecognizer(context)
 
-    suspend fun recognize(document: ScanDocument): DocumentOcrResult = withContext(Dispatchers.Default) {
+    suspend fun recognize(
+        document: ScanDocument,
+        language: OcrLanguage
+    ): DocumentOcrResult = withContext(Dispatchers.Default) {
         val pages = buildList {
             document.pageImagePaths.forEachIndexed { index, path ->
-                add(recognizePage(index, path))
+                add(recognizePage(language, index, path))
             }
         }
 
@@ -55,49 +55,107 @@ class OcrEngine(
     }
 
     fun close() {
-        recognizer.close()
+        latinRecognizer.close()
+        tesseractRecognizer.close()
     }
 
     private suspend fun recognizePage(
+        language: OcrLanguage,
         pageIndex: Int,
         path: String
-    ): PageOcrResult {
-        val file = File(path)
-        val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
-        BitmapFactory.decodeFile(file.absolutePath, bounds)
-        val width = bounds.outWidth.takeIf { it > 0 } ?: 1
-        val height = bounds.outHeight.takeIf { it > 0 } ?: 1
-        val result = process(InputImage.fromFilePath(context, Uri.fromFile(file)))
+    ): PageOcrResult = if (language.usesTesseract) {
+        tesseractRecognizer.recognizePage(language, pageIndex, path)
+    } else {
+        latinRecognizer.recognizePage(pageIndex, path)
+    }
+}
 
-        return PageOcrResult(
-            pageIndex = pageIndex,
-            text = result.text,
-            sourceWidth = width,
-            sourceHeight = height,
-            lines = result.textBlocks.flatMap { block ->
-                block.lines.mapNotNull { line ->
-                    val box = line.boundingBox ?: return@mapNotNull null
-                    val trimmed = line.text.trim()
-                    if (trimmed.isBlank()) return@mapNotNull null
-                    OcrLine(
-                        text = trimmed,
-                        left = box.left,
-                        top = box.top,
-                        right = box.right,
-                        bottom = box.bottom
-                    )
-                }
-            }
+object OcrBenchmarkRunner {
+    data class SyntheticSample(
+        val language: OcrLanguage,
+        val sampleName: String,
+        val expectedText: String
+    )
+
+    private val syntheticSamples = listOf(
+        SyntheticSample(
+            language = OcrLanguage.Sinhala,
+            sampleName = "sinhala-synthetic-print",
+            expectedText = "සිංහල ලිපිය"
+        ),
+        SyntheticSample(
+            language = OcrLanguage.Tamil,
+            sampleName = "tamil-synthetic-print",
+            expectedText = "தமிழ் ஆவணம்"
         )
+    )
+
+    suspend fun runSyntheticEngineBenchmark(
+        context: Context,
+        engine: OcrEngine = OcrEngine(context)
+    ): List<OcrBenchmarkMetrics> {
+        val workingDir = File(context.cacheDir, "ocr-benchmark").apply {
+            deleteRecursively()
+            mkdirs()
+        }
+
+        return try {
+            syntheticSamples.map { sample ->
+                val imagePath = renderSampleText(
+                    targetDir = workingDir,
+                    fileName = "${sample.sampleName}.png",
+                    text = sample.expectedText
+                )
+                val document = ScanDocument(
+                    id = "benchmark-${sample.sampleName}",
+                    title = sample.sampleName,
+                    pageCount = 1,
+                    createdAt = java.time.Instant.now(),
+                    pdfPath = null,
+                    pageImagePaths = listOf(imagePath),
+                    ocrLanguage = sample.language
+                )
+                val ocrResult = engine.recognize(document, sample.language)
+                val benchmarkLanguage = sample.language.toBenchmarkLanguage()
+                    ?: error("Synthetic benchmark requires Sinhala or Tamil.")
+                OcrBenchmark.evaluate(
+                    OcrBenchmarkCase(
+                        language = benchmarkLanguage,
+                        sampleName = sample.sampleName,
+                        expectedText = sample.expectedText,
+                        actualText = ocrResult.text
+                    )
+                )
+            }
+        } finally {
+            workingDir.deleteRecursively()
+            engine.close()
+        }
     }
 
-    private suspend fun process(image: InputImage): Text = suspendCancellableCoroutine { continuation ->
-        recognizer.process(image)
-            .addOnSuccessListener { text ->
-                if (continuation.isActive) continuation.resume(text)
-            }
-            .addOnFailureListener { error ->
-                if (continuation.isActive) continuation.resumeWithException(error)
-            }
+    private suspend fun renderSampleText(
+        targetDir: File,
+        fileName: String,
+        text: String
+    ): String = withContext(Dispatchers.Default) {
+        val width = 1280
+        val height = 360
+        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+        canvas.drawColor(Color.WHITE)
+
+        val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.BLACK
+            textSize = 72f
+            typeface = Typeface.DEFAULT
+        }
+        canvas.drawText(text, 48f, height / 2f, paint)
+
+        val output = File(targetDir, fileName)
+        output.outputStream().use { stream ->
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
+        }
+        bitmap.recycle()
+        output.absolutePath
     }
 }

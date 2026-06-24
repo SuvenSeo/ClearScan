@@ -59,6 +59,8 @@ The verified debug APKs are published on GitHub Releases:
 - APK: `ClearScan-v0.2.0-debug.apk`
 - SHA256: `CBDB600397F02DE841B58F889A61813BDA5607B2ABCCFB6825A564D65E5CA32D`
 
+In-app updates (opt-in): see [docs/APP_UPDATES.md](docs/APP_UPDATES.md). The app reads `distribution/version.json` on `main` and downloads newer APKs from GitHub Releases.
+
 Free-policy guard:
 
 ```powershell

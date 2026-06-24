@@ -45,6 +45,7 @@ Sources:
 - Sinhala/Tamil OCR benchmark harness for measured CER/WER scoring.
 - Android share-sheet export with no cloud account.
 - Delete from local storage.
+- Folders, tags, favorites, batch library actions, and duplicate detection.
 - Free-policy script for ad, billing, and monetization SDK checks.
 
 ## Features ClearScan Should Keep Free

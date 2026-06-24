@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CloudOff
 import androidx.compose.material.icons.outlined.Lock
@@ -20,8 +19,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.ardeno.clearscan.model.OcrStatus
-
-private val PillShape = RoundedCornerShape(percent = 50)
+import com.ardeno.clearscan.ui.theme.PillShape
 
 @Composable
 fun OcrStatusChip(status: OcrStatus) {

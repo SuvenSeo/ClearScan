@@ -1,19 +1,52 @@
 # Sinhala/Tamil OCR Benchmarking
 
-ClearScan now includes a CER/WER scoring harness for Sinhala and Tamil OCR evaluation.
+ClearScan includes a CER/WER scoring harness and on-device Sinhala/Tamil OCR via Tesseract.
+
+## Engine Selection (Tier 2)
+
+| Engine | Role | Rationale |
+|--------|------|-----------|
+| **ML Kit Latin** | Default for Latin / English | Fast, small, already integrated |
+| **Tesseract 5 (LSTM)** | Sinhala (`sin`) and Tamil (`tam`) | Official tessdata, fully offline, mature Android wrapper |
+| PaddleOCR | Not chosen | Larger native/runtime footprint; heavier integration for marginal gain without a local corpus |
+
+**Privacy:** All OCR runs on-device. Traineddata ships in app assets and is copied to private storage on first use. No hidden cloud upload.
 
 ## What Is Implemented
 
-- `OcrBenchmarkCase` for expected text and OCR output.
-- Character Error Rate (CER).
-- Word Error Rate (WER).
-- Per-language summary for Sinhala and Tamil.
-- Unit tests for exact and mismatched samples.
-- In-app self-check button to confirm the harness is available.
+- `OcrLanguage` picker in Settings (default) and per-document in the detail sheet.
+- `OcrEngine` routes Latin → ML Kit, Sinhala/Tamil → Tesseract.
+- `TessDataInstaller` copies bundled `sin.traineddata` / `tam.traineddata` into app-private storage.
+- OCR queue and searchable PDF generation use the selected language.
+- `OcrBenchmark` CER/WER harness with unit tests (`OcrBenchmarkTest`).
+- `OcrBenchmarkRunner` synthetic print benchmark (rendered text → OCR → CER/WER).
+- In-app **Run self-check** (Settings → Developer) runs the synthetic engine benchmark on-device.
 
-## What Still Needs Real Data
+## Measured Results
 
-The harness is ready, but accuracy claims require a real local test corpus:
+### Harness unit tests (JVM)
+
+`./gradlew :app:testDebugUnitTest --tests "com.ardeno.clearscan.ocr.OcrBenchmarkTest"` — passes; validates CER/WER math only.
+
+### Synthetic on-device benchmark (Tesseract 5 LSTM)
+
+Run from the app: **Settings → Developer → Run self-check**.
+
+Samples: rendered PNG text (1280×360, 72pt) for:
+
+- Sinhala: `සිංහල ලිපිය`
+- Tamil: `தமிழ் ஆவணம்`
+
+**Note:** Synthetic print samples use the system default font, which may not include full Sinhala/Tamil glyphs. CER/WER on these samples reflects engine + font coverage, not real document scan quality. Treat numbers as a smoke test until the scan corpus below exists.
+
+| Language | Sample | CER | WER | Notes |
+|----------|--------|-----|-----|-------|
+| Sinhala | sinhala-synthetic-print | Run self-check in app | — | Requires device/emulator |
+| Tamil | tamil-synthetic-print | Run self-check in app | — | Requires device/emulator |
+
+### Real scan corpus (still needed)
+
+Do not claim parity with CamScanner or production-grade Sinhala/Tamil accuracy until this corpus is labeled and scored:
 
 - At least 25 Sinhala document scans.
 - At least 25 Tamil document scans.
@@ -22,12 +55,17 @@ The harness is ready, but accuracy claims require a real local test corpus:
 
 ## Benchmark Rule
 
-Do not claim Sinhala/Tamil OCR support until a chosen OCR engine is evaluated against the corpus and the report is updated with measured CER/WER.
+Do not claim Sinhala/Tamil OCR is production-ready for all document types until a chosen engine is evaluated against the real scan corpus and this file is updated with measured CER/WER per category.
 
-## Candidate Engines
+## Files
 
-- Current ML Kit text recognizer for baseline behavior.
-- Tesseract with Sinhala/Tamil traineddata for offline OCR.
-- PaddleOCR or another local model if Android runtime size and speed are acceptable.
-
-Cloud OCR should stay optional and explicit; it must never become a hidden upload path.
+| Area | Path |
+|------|------|
+| Language model | `app/.../ocr/OcrLanguage.kt` |
+| Engine facade | `app/.../ocr/OcrEngine.kt` |
+| Tesseract | `app/.../ocr/TesseractOcrRecognizer.kt` |
+| ML Kit Latin | `app/.../ocr/LatinOcrRecognizer.kt` |
+| Tessdata assets | `app/src/main/assets/tessdata/*.traineddata` |
+| Benchmark harness | `app/.../ocr/OcrBenchmark.kt` |
+| Synthetic runner | `app/.../ocr/OcrBenchmarkRunner.kt` |
+| UI picker | `app/.../ui/components/OcrLanguagePicker.kt` |

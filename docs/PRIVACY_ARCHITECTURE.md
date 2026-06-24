@@ -12,8 +12,10 @@ ClearScan treats scanned documents as sensitive by default.
 - OCR runs locally against saved page images.
 - Searchable PDFs are generated locally before explicit export.
 - PDF merge/split/rotate/sign/redact/password operations generate new local copies and do not overwrite the original scan.
-- Vault mode gates the scan library behind Android biometric/device credential prompt and verifies Android Keystore AES/GCM availability.
-- Android system backup excludes stored documents.
+- Vault mode gates the scan library behind Android biometric/device credential prompt.
+- Document page images and PDFs are encrypted at rest with Android Keystore AES/GCM (`.enc` blobs under `filesDir/documents`).
+- Readable copies are decrypted only into app-private cache for OCR, PDF tools, and explicit export.
+- Android system backup (`allowBackup=false`) excludes stored documents; users can export an encrypted `.csbak` backup via SAF.
 
 ## Permission Strategy
 
@@ -23,17 +25,35 @@ ClearScan treats scanned documents as sensitive by default.
 
 ## Storage Strategy
 
-- Store documents under `filesDir/documents`.
+- Store encrypted document blobs under `filesDir/documents/{documentId}/`.
 - Store metadata in a local `index.json` until Room is introduced.
-- Store OCR text and searchable PDF paths in the local index.
-- Current vault build gates app access with biometrics/device credential and maintains a Keystore AES/GCM key health check.
-- Planned hardening: migrate existing document files into encrypted blobs and decrypt only into app-private cache for explicit export.
+- Store folders in `folders.json` beside the document index.
+- Store OCR text and searchable PDF paths in the local index (paths reference encrypted blobs).
+- Legacy plaintext files are migrated to encrypted blobs on first load after upgrade.
+- Export audit events are stored locally in `filesDir/export-audit.json`.
+
+## Encryption And Backup
+
+- **At rest:** `VaultCrypto` generates a hardware-backed AES/GCM key in Android Keystore (`clearscan_vault_aes`). `EncryptedFileStore` wraps each file with a `CSC1` header, IV, and ciphertext.
+- **Readable cache:** Decrypted files live under `cacheDir/vault-read/{documentId}/` and are invalidated when the encrypted source changes.
+- **Explicit backup:** Settings → Backup exports a `.csbak` file (SAF `CreateDocument`). The archive is a zip of `index.json`, `folders.json`, and encrypted blobs, then encrypted again with the vault key. Restore replaces local storage on the same device (Keystore-bound).
 
 ## Network Strategy
 
 - The core scanner must work offline.
 - Export/sync/upload requires an explicit user action.
 - Any future AI, OCR server, or cloud sync path must show a clear opt-in boundary.
+
+## Privacy Dashboard
+
+Settings → Privacy dashboard surfaces:
+
+- Offline / no background network policy
+- App-private storage location
+- Encryption-at-rest health (Keystore round-trip)
+- System backup exclusion status
+- Ad SDK classpath scan (common monetization SDK markers)
+- Export audit log (share/export actions only)
 
 ## Release Gate
 
@@ -43,5 +63,6 @@ Before Play Store submission:
 - Confirm no tracker/ad SDKs are present.
 - Confirm no billing/subscription SDKs are present.
 - Run a proxy/network test while scanning and browsing the local library.
-- Confirm backup exclusions and app-lock behavior on a real device.
+- Confirm backup exclusions, encryption migration, and app-lock behavior on a real device.
+- Confirm encrypted backup export/restore on the same device.
 - Confirm generated password-protected PDFs open with the password in an external PDF viewer before release.

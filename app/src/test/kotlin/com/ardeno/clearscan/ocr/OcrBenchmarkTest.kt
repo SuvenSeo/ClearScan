@@ -61,4 +61,11 @@ class OcrBenchmarkTest {
         assertTrue(summary.contains("Sinhala"))
         assertTrue(summary.contains("Tamil"))
     }
+
+    @Test
+    fun ocrLanguageFromNameFallsBackToLatin() {
+        assertEquals(OcrLanguage.Latin, OcrLanguage.fromName(null))
+        assertEquals(OcrLanguage.Sinhala, OcrLanguage.fromName("Sinhala"))
+        assertEquals(OcrLanguage.Tamil, OcrLanguage.fromName("Tamil"))
+    }
 }

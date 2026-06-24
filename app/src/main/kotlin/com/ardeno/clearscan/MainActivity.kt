@@ -15,8 +15,12 @@ import androidx.core.content.FileProvider
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import android.net.Uri
+import com.ardeno.clearscan.capture.PageTurnCaptureActivity
 import com.ardeno.clearscan.model.ScanDocument
+import com.ardeno.clearscan.model.ScanMode
 import com.ardeno.clearscan.scanner.ScannerImport
+import com.ardeno.clearscan.update.ApkUpdateManager
 import com.ardeno.clearscan.ui.ClearScanApp
 import com.ardeno.clearscan.ui.theme.ClearScanTheme
 import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions
@@ -26,6 +30,7 @@ import java.io.File
 
 class MainActivity : FragmentActivity() {
     private val viewModel by viewModels<ClearScanViewModel>()
+    private var pendingScanMode = ScanMode.Document
 
     private val scannerLauncher = registerForActivityResult(
         ActivityResultContracts.StartIntentSenderForResult()
@@ -46,9 +51,43 @@ class MainActivity : FragmentActivity() {
         viewModel.saveScan(
             ScannerImport(
                 pdfUri = pdfUri,
-                pageUris = pageUris
+                pageUris = pageUris,
+                scanMode = pendingScanMode,
+                enhanceImages = viewModel.uiState.value.imageEnhancementEnabled
             )
         )
+    }
+
+    private val pageTurnLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { activityResult ->
+        if (activityResult.resultCode != Activity.RESULT_OK) {
+            return@registerForActivityResult
+        }
+
+        val pagePaths = activityResult.data
+            ?.getStringArrayListExtra(PageTurnCaptureActivity.EXTRA_PAGE_PATHS)
+            .orEmpty()
+
+        viewModel.savePageTurnCapture(pagePaths)
+    }
+
+    private val exportBackupLauncher = registerForActivityResult(
+        ActivityResultContracts.CreateDocument("application/octet-stream")
+    ) { uri ->
+        uri?.let(viewModel::exportBackup)
+    }
+
+    private val importBackupLauncher = registerForActivityResult(
+        ActivityResultContracts.OpenDocument()
+    ) { uri ->
+        uri?.let(viewModel::importBackup)
+    }
+
+    private val fileImportLauncher = registerForActivityResult(
+        ActivityResultContracts.OpenMultipleDocuments()
+    ) { uris ->
+        viewModel.importFiles(uris)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -62,7 +101,8 @@ class MainActivity : FragmentActivity() {
                 ClearScanApp(
                     state = state,
                     onScanClick = ::startDocumentScanner,
-                    onImportClick = ::startDocumentScanner,
+                    onIdScanClick = ::startIdCardScanner,
+                    onImportClick = ::startFileImport,
                     onQueryChange = viewModel::updateQuery,
                     onSignatureTextChange = viewModel::updateSignatureText,
                     onPdfPasswordChange = viewModel::updatePdfPassword,
@@ -70,33 +110,90 @@ class MainActivity : FragmentActivity() {
                     onShareDocument = ::shareDocument,
                     onDeleteDocument = viewModel::deleteDocument,
                     onRetryOcr = viewModel::retryOcr,
+                    onDocumentOcrLanguageChange = viewModel::setDocumentOcrLanguage,
                     onMergeAllDocuments = viewModel::mergeAllDocuments,
                     onSplitDocument = viewModel::splitDocument,
                     onRotateDocument = viewModel::rotateDocument,
                     onSignDocument = viewModel::signDocument,
                     onRedactDocument = viewModel::redactDocument,
+                    onApplyAnnotations = viewModel::applyAnnotations,
                     onPasswordProtectDocument = viewModel::passwordProtectDocument,
+                    onReorderDocument = viewModel::reorderDocument,
+                    onDeletePagesFromDocument = viewModel::deletePagesFromDocument,
+                    onCompressDocument = viewModel::compressDocument,
+                    onCompressQualityChange = viewModel::updateCompressQuality,
+                    onSelectFolder = viewModel::setSelectedFolder,
+                    onSelectFavorites = { viewModel.setShowFavoritesOnly(true) },
+                    onCreateFolder = viewModel::createFolder,
+                    onEnterSelectionMode = viewModel::enterSelectionMode,
+                    onExitSelectionMode = viewModel::exitSelectionMode,
+                    onToggleDocumentSelection = viewModel::toggleDocumentSelection,
+                    onSelectAllVisible = viewModel::selectAllVisibleDocuments,
+                    onMergeSelected = viewModel::mergeSelectedDocuments,
+                    onExportSelected = ::shareSelectedDocuments,
+                    onDeleteSelected = viewModel::deleteSelectedDocuments,
+                    onToggleFavorite = viewModel::toggleDocumentFavorite,
+                    onUpdateTags = viewModel::updateDocumentTags,
+                    onMoveToFolder = viewModel::moveDocumentToFolder,
                     onToggleVault = ::toggleVault,
                     onUnlockVault = ::unlockVault,
                     onLockVault = viewModel::lockVault,
                     onRunOcrBenchmark = viewModel::runSinhalaTamilBenchmarkSelfCheck,
+                    onOpenPrivacyDashboard = viewModel::refreshPrivacyStatus,
+                    onClosePrivacyDashboard = viewModel::refreshPrivacyStatus,
+                    onExportBackup = ::startBackupExport,
+                    onImportBackup = ::startBackupImport,
+                    onSelfHostConfigChange = viewModel::updateSelfHostConfig,
+                    onSaveSelfHostConfig = viewModel::saveSelfHostConfig,
+                    onUploadToSelfHost = viewModel::uploadToSelfHost,
+                    onRedactIdFields = viewModel::redactIdSensitiveFields,
+                    onAutoPageTurnChange = viewModel::setAutoPageTurnEnabled,
+                    onImageEnhancementChange = viewModel::setImageEnhancementEnabled,
+                    onDefaultOcrLanguageChange = viewModel::setDefaultOcrLanguage,
                     onCompleteOnboarding = viewModel::completeOnboarding,
                     onLibraryViewModeChange = viewModel::setLibraryViewMode,
-                    onDismissMessage = viewModel::clearMessage
+                    onDismissMessage = viewModel::clearMessage,
+                    onCheckForAppUpdate = viewModel::checkForAppUpdate,
+                    onDismissAppUpdate = viewModel::dismissAppUpdate,
+                    onDownloadAppUpdate = ::startAppUpdateDownload
                 )
             }
         }
     }
 
+    private fun startFileImport() {
+        fileImportLauncher.launch(arrayOf("application/pdf", "image/*"))
+    }
+
     private fun startDocumentScanner() {
+        pendingScanMode = ScanMode.Document
+        if (viewModel.uiState.value.autoPageTurnEnabled) {
+            pageTurnLauncher.launch(Intent(this, PageTurnCaptureActivity::class.java))
+            return
+        }
+        launchScanner(
+            pageLimit = 64,
+            scannerMode = GmsDocumentScannerOptions.SCANNER_MODE_FULL
+        )
+    }
+
+    private fun startIdCardScanner() {
+        pendingScanMode = ScanMode.IdCard
+        launchScanner(
+            pageLimit = 2,
+            scannerMode = GmsDocumentScannerOptions.SCANNER_MODE_BASE
+        )
+    }
+
+    private fun launchScanner(pageLimit: Int, scannerMode: Int) {
         val options = GmsDocumentScannerOptions.Builder()
             .setGalleryImportAllowed(true)
-            .setPageLimit(64)
+            .setPageLimit(pageLimit)
             .setResultFormats(
                 GmsDocumentScannerOptions.RESULT_FORMAT_JPEG,
                 GmsDocumentScannerOptions.RESULT_FORMAT_PDF
             )
-            .setScannerMode(GmsDocumentScannerOptions.SCANNER_MODE_FULL)
+            .setScannerMode(scannerMode)
             .build()
 
         GmsDocumentScanning.getClient(options)
@@ -132,6 +229,63 @@ class MainActivity : FragmentActivity() {
         }
 
         startActivity(Intent.createChooser(shareIntent, "Share scan"))
+        viewModel.logDocumentExport(document)
+    }
+
+    private fun startBackupExport() {
+        val timestamp = java.time.LocalDateTime.now()
+            .format(java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd-HHmm"))
+        exportBackupLauncher.launch("clearscan-backup-$timestamp.csbak")
+    }
+
+    private fun startBackupImport() {
+        importBackupLauncher.launch(arrayOf("application/octet-stream", "*/*"))
+    }
+
+    private fun shareSelectedDocuments() {
+        val exports = viewModel.exportPathsForSelectedDocuments()
+        if (exports.isEmpty()) {
+            viewModel.reportMessage("No export files are available for the selected scans.")
+            return
+        }
+
+        val uris = ArrayList<android.net.Uri>()
+        var mimeType = exports.first().second
+
+        exports.forEach { (path, type) ->
+            val file = File(path)
+            if (!file.exists()) return@forEach
+            uris.add(FileProvider.getUriForFile(this, "$packageName.fileprovider", file))
+            if (mimeType != type) {
+                mimeType = "*/*"
+            }
+        }
+
+        if (uris.isEmpty()) {
+            viewModel.reportMessage("The selected export files are missing.")
+            return
+        }
+
+        val shareIntent = if (uris.size == 1) {
+            Intent(Intent.ACTION_SEND).apply {
+                this.type = exports.first().second
+                putExtra(Intent.EXTRA_STREAM, uris.first())
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }
+        } else {
+            Intent(Intent.ACTION_SEND_MULTIPLE).apply {
+                this.type = mimeType
+                putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris)
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }
+        }
+
+        startActivity(Intent.createChooser(shareIntent, "Share selected scans"))
+        val selectedIds = viewModel.uiState.value.selectedDocumentIds
+        viewModel.uiState.value.documents
+            .filter { it.id in selectedIds }
+            .forEach { document -> viewModel.logDocumentExport(document, exportKind = "bulk-share") }
+        viewModel.exitSelectionMode()
     }
 
     private fun toggleVault() {
@@ -199,5 +353,15 @@ class MainActivity : FragmentActivity() {
             .build()
 
         prompt.authenticate(promptInfo)
+    }
+
+    private fun startAppUpdateDownload() {
+        val updateManager = ApkUpdateManager(this)
+        if (!updateManager.canInstallPackages()) {
+            startActivity(updateManager.createInstallPermissionIntent())
+            viewModel.reportMessage("Allow ClearScan to install updates, then tap Download again.")
+            return
+        }
+        viewModel.downloadPendingAppUpdate()
     }
 }

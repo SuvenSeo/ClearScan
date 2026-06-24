@@ -1,0 +1,59 @@
+package com.ardeno.clearscan.update
+
+import android.app.DownloadManager
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.widget.Toast
+
+class ApkDownloadReceiver : BroadcastReceiver() {
+    override fun onReceive(context: Context, intent: Intent) {
+        if (intent.action != DownloadManager.ACTION_DOWNLOAD_COMPLETE) {
+            return
+        }
+
+        val completedId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1L)
+        if (completedId != ApkUpdateSession.pendingDownloadId) {
+            return
+        }
+
+        val downloadManager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+        val query = DownloadManager.Query().setFilterById(completedId)
+        val cursor = downloadManager.query(query)
+        cursor.use {
+            if (!it.moveToFirst()) {
+                Toast.makeText(context, "Update download not found.", Toast.LENGTH_LONG).show()
+                ApkUpdateSession.clear()
+                return
+            }
+
+            val status = it.getInt(it.getColumnIndexOrThrow(DownloadManager.COLUMN_STATUS))
+            if (status != DownloadManager.STATUS_SUCCESSFUL) {
+                Toast.makeText(context, "Update download failed.", Toast.LENGTH_LONG).show()
+                ApkUpdateSession.clear()
+                return
+            }
+        }
+
+        val apkFile = ApkUpdateSession.expectedApkFile
+        ApkUpdateSession.clear()
+
+        if (apkFile == null || !apkFile.exists()) {
+            Toast.makeText(context, "Downloaded APK is missing.", Toast.LENGTH_LONG).show()
+            return
+        }
+
+        val manager = ApkUpdateManager(context.applicationContext)
+        if (!manager.canInstallPackages()) {
+            Toast.makeText(
+                context,
+                "Allow ClearScan to install updates, then try again.",
+                Toast.LENGTH_LONG
+            ).show()
+            context.startActivity(manager.createInstallPermissionIntent().addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+            return
+        }
+
+        manager.launchInstaller(apkFile)
+    }
+}

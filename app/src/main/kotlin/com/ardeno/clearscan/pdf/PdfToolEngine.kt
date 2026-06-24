@@ -8,11 +8,14 @@ import android.graphics.Matrix
 import android.graphics.Paint
 import android.graphics.Rect
 import android.graphics.pdf.PdfDocument
+import com.ardeno.clearscan.model.PageAnnotation
 import com.ardeno.clearscan.model.ScanDocument
 import com.tom_roush.pdfbox.pdmodel.PDDocument
 import com.tom_roush.pdfbox.pdmodel.encryption.AccessPermission
 import com.tom_roush.pdfbox.pdmodel.encryption.StandardProtectionPolicy
+import com.tom_roush.pdfbox.rendering.PDFRenderer
 import java.io.File
+import kotlin.math.max
 import kotlin.math.roundToInt
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -93,7 +96,7 @@ class PdfToolEngine {
         toolName = "Rotate",
         tags = listOf("rotated", "pdf-tool"),
         pdfFileName = "rotated.pdf"
-    ) { source ->
+    ) { source, _ ->
         Bitmap.createBitmap(
             source,
             0,
@@ -118,7 +121,7 @@ class PdfToolEngine {
             toolName = "Signature",
             tags = listOf("signed", "pdf-tool"),
             pdfFileName = "signed.pdf"
-        ) { source ->
+        ) { source, _ ->
             source.copy(Bitmap.Config.ARGB_8888, true).apply {
                 val canvas = Canvas(this)
                 val linePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -154,7 +157,7 @@ class PdfToolEngine {
         toolName = "Redaction",
         tags = listOf("redacted", "pdf-tool"),
         pdfFileName = "redacted.pdf"
-    ) { source ->
+    ) { source, _ ->
         source.copy(Bitmap.Config.ARGB_8888, true).apply {
             val canvas = Canvas(this)
             val margin = width / 14f
@@ -169,6 +172,137 @@ class PdfToolEngine {
             canvas.drawRect(margin, top, width - margin, bottom, boxPaint)
             canvas.drawText("REDACTED", margin + width / 30f, top + (bottom - top) * 0.62f, textPaint)
         }
+    }
+
+    suspend fun redactIdSensitiveFields(
+        document: ScanDocument,
+        regions: List<com.ardeno.clearscan.ocr.NormalizedRegion>,
+        workingDir: File
+    ): PdfToolOutput = withContext(Dispatchers.IO) {
+        require(document.pageImagePaths.isNotEmpty()) { "This scan does not have page images for ID redaction." }
+        val pages = document.pageImagePaths.mapIndexed { index, path ->
+            val original = BitmapFactory.decodeFile(path) ?: error("Could not read page ${index + 1}.")
+            val edited = original.copy(Bitmap.Config.ARGB_8888, true).apply {
+                val canvas = Canvas(this)
+                val boxPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.BLACK }
+                regions.forEach { region ->
+                    val rect = region.toPixelRect(width, height)
+                    canvas.drawRect(rect, boxPaint)
+                }
+            }
+            if (edited !== original) original.recycle()
+            val target = File(workingDir, "page-${index + 1}.jpg")
+            target.outputStream().use { output ->
+                edited.compress(Bitmap.CompressFormat.JPEG, 94, output)
+            }
+            edited.recycle()
+            target
+        }
+        val pdf = writePdfFromImages(pages, File(workingDir, "id-redacted.pdf"))
+        PdfToolOutput(
+            title = "${document.title} ID redacted",
+            toolName = "ID redaction",
+            workingDir = workingDir,
+            pdfFile = pdf,
+            pageImageFiles = pages,
+            pageCount = pages.size,
+            tags = listOf("id-card", "redacted", "pdf-tool"),
+            ocrText = "",
+            searchablePdfReady = false,
+            pdfFileName = "id-redacted.pdf"
+        )
+    }
+
+    suspend fun applyAnnotations(
+        document: ScanDocument,
+        annotationsByPage: Map<Int, List<PageAnnotation>>,
+        workingDir: File
+    ): PdfToolOutput {
+        val hasAnnotations = annotationsByPage.values.any { it.isNotEmpty() }
+        require(hasAnnotations) { "Add at least one annotation before applying." }
+
+        return transformPages(
+            document = document,
+            workingDir = workingDir,
+            title = "${document.title} annotated",
+            toolName = "Annotate",
+            tags = listOf("annotated", "pdf-tool"),
+            pdfFileName = "annotated.pdf"
+        ) { source, pageIndex ->
+            val pageAnnotations = annotationsByPage[pageIndex].orEmpty()
+            if (pageAnnotations.isEmpty()) {
+                source
+            } else {
+                source.copy(Bitmap.Config.ARGB_8888, true).apply {
+                    AnnotationRenderer.render(
+                        canvas = Canvas(this),
+                        annotations = pageAnnotations,
+                        bitmapWidth = width,
+                        bitmapHeight = height
+                    )
+                }
+            }
+        }
+    }
+
+    suspend fun reorderPages(
+        document: ScanDocument,
+        pageOrder: List<Int>,
+        workingDir: File
+    ): PdfToolOutput = buildFromPageSelection(
+        document = document,
+        pageIndices = pageOrder,
+        workingDir = workingDir,
+        title = "${document.title} reordered",
+        toolName = "Reorder",
+        tags = listOf("reordered", "pdf-tool"),
+        pdfFileName = "reordered.pdf"
+    )
+
+    suspend fun deletePages(
+        document: ScanDocument,
+        pageIndicesToKeep: List<Int>,
+        workingDir: File
+    ): PdfToolOutput = buildFromPageSelection(
+        document = document,
+        pageIndices = pageIndicesToKeep,
+        workingDir = workingDir,
+        title = "${document.title} edited",
+        toolName = "Delete pages",
+        tags = listOf("edited", "pdf-tool"),
+        pdfFileName = "edited.pdf"
+    )
+
+    suspend fun compress(
+        document: ScanDocument,
+        quality: PdfCompressQuality,
+        workingDir: File
+    ): PdfToolOutput = withContext(Dispatchers.IO) {
+        val sourcePaths = resolveSourcePagePaths(document, workingDir)
+        val pages = sourcePaths.mapIndexed { index, path ->
+            val original = BitmapFactory.decodeFile(path) ?: error("Could not read page ${index + 1}.")
+            val scaled = scaleBitmapIfNeeded(original, quality.maxLongEdge)
+            if (scaled !== original) original.recycle()
+            val target = File(workingDir, "page-${index + 1}.jpg")
+            target.outputStream().use { output ->
+                scaled.compress(Bitmap.CompressFormat.JPEG, quality.jpegQuality, output)
+            }
+            scaled.recycle()
+            target
+        }
+        val pdf = writePdfFromImages(pages, File(workingDir, "compressed.pdf"))
+        PdfToolOutput(
+            title = "${document.title} compressed",
+            toolName = "Compress",
+            workingDir = workingDir,
+            pdfFile = pdf,
+            pageImageFiles = pages,
+            pageCount = pages.size,
+            tags = listOf("compressed", "pdf-tool", quality.name.lowercase()),
+            ocrText = document.ocrText,
+            searchablePdfReady = false,
+            pdfFileName = "compressed.pdf"
+        )
     }
 
     suspend fun passwordProtect(
@@ -204,6 +338,41 @@ class PdfToolEngine {
         )
     }
 
+    private suspend fun buildFromPageSelection(
+        document: ScanDocument,
+        pageIndices: List<Int>,
+        workingDir: File,
+        title: String,
+        toolName: String,
+        tags: List<String>,
+        pdfFileName: String
+    ): PdfToolOutput = withContext(Dispatchers.IO) {
+        val sourcePaths = resolveSourcePagePaths(document, workingDir)
+        require(pageIndices.isNotEmpty()) { "Keep at least one page." }
+        require(pageIndices.all { it in sourcePaths.indices }) { "One or more page selections are invalid." }
+        require(pageIndices.distinct().size == pageIndices.size) { "Duplicate pages are not allowed." }
+
+        val pages = pageIndices.mapIndexed { outputIndex, sourceIndex ->
+            val source = File(sourcePaths[sourceIndex])
+            val target = File(workingDir, "page-${outputIndex + 1}.jpg")
+            source.copyTo(target, overwrite = true)
+            target
+        }
+        val pdf = writePdfFromImages(pages, File(workingDir, pdfFileName))
+        PdfToolOutput(
+            title = title,
+            toolName = toolName,
+            workingDir = workingDir,
+            pdfFile = pdf,
+            pageImageFiles = pages,
+            pageCount = pages.size,
+            tags = tags,
+            ocrText = document.ocrText,
+            searchablePdfReady = false,
+            pdfFileName = pdfFileName
+        )
+    }
+
     private suspend fun transformPages(
         document: ScanDocument,
         workingDir: File,
@@ -211,12 +380,12 @@ class PdfToolEngine {
         toolName: String,
         tags: List<String>,
         pdfFileName: String,
-        transform: (Bitmap) -> Bitmap
+        transform: (Bitmap, Int) -> Bitmap
     ): PdfToolOutput = withContext(Dispatchers.IO) {
-        require(document.pageImagePaths.isNotEmpty()) { "This scan does not have page images for $toolName." }
-        val pages = document.pageImagePaths.mapIndexed { index, path ->
+        val sourcePaths = resolveSourcePagePaths(document, workingDir)
+        val pages = sourcePaths.mapIndexed { index, path ->
             val original = BitmapFactory.decodeFile(path) ?: error("Could not read page ${index + 1}.")
-            val edited = transform(original)
+            val edited = transform(original, index)
             if (edited !== original) original.recycle()
             val target = File(workingDir, "page-${index + 1}.jpg")
             target.outputStream().use { output ->
@@ -249,13 +418,67 @@ class PdfToolEngine {
         target
     }
 
+    private suspend fun resolveSourcePagePaths(
+        document: ScanDocument,
+        workingDir: File
+    ): List<String> = withContext(Dispatchers.IO) {
+        val existingPages = document.pageImagePaths.filter { File(it).exists() }
+        if (existingPages.isNotEmpty()) {
+            return@withContext existingPages
+        }
+
+        val pdfFile = document.bestPdfFile() ?: error("No PDF or page images are available for this document.")
+        renderPdfPagesToImages(pdfFile, workingDir).map { it.absolutePath }
+    }
+
+    private fun renderPdfPagesToImages(
+        pdfFile: File,
+        targetDir: File
+    ): List<File> {
+        PDDocument.load(pdfFile).use { pdf ->
+            val renderer = PDFRenderer(pdf)
+            return (0 until pdf.numberOfPages).map { pageIndex ->
+                val bitmap = renderer.renderImage(pageIndex, 2f)
+                val pageFile = File(targetDir, "rendered-page-${pageIndex + 1}.jpg")
+                pageFile.outputStream().use { output ->
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 90, output)
+                }
+                bitmap.recycle()
+                pageFile
+            }
+        }
+    }
+
+    private fun scaleBitmapIfNeeded(
+        source: Bitmap,
+        maxLongEdge: Int?
+    ): Bitmap {
+        if (maxLongEdge == null) return source
+
+        val longEdge = max(source.width, source.height)
+        if (longEdge <= maxLongEdge) return source
+
+        val scale = maxLongEdge.toFloat() / longEdge.toFloat()
+        val targetWidth = (source.width * scale).roundToInt().coerceAtLeast(1)
+        val targetHeight = (source.height * scale).roundToInt().coerceAtLeast(1)
+        return Bitmap.createScaledBitmap(source, targetWidth, targetHeight, true)
+    }
+
     private fun createBasePdf(
         document: ScanDocument,
         workingDir: File
     ): File {
-        require(document.pageImagePaths.isNotEmpty()) { "No PDF or page images are available for password protection." }
-        val pages = copyPages(document.pageImagePaths, workingDir)
-        return writePdfFromImages(pages, File(workingDir, "base.pdf"))
+        val pages = copyPages(
+            document.pageImagePaths.filter { File(it).exists() },
+            workingDir
+        )
+        if (pages.isNotEmpty()) {
+            return writePdfFromImages(pages, File(workingDir, "base.pdf"))
+        }
+
+        val pdfFile = document.bestPdfFile() ?: error("No PDF or page images are available for password protection.")
+        val rendered = renderPdfPagesToImages(pdfFile, workingDir)
+        return writePdfFromImages(rendered, File(workingDir, "base.pdf"))
     }
 
     private fun writePdfFromImages(
