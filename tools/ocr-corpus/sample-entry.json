@@ -1,0 +1,9 @@
+{
+  "id": "sinhala-receipt-01",
+  "language": "sinhala",
+  "category": "receipt",
+  "description": "Printed Sinhala grocery receipt, indoor lighting.",
+  "expectedText": "Ground-truth text typed manually from the scan image.",
+  "actualText": null,
+  "imageFile": "sinhala-receipt-01.png"
+}

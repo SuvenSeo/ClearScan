@@ -1,0 +1,8 @@
+{
+  "id": "sinhala-synthetic-01",
+  "language": "sinhala",
+  "category": "synthetic-print",
+  "description": "Placeholder Sinhala synthetic sample for JVM corpus harness validation.",
+  "expectedText": "සිංහල ලිපිය",
+  "actualText": "සිංහල ලිපිය"
+}

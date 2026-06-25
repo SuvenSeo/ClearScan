@@ -1,0 +1,8 @@
+{
+  "id": "tamil-synthetic-01",
+  "language": "tamil",
+  "category": "synthetic-print",
+  "description": "Placeholder Tamil synthetic sample with a deliberate OCR mismatch for harness validation.",
+  "expectedText": "தமிழ் ஆவணம்",
+  "actualText": "தமிழ்"
+}

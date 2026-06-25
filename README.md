@@ -4,12 +4,15 @@ ClearScan is an Android-first, local-first document scanner planned as a free Ca
 
 ## Phase Status
 
-- Phase 0 research: complete.
-- Phase 1 Android foundation: complete.
-- Phase 2 OCR/search/searchable PDF foundation: implemented.
-- Phase 3 free export/delete/no-monetization guard: implemented.
-- Phase 3 advanced PDF editing, app lock, backup, tags: planned.
-- Phase 4 Sinhala/Tamil OCR and iOS parity: planned.
+- Phase 0 product and technical direction: complete.
+- Phase 1 scanner foundation: complete.
+- Phase 2 OCR and searchable PDFs: implemented foundation (real scan accuracy QA still needed).
+- Phase 3 free PDF tools: Tier 1 complete; annotation, folders, tags, and batch tools in progress.
+- Phase 4 language and platform expansion: in progress (Sinhala/Tamil OCR benchmarking, self-host export, ID scan mode).
+- Phase 5 security, backup, and privacy dashboard: implemented foundation.
+- Phase 6 Tier 3 local intelligence: implemented foundation (page-turn capture, receipt extraction, auto-tagging, image enhancement).
+
+See [docs/PHASES.md](docs/PHASES.md) for done-when criteria per phase.
 
 ## Current App Scope
 
@@ -23,7 +26,10 @@ ClearScan is an Android-first, local-first document scanner planned as a free Ca
 - Searchable PDF export generated locally from page images plus OCR text.
 - PDF editor actions: merge all scans, split into page PDFs, rotate pages, add typed signature, redact a header band, and create password-protected PDFs.
 - Biometric/device-credential vault gate with Android Keystore crypto health check.
-- Sinhala/Tamil OCR benchmark harness for CER/WER scoring.
+- Sinhala/Tamil OCR benchmark harness for CER/WER scoring plus labeled corpus loader (`tools/ocr-corpus/`).
+- Encrypted document storage at rest, privacy dashboard, and encrypted local backup/restore.
+- Self-host export (WebDAV / paperless-ngx), ID scan mode with redaction suggestions.
+- Page-turn capture, receipt field extraction, offline auto-tagging, and scan quality enhancement.
 - Android share-sheet export through FileProvider.
 - Delete saved scans from app-private storage.
 - Offline-first UI with document list, scan/import actions, OCR status, and free-feature surface.
@@ -48,7 +54,19 @@ This workspace has a local Android SDK installed under `work/android-sdk`, with 
 Run:
 
 ```powershell
+.\scripts\smoke-qa.ps1
+```
+
+Or run Gradle directly:
+
+```powershell
 .\gradlew.bat :app:lintDebug :app:testDebugUnitTest :app:assembleDebug
+```
+
+Privacy release gate (pre-release):
+
+```powershell
+.\scripts\privacy-release-gate.ps1
 ```
 
 ## Final Debug Build
