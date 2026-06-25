@@ -1,4 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">ClearScan</string>
+    <string name="shortcut_scan">Scan</string>
+    <string name="shortcut_scan_long">Scan a document</string>
+    <string name="shortcut_id_scan">ID scan</string>
+    <string name="shortcut_id_scan_long">Scan an ID card</string>
+    <string name="shortcut_import">Import</string>
+    <string name="shortcut_import_long">Import PDF or images</string>
+    <string name="widget_scan_label">Scan document</string>
+    <string name="widget_scan_description">Quick scan shortcut for ClearScan</string>
 </resources>

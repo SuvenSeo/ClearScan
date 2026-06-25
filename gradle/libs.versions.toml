@@ -52,7 +52,11 @@ mlkit-text-recognition = { module = "com.google.mlkit:text-recognition", version
 pdfbox-android = { module = "com.tom-roush:pdfbox-android", version.ref = "pdfboxAndroid" }
 tesseract4android = { module = "com.github.adaptech-cz.Tesseract4Android:tesseract4android", version.ref = "tesseract4Android" }
 security-crypto = { module = "androidx.security:security-crypto", version.ref = "securityCrypto" }
+room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
+room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
+room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }

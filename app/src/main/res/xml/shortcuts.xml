@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="scan_document"
+        android:enabled="true"
+        android:icon="@drawable/ic_launcher"
+        android:shortcutShortLabel="@string/shortcut_scan"
+        android:shortcutLongLabel="@string/shortcut_scan_long">
+        <intent
+            android:action="com.ardeno.clearscan.action.SCAN"
+            android:targetPackage="com.ardeno.clearscan"
+            android:targetClass="com.ardeno.clearscan.MainActivity" />
+    </shortcut>
+    <shortcut
+        android:shortcutId="scan_id"
+        android:enabled="true"
+        android:icon="@drawable/ic_launcher"
+        android:shortcutShortLabel="@string/shortcut_id_scan"
+        android:shortcutLongLabel="@string/shortcut_id_scan_long">
+        <intent
+            android:action="com.ardeno.clearscan.action.SCAN_ID"
+            android:targetPackage="com.ardeno.clearscan"
+            android:targetClass="com.ardeno.clearscan.MainActivity" />
+    </shortcut>
+    <shortcut
+        android:shortcutId="import_files"
+        android:enabled="true"
+        android:icon="@drawable/ic_launcher"
+        android:shortcutShortLabel="@string/shortcut_import"
+        android:shortcutLongLabel="@string/shortcut_import_long">
+        <intent
+            android:action="com.ardeno.clearscan.action.IMPORT"
+            android:targetPackage="com.ardeno.clearscan"
+            android:targetClass="com.ardeno.clearscan.MainActivity" />
+    </shortcut>
+</shortcuts>

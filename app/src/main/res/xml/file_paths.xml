@@ -6,4 +6,7 @@
     <external-files-path
         name="updates"
         path="Download/" />
+    <cache-path
+        name="text_exports"
+        path="text-exports/" />
 </paths>

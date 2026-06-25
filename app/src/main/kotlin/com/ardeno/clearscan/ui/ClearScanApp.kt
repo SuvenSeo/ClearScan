@@ -63,6 +63,8 @@ fun ClearScanApp(
     onPdfPasswordChange: (String) -> Unit,
     onToggleDocumentExpanded: (ScanDocument) -> Unit,
     onShareDocument: (ScanDocument) -> Unit,
+    onExportText: (ScanDocument) -> Unit,
+    onPrintDocument: (ScanDocument) -> Unit,
     onDeleteDocument: (ScanDocument) -> Unit,
     onRetryOcr: (ScanDocument) -> Unit,
     onDocumentOcrLanguageChange: (ScanDocument, OcrLanguage) -> Unit,
@@ -309,6 +311,8 @@ fun ClearScanApp(
                 }
             },
             onShare = { onShareDocument(currentDocument) },
+            onExportText = { onExportText(currentDocument) },
+            onPrint = { onPrintDocument(currentDocument) },
             onUploadToSelfHost = { onUploadToSelfHost(currentDocument) },
             onRedactIdFields = { onRedactIdFields(currentDocument) },
             onDelete = {

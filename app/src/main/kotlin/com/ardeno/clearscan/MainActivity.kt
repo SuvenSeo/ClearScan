@@ -21,6 +21,9 @@ import com.ardeno.clearscan.model.ScanDocument
 import com.ardeno.clearscan.model.ScanMode
 import com.ardeno.clearscan.scanner.ScannerImport
 import com.ardeno.clearscan.update.ApkUpdateManager
+import com.ardeno.clearscan.export.DocumentPrintHelper
+import com.ardeno.clearscan.export.TextExportHelper
+import com.ardeno.clearscan.widget.ScanWidgetProvider
 import com.ardeno.clearscan.ui.ClearScanApp
 import com.ardeno.clearscan.ui.theme.ClearScanTheme
 import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions
@@ -94,6 +97,8 @@ class MainActivity : FragmentActivity() {
         installSplashScreen()
         super.onCreate(savedInstanceState)
 
+        handleIncomingIntent(intent)
+
         setContent {
             val state = viewModel.uiState.collectAsStateWithLifecycle().value
 
@@ -108,6 +113,8 @@ class MainActivity : FragmentActivity() {
                     onPdfPasswordChange = viewModel::updatePdfPassword,
                     onToggleDocumentExpanded = viewModel::toggleDocumentExpanded,
                     onShareDocument = ::shareDocument,
+                    onExportText = ::exportText,
+                    onPrintDocument = ::printDocument,
                     onDeleteDocument = viewModel::deleteDocument,
                     onRetryOcr = viewModel::retryOcr,
                     onDocumentOcrLanguageChange = viewModel::setDocumentOcrLanguage,
@@ -230,6 +237,71 @@ class MainActivity : FragmentActivity() {
 
         startActivity(Intent.createChooser(shareIntent, "Share scan"))
         viewModel.logDocumentExport(document)
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        handleIncomingIntent(intent)
+    }
+
+    private fun handleIncomingIntent(intent: Intent?) {
+        if (intent == null) return
+
+        when (intent.action) {
+            ScanWidgetProvider.ACTION_SCAN,
+            "com.ardeno.clearscan.action.SCAN" -> {
+                if (viewModel.uiState.value.hasCompletedOnboarding) {
+                    startDocumentScanner()
+                }
+                intent.action = null
+            }
+            "com.ardeno.clearscan.action.SCAN_ID" -> {
+                if (viewModel.uiState.value.hasCompletedOnboarding) {
+                    startIdCardScanner()
+                }
+                intent.action = null
+            }
+            "com.ardeno.clearscan.action.IMPORT" -> {
+                if (viewModel.uiState.value.hasCompletedOnboarding) {
+                    startFileImport()
+                }
+                intent.action = null
+            }
+            Intent.ACTION_SEND -> {
+                val uri = intent.getParcelableExtra<Uri>(Intent.EXTRA_STREAM)
+                if (uri != null) {
+                    viewModel.importFiles(listOf(uri))
+                }
+                intent.action = null
+            }
+            Intent.ACTION_SEND_MULTIPLE -> {
+                val uris = intent.getParcelableArrayListExtra<Uri>(Intent.EXTRA_STREAM).orEmpty()
+                if (uris.isNotEmpty()) {
+                    viewModel.importFiles(uris)
+                }
+                intent.action = null
+            }
+        }
+    }
+
+    private fun exportText(document: ScanDocument) {
+        val shareIntent = TextExportHelper.createShareIntent(this, document)
+        if (shareIntent == null) {
+            viewModel.reportMessage("No OCR text is available to export yet.")
+            return
+        }
+        startActivity(Intent.createChooser(shareIntent, "Export OCR text"))
+        viewModel.logDocumentExport(document, exportKind = "text")
+    }
+
+    private fun printDocument(document: ScanDocument) {
+        val started = DocumentPrintHelper.printDocument(this, document)
+        if (!started) {
+            viewModel.reportMessage("No PDF is available to print for this scan.")
+            return
+        }
+        viewModel.logDocumentExport(document, exportKind = "print")
     }
 
     private fun startBackupExport() {

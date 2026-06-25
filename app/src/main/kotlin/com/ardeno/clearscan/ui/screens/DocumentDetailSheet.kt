@@ -19,8 +19,10 @@ import androidx.compose.material.icons.outlined.CloudUpload
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material.icons.outlined.Refresh
+import androidx.compose.material.icons.outlined.Print
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material.icons.outlined.Star
+import androidx.compose.material.icons.outlined.TextSnippet
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -88,6 +90,8 @@ fun DocumentDetailSheet(
     idRedactionSuggestion: IdRedactionSuggestion? = null,
     onDismiss: () -> Unit,
     onShare: () -> Unit,
+    onExportText: () -> Unit = {},
+    onPrint: () -> Unit = {},
     onUploadToSelfHost: () -> Unit = {},
     onRedactIdFields: () -> Unit = {},
     onDelete: () -> Unit,
@@ -272,7 +276,7 @@ fun DocumentDetailSheet(
                         .defaultMinSize(minHeight = ClearScanSpacing.minTouchTarget),
                     shape = MaterialTheme.shapes.medium
                 ) {
-                    Icon(Icons.Outlined.Share, contentDescription = null)
+                    Icon(Icons.Outlined.Share, contentDescription = "Share document")
                     Text(modifier = Modifier.padding(start = ClearScanSpacing.sm), text = "Share")
                 }
                 FilledTonalButton(
@@ -286,8 +290,42 @@ fun DocumentDetailSheet(
                         contentColor = MaterialTheme.colorScheme.onErrorContainer
                     )
                 ) {
-                    Icon(Icons.Outlined.Delete, contentDescription = null)
+                    Icon(Icons.Outlined.Delete, contentDescription = "Delete document")
                     Text(modifier = Modifier.padding(start = ClearScanSpacing.sm), text = "Delete")
+                }
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(ClearScanSpacing.sm)
+            ) {
+                FilledTonalButton(
+                    onClick = {
+                        performHaptic(ClearScanHaptic.Confirm)
+                        onExportText()
+                    },
+                    enabled = document.ocrText.isNotBlank(),
+                    modifier = Modifier
+                        .weight(1f)
+                        .defaultMinSize(minHeight = ClearScanSpacing.minTouchTarget),
+                    shape = MaterialTheme.shapes.medium
+                ) {
+                    Icon(Icons.Outlined.TextSnippet, contentDescription = "Export OCR text")
+                    Text(modifier = Modifier.padding(start = ClearScanSpacing.sm), text = "Export text")
+                }
+                FilledTonalButton(
+                    onClick = {
+                        performHaptic(ClearScanHaptic.Confirm)
+                        onPrint()
+                    },
+                    enabled = document.pdfPath != null || document.searchablePdfPath != null,
+                    modifier = Modifier
+                        .weight(1f)
+                        .defaultMinSize(minHeight = ClearScanSpacing.minTouchTarget),
+                    shape = MaterialTheme.shapes.medium
+                ) {
+                    Icon(Icons.Outlined.Print, contentDescription = "Print document")
+                    Text(modifier = Modifier.padding(start = ClearScanSpacing.sm), text = "Print")
                 }
             }
 
