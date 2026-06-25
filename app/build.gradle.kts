@@ -1,6 +1,15 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
+}
+
+val signingPropertiesFile = rootProject.file("app/signing.properties")
+val signingProperties = Properties().apply {
+    if (signingPropertiesFile.exists()) {
+        signingPropertiesFile.inputStream().use { load(it) }
+    }
 }
 
 android {
@@ -28,6 +37,17 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        if (signingPropertiesFile.exists()) {
+            create("release") {
+                storeFile = rootProject.file(signingProperties.getProperty("storeFile"))
+                storePassword = signingProperties.getProperty("storePassword")
+                keyAlias = signingProperties.getProperty("keyAlias")
+                keyPassword = signingProperties.getProperty("keyPassword")
+            }
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = true
@@ -35,6 +55,9 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            if (signingPropertiesFile.exists()) {
+                signingConfig = signingConfigs.getByName("release")
+            }
         }
     }
 
@@ -96,6 +119,13 @@ dependencies {
     implementation(libs.security.crypto)
 
     debugImplementation(libs.compose.ui.tooling)
+    debugImplementation(libs.compose.ui.test.manifest)
 
     testImplementation(libs.junit)
+
+    androidTestImplementation(libs.androidx.test.ext.junit)
+    androidTestImplementation(libs.androidx.test.espresso.core)
+    androidTestImplementation(libs.androidx.test.runner)
+    androidTestImplementation(platform(libs.compose.bom))
+    androidTestImplementation(libs.compose.ui.test.junit4)
 }

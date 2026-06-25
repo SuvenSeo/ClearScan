@@ -1,0 +1,7 @@
+# Copy to signing.properties (gitignored) for local release builds.
+# CI release builds use unsigned APKs unless you add secrets separately.
+
+storeFile=../path/to/your-release.keystore
+storePassword=your-store-password
+keyAlias=your-key-alias
+keyPassword=your-key-password

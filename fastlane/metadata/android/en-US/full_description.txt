@@ -1,0 +1,18 @@
+ClearScan is a free, local-first document scanner for Android.
+
+Scan receipts, contracts, IDs, and notes with your camera. Everything stays on your device — no account, no ads, and no forced cloud upload.
+
+FEATURES
+• ML Kit document scanning with PDF and JPEG output
+• Local OCR with searchable PDF export
+• Merge, split, rotate, sign, redact, and password-protect PDFs
+• Folders, tags, favorites, and full-text search
+• Optional biometric vault lock
+• Encrypted storage and passphrase-protected backups
+• Self-host export to WebDAV or paperless-ngx
+• Sinhala and Tamil OCR support
+
+PRIVACY BY DESIGN
+ClearScan does not include analytics or ad SDKs. OCR runs on-device. Network access is used only when you enable self-host export or check for app updates.
+
+ClearScan is open source. Built for people who want CamScanner-style tools without subscriptions or watermarks.

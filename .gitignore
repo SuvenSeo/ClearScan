@@ -2,6 +2,7 @@
 .kotlin/
 build/
 local.properties
+app/signing.properties
 work/
 
 app/build/
