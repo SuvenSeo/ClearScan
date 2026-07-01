@@ -5,6 +5,8 @@ import android.net.Uri
 import com.ardeno.clearscan.image.ImageEnhancer
 import com.ardeno.clearscan.model.DocumentFolder
 import com.ardeno.clearscan.model.OcrStatus
+import com.ardeno.clearscan.model.PageAnnotation
+import com.ardeno.clearscan.model.PageAnnotationJson
 import com.ardeno.clearscan.model.ScanDocument
 import com.ardeno.clearscan.model.ScanMode
 import com.ardeno.clearscan.ocr.OcrLanguage
@@ -321,6 +323,35 @@ class LocalDocumentRepository(
 
     fun storageLocation(): String = documentsRoot.absolutePath
 
+    suspend fun updatePageAnnotations(
+        id: String,
+        pageAnnotations: List<List<PageAnnotation>>
+    ): ScanDocument? = withContext(Dispatchers.IO) {
+        updateDocument(id) { document ->
+            document.copy(
+                updatedAt = Instant.now(),
+                pageAnnotations = pageAnnotations
+            )
+        }?.let(::toReadableDocument)
+    }
+
+    fun hasStoredDocuments(): Boolean {
+        if (!indexFile.exists()) return false
+        return readIndex().isNotEmpty()
+    }
+
+    suspend fun writeBackupMetadataFiles(stagingRoot: File) = withContext(Dispatchers.IO) {
+        stagingRoot.mkdirs()
+        val documents = readIndex()
+        val folders = readFolders()
+        File(stagingRoot, "index.json").writeText(documentsToJsonArray(documents).toString(2))
+        File(stagingRoot, "folders.json").writeText(foldersToJsonArray(folders).toString(2))
+    }
+
+    fun invalidateIndexCache() {
+        // Index is persisted on disk; Room migration may add caching later.
+    }
+
     private fun toReadableDocument(document: ScanDocument): ScanDocument =
         document.copy(
             pdfPath = document.pdfPath?.let { encryptedFileStore.decryptToCache(it, document.id).absolutePath },
@@ -426,11 +457,28 @@ class LocalDocumentRepository(
     }
 
     private fun writeIndex(documents: List<ScanDocument>) {
+        indexFile.writeText(documentsToJsonArray(documents).toString(2))
+    }
+
+    private fun documentsToJsonArray(documents: List<ScanDocument>): JSONArray {
         val array = JSONArray()
         documents.forEach { document ->
             array.put(document.toJson())
         }
-        indexFile.writeText(array.toString(2))
+        return array
+    }
+
+    private fun foldersToJsonArray(folders: List<DocumentFolder>): JSONArray {
+        val array = JSONArray()
+        folders.forEach { folder ->
+            array.put(
+                JSONObject()
+                    .put("id", folder.id)
+                    .put("name", folder.name)
+                    .put("createdAt", folder.createdAt.toString())
+            )
+        }
+        return array
     }
 
     private fun ScanDocument.toJson(): JSONObject = JSONObject()
@@ -454,6 +502,7 @@ class LocalDocumentRepository(
         .put("isFavorite", isFavorite)
         .put("pageHashes", JSONArray(pageHashes))
         .put("receiptFields", receiptFields?.toJson())
+        .put("pageAnnotations", JSONArray(PageAnnotationJson.encodePages(pageAnnotations)))
 
     private fun JSONObject.toScanDocument(): ScanDocument = ScanDocument(
         id = getString("id"),
@@ -476,7 +525,8 @@ class LocalDocumentRepository(
         folderId = optString("folderId").takeUnless { it.isBlank() || it == "null" },
         isFavorite = optBoolean("isFavorite", false),
         pageHashes = optJSONArray("pageHashes")?.toStringList().orEmpty(),
-        receiptFields = optJSONObject("receiptFields")?.toReceiptFields()
+        receiptFields = optJSONObject("receiptFields")?.toReceiptFields(),
+        pageAnnotations = PageAnnotationJson.decodePages(optString("pageAnnotations").takeUnless { it.isBlank() || it == "null" })
     )
 
     private fun ReceiptFields.toJson(): JSONObject = JSONObject()
@@ -516,16 +566,7 @@ class LocalDocumentRepository(
     }
 
     private fun writeFolders(folders: List<DocumentFolder>) {
-        val array = JSONArray()
-        folders.forEach { folder ->
-            array.put(
-                JSONObject()
-                    .put("id", folder.id)
-                    .put("name", folder.name)
-                    .put("createdAt", folder.createdAt.toString())
-            )
-        }
-        foldersFile.writeText(array.toString(2))
+        foldersFile.writeText(foldersToJsonArray(folders).toString(2))
     }
 
     private companion object {

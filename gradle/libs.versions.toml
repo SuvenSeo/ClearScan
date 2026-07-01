@@ -17,6 +17,8 @@ lifecycle = "2.9.0"
 mlkitDocumentScanner = "16.0.0"
 mlkitTextRecognition = "16.0.1"
 pdfboxAndroid = "2.0.27.0"
+room = "2.7.2"
+ksp = "2.3.21-2.0.2"
 tesseract4Android = "4.9.0"
 securityCrypto = "1.1.0"
 

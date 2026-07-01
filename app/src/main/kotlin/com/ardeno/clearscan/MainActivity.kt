@@ -78,13 +78,13 @@ class MainActivity : FragmentActivity() {
     private val exportBackupLauncher = registerForActivityResult(
         ActivityResultContracts.CreateDocument("application/octet-stream")
     ) { uri ->
-        uri?.let(viewModel::exportBackup)
+        uri?.let(viewModel::onBackupExportUriSelected)
     }
 
     private val importBackupLauncher = registerForActivityResult(
         ActivityResultContracts.OpenDocument()
     ) { uri ->
-        uri?.let(viewModel::importBackup)
+        uri?.let(viewModel::onBackupImportUriSelected)
     }
 
     private val fileImportLauncher = registerForActivityResult(
@@ -157,6 +157,10 @@ class MainActivity : FragmentActivity() {
                     onAutoPageTurnChange = viewModel::setAutoPageTurnEnabled,
                     onImageEnhancementChange = viewModel::setImageEnhancementEnabled,
                     onDefaultOcrLanguageChange = viewModel::setDefaultOcrLanguage,
+                    onPassphraseBackupChange = viewModel::setPassphraseBackupEnabled,
+                    onWifiOnlySelfHostUploadChange = viewModel::setWifiOnlySelfHostUpload,
+                    onSubmitBackupPassphrase = viewModel::submitBackupPassphrase,
+                    onDismissBackupPassphrase = viewModel::dismissBackupPassphrase,
                     onCompleteOnboarding = viewModel::completeOnboarding,
                     onLibraryViewModeChange = viewModel::setLibraryViewMode,
                     onDismissMessage = viewModel::clearMessage,

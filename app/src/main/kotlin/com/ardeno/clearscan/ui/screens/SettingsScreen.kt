@@ -68,6 +68,10 @@ fun SettingsScreen(
     onAutoPageTurnChange: (Boolean) -> Unit,
     onImageEnhancementChange: (Boolean) -> Unit,
     onDefaultOcrLanguageChange: (OcrLanguage) -> Unit,
+    passphraseBackupEnabled: Boolean,
+    wifiOnlySelfHostUpload: Boolean,
+    onPassphraseBackupChange: (Boolean) -> Unit,
+    onWifiOnlySelfHostUploadChange: (Boolean) -> Unit,
     isUpdateChecking: Boolean,
     onCheckForAppUpdate: () -> Unit,
     modifier: Modifier = Modifier
@@ -133,6 +137,8 @@ fun SettingsScreen(
             ) {
                 BackupGroupedRow(
                     isBackupRunning = isBackupRunning,
+                    passphraseBackupEnabled = passphraseBackupEnabled,
+                    onPassphraseBackupChange = onPassphraseBackupChange,
                     onExportBackup = onExportBackup,
                     onImportBackup = onImportBackup
                 )
@@ -148,6 +154,8 @@ fun SettingsScreen(
             ) {
                 SelfHostSettingsSection(
                     config = selfHostConfig,
+                    wifiOnlySelfHostUpload = wifiOnlySelfHostUpload,
+                    onWifiOnlySelfHostUploadChange = onWifiOnlySelfHostUploadChange,
                     onConfigChange = onSelfHostConfigChange,
                     onSave = onSaveSelfHostConfig
                 )
@@ -312,6 +320,8 @@ private fun PromiseChip(
 @Composable
 private fun BackupGroupedRow(
     isBackupRunning: Boolean,
+    passphraseBackupEnabled: Boolean,
+    onPassphraseBackupChange: (Boolean) -> Unit,
     onExportBackup: () -> Unit,
     onImportBackup: () -> Unit
 ) {
@@ -329,6 +339,29 @@ private fun BackupGroupedRow(
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = "Passphrase-protected backup",
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Medium
+                )
+                Text(
+                    text = "Restore the same backup on another device with your passphrase.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            Switch(
+                checked = passphraseBackupEnabled,
+                onCheckedChange = onPassphraseBackupChange,
+                enabled = !isBackupRunning
+            )
+        }
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp)

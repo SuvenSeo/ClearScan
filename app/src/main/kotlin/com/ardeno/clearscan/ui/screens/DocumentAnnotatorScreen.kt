@@ -103,8 +103,12 @@ fun DocumentAnnotatorScreen(
 
     val pagerState = rememberPagerState(pageCount = { pagePaths.size })
     var selectedTool by remember { mutableStateOf(AnnotatorTool.Signature) }
-    val annotationsByPage = remember(document.id) {
-        mutableStateMapOf<Int, MutableList<PageAnnotation>>()
+    val annotationsByPage = remember(document.id, document.pageAnnotations) {
+        mutableStateMapOf<Int, MutableList<PageAnnotation>>().apply {
+            document.pageAnnotations.forEachIndexed { index, page ->
+                put(index, mutableStateListOf<PageAnnotation>().apply { addAll(page) })
+            }
+        }
     }
     var pendingNoteAnchor by remember { mutableStateOf<NormalizedPoint?>(null) }
     var noteDraft by remember { mutableStateOf("") }

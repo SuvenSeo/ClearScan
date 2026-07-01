@@ -4,6 +4,8 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import android.net.Uri
+import com.ardeno.clearscan.backup.BackupPassphraseAction
+import com.ardeno.clearscan.backup.BackupPassphraseRequest
 import com.ardeno.clearscan.backup.BackupRestoreManager
 import com.ardeno.clearscan.data.AppPreferences
 import com.ardeno.clearscan.data.LocalDocumentRepository
@@ -78,7 +80,10 @@ data class ClearScanUiState(
     val defaultOcrLanguage: OcrLanguage = OcrLanguage.Latin,
     val isUpdateChecking: Boolean = false,
     val isUpdateDownloading: Boolean = false,
-    val pendingAppUpdate: AppUpdateInfo? = null
+    val pendingAppUpdate: AppUpdateInfo? = null,
+    val backupPassphraseRequest: BackupPassphraseRequest? = null,
+    val passphraseBackupEnabled: Boolean = false,
+    val wifiOnlySelfHostUpload: Boolean = true
 )
 
 class ClearScanViewModel(application: Application) : AndroidViewModel(application) {
@@ -110,7 +115,9 @@ class ClearScanViewModel(application: Application) : AndroidViewModel(applicatio
                 selfHostConfig = selfHostSettings.load(),
                 autoPageTurnEnabled = appPreferences.autoPageTurnEnabled,
                 imageEnhancementEnabled = appPreferences.imageEnhancementEnabled,
-                defaultOcrLanguage = appPreferences.defaultOcrLanguage
+                defaultOcrLanguage = appPreferences.defaultOcrLanguage,
+                passphraseBackupEnabled = appPreferences.passphraseBackupEnabled,
+                wifiOnlySelfHostUpload = appPreferences.wifiOnlySelfHostUpload
             )
         }
 
@@ -383,6 +390,16 @@ class ClearScanViewModel(application: Application) : AndroidViewModel(applicatio
         _uiState.update { it.copy(defaultOcrLanguage = language) }
     }
 
+    fun setPassphraseBackupEnabled(enabled: Boolean) {
+        appPreferences.setPassphraseBackupEnabled(enabled)
+        _uiState.update { it.copy(passphraseBackupEnabled = enabled) }
+    }
+
+    fun setWifiOnlySelfHostUpload(enabled: Boolean) {
+        appPreferences.setWifiOnlySelfHostUpload(enabled)
+        _uiState.update { it.copy(wifiOnlySelfHostUpload = enabled) }
+    }
+
     fun setDocumentOcrLanguage(document: ScanDocument, language: OcrLanguage) {
         if (document.ocrLanguage == language) return
 
@@ -567,13 +584,26 @@ class ClearScanViewModel(application: Application) : AndroidViewModel(applicatio
         document: ScanDocument,
         annotationsByPage: Map<Int, List<PageAnnotation>>
     ) {
-        runSingleDocumentTool(
-            document = document,
-            successMessage = "Created annotated copy.",
-            output = { workingDir ->
-                pdfToolEngine.applyAnnotations(document, annotationsByPage, workingDir)
+        viewModelScope.launch {
+            val pageAnnotations = List(document.pageCount) { pageIndex ->
+                annotationsByPage[pageIndex].orEmpty()
             }
-        )
+            val updatedSource = repository.updatePageAnnotations(document.id, pageAnnotations)
+            if (updatedSource != null) {
+                replaceDocument(updatedSource)
+            }
+            runSingleDocumentTool(
+                document = updatedSource ?: document,
+                successMessage = "Created annotated copy.",
+                output = { workingDir ->
+                    pdfToolEngine.applyAnnotations(
+                        updatedSource ?: document,
+                        annotationsByPage,
+                        workingDir
+                    )
+                }
+            )
+        }
     }
 
     fun passwordProtectDocument(document: ScanDocument) {
@@ -688,10 +718,59 @@ class ClearScanViewModel(application: Application) : AndroidViewModel(applicatio
         refreshPrivacyStatus()
     }
 
-    fun exportBackup(targetUri: Uri) {
+    fun onBackupExportUriSelected(targetUri: Uri) {
+        if (appPreferences.passphraseBackupEnabled) {
+            _uiState.update {
+                it.copy(
+                    backupPassphraseRequest = BackupPassphraseRequest(
+                        action = BackupPassphraseAction.Export,
+                        uri = targetUri,
+                        confirmPassphrase = true
+                    )
+                )
+            }
+        } else {
+            exportBackupWithPassphrase(targetUri, null)
+        }
+    }
+
+    fun onBackupImportUriSelected(sourceUri: Uri) {
+        val version = backupRestoreManager.backupVersion(sourceUri)
+        if (version == BackupRestoreManager.BACKUP_VERSION_PASSPHRASE) {
+            _uiState.update {
+                it.copy(
+                    backupPassphraseRequest = BackupPassphraseRequest(
+                        action = BackupPassphraseAction.Import,
+                        uri = sourceUri
+                    )
+                )
+            }
+        } else {
+            importBackupWithPassphrase(sourceUri, null)
+        }
+    }
+
+    fun submitBackupPassphrase(passphrase: CharArray, confirmation: CharArray?) {
+        val request = _uiState.value.backupPassphraseRequest ?: return
+        if (request.confirmPassphrase && confirmation != null && !passphrase.contentEquals(confirmation)) {
+            reportMessage("Passphrases do not match.")
+            return
+        }
+        _uiState.update { it.copy(backupPassphraseRequest = null) }
+        when (request.action) {
+            BackupPassphraseAction.Export -> exportBackupWithPassphrase(request.uri, passphrase)
+            BackupPassphraseAction.Import -> importBackupWithPassphrase(request.uri, passphrase)
+        }
+    }
+
+    fun dismissBackupPassphrase() {
+        _uiState.update { it.copy(backupPassphraseRequest = null) }
+    }
+
+    private fun exportBackupWithPassphrase(targetUri: Uri, passphrase: CharArray?) {
         viewModelScope.launch {
             _uiState.update { it.copy(isBackupRunning = true, message = null) }
-            val result = backupRestoreManager.exportBackup(targetUri)
+            val result = backupRestoreManager.exportBackup(targetUri, passphrase)
             _uiState.update { current ->
                 current.copy(
                     isBackupRunning = false,
@@ -702,13 +781,29 @@ class ClearScanViewModel(application: Application) : AndroidViewModel(applicatio
         }
     }
 
-    fun importBackup(sourceUri: Uri) {
+    private fun importBackupWithPassphrase(sourceUri: Uri, passphrase: CharArray?) {
         viewModelScope.launch {
             _uiState.update { it.copy(isBackupRunning = true, message = null) }
-            val result = backupRestoreManager.importBackup(sourceUri)
+            val result = backupRestoreManager.importBackup(sourceUri, passphrase)
+            if (result.requiresPassphrase) {
+                _uiState.update {
+                    it.copy(
+                        isBackupRunning = false,
+                        backupPassphraseRequest = BackupPassphraseRequest(
+                            action = BackupPassphraseAction.Import,
+                            uri = sourceUri
+                        )
+                    )
+                }
+                return@launch
+            }
             val documents = if (result.success) repository.loadDocuments() else _uiState.value.documents
             val folders = if (result.success) repository.loadFolders() else _uiState.value.folders
-            val duplicateIds = if (result.success) duplicateDetector.duplicateDocumentIds(documents) else _uiState.value.duplicateDocumentIds
+            val duplicateIds = if (result.success) {
+                duplicateDetector.duplicateDocumentIds(documents)
+            } else {
+                _uiState.value.duplicateDocumentIds
+            }
             _uiState.update { current ->
                 current.copy(
                     documents = documents,

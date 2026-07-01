@@ -14,37 +14,62 @@ import java.util.zip.ZipInputStream
 import java.util.zip.ZipOutputStream
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.json.JSONObject
 
 class BackupRestoreManager(
     private val context: Context,
     private val repository: LocalDocumentRepository,
     private val encryptedFileStore: EncryptedFileStore,
-    private val vaultCrypto: VaultCrypto
+    private val vaultCrypto: VaultCrypto,
+    private val passphraseBackupCrypto: PassphraseBackupCrypto = PassphraseBackupCrypto()
 ) {
-    suspend fun exportBackup(targetUri: Uri): BackupResult = withContext(Dispatchers.IO) {
+    suspend fun exportBackup(
+        targetUri: Uri,
+        passphrase: CharArray? = null
+    ): BackupResult = withContext(Dispatchers.IO) {
         vaultCrypto.ensureVaultKey()
-        val documentsRoot = encryptedFileStore.storageRoot()
-        val indexFile = File(documentsRoot, "index.json")
-        if (!indexFile.exists()) {
+        if (!repository.hasStoredDocuments()) {
             return@withContext BackupResult.failure("Nothing to back up yet.")
         }
 
-        val zipBytes = buildZipBytes(documentsRoot, indexFile)
-        val encryptedPayload = EncryptedFileStore.packCiphertext(vaultCrypto.encrypt(zipBytes))
+        val documentsRoot = encryptedFileStore.storageRoot()
+        val stagingRoot = File(context.cacheDir, "backup-export-${Instant.now().toEpochMilli()}").apply {
+            deleteRecursively()
+            mkdirs()
+        }
 
-        context.contentResolver.openOutputStream(targetUri)?.use { output ->
-            BufferedOutputStream(output).use { stream ->
-                stream.write(BACKUP_MAGIC)
-                stream.write(byteArrayOf(BACKUP_VERSION))
-                stream.write(encryptedPayload)
+        try {
+            repository.writeBackupMetadataFiles(stagingRoot)
+            val zipBytes = buildZipBytes(documentsRoot, stagingRoot)
+            val version = if (passphrase != null) BACKUP_VERSION_PASSPHRASE else BACKUP_VERSION_DEVICE
+            val encryptedPayload = if (passphrase != null) {
+                passphraseBackupCrypto.encrypt(zipBytes, passphrase)
+            } else {
+                EncryptedFileStore.packCiphertext(vaultCrypto.encrypt(zipBytes))
             }
-        } ?: return@withContext BackupResult.failure("Could not write backup file.")
 
-        BackupResult.success("Encrypted backup saved.")
+            context.contentResolver.openOutputStream(targetUri)?.use { output ->
+                BufferedOutputStream(output).use { stream ->
+                    stream.write(BACKUP_MAGIC)
+                    stream.write(byteArrayOf(version))
+                    stream.write(encryptedPayload)
+                }
+            } ?: return@withContext BackupResult.failure("Could not write backup file.")
+
+            val message = if (passphrase != null) {
+                "Passphrase-protected backup saved. Use the same passphrase to restore on another device."
+            } else {
+                "Encrypted backup saved."
+            }
+            BackupResult.success(message)
+        } finally {
+            stagingRoot.deleteRecursively()
+        }
     }
 
-    suspend fun importBackup(sourceUri: Uri): BackupResult = withContext(Dispatchers.IO) {
+    suspend fun importBackup(
+        sourceUri: Uri,
+        passphrase: CharArray? = null
+    ): BackupResult = withContext(Dispatchers.IO) {
         vaultCrypto.ensureVaultKey()
 
         val encryptedBytes = context.contentResolver.openInputStream(sourceUri)?.use { input ->
@@ -59,54 +84,77 @@ class BackupRestoreManager(
         }
 
         val version = encryptedBytes[BACKUP_MAGIC.size]
-        if (version != BACKUP_VERSION) {
-            return@withContext BackupResult.failure("Unsupported backup version.")
-        }
-
         val payload = encryptedBytes.copyOfRange(BACKUP_MAGIC.size + 1, encryptedBytes.size)
-        val zipBytes = runCatching {
-            vaultCrypto.decrypt(EncryptedFileStore.unpackCiphertext(payload))
-        }.getOrElse {
-            return@withContext BackupResult.failure(
-                "Could not decrypt backup. Restore only works on the device that created it."
-            )
+        val zipBytes = when (version) {
+            BACKUP_VERSION_DEVICE -> runCatching {
+                vaultCrypto.decrypt(EncryptedFileStore.unpackCiphertext(payload))
+            }.getOrElse {
+                return@withContext BackupResult.failure(
+                    "Could not decrypt backup. Restore only works on the device that created it."
+                )
+            }
+            BACKUP_VERSION_PASSPHRASE -> {
+                if (passphrase == null) {
+                    return@withContext BackupResult.needsPassphrase()
+                }
+                runCatching {
+                    passphraseBackupCrypto.decrypt(payload, passphrase)
+                }.getOrElse {
+                    return@withContext BackupResult.failure("Incorrect passphrase or corrupted backup file.")
+                }
+            }
+            else -> return@withContext BackupResult.failure("Unsupported backup version.")
         }
 
+        restoreZipBytes(zipBytes)
+    }
+
+    fun backupVersion(sourceUri: Uri): Byte? {
+        val header = context.contentResolver.openInputStream(sourceUri)?.use { input ->
+            BufferedInputStream(input).readNBytes(BACKUP_MAGIC.size + 1)
+        } ?: return null
+        if (header.size < BACKUP_MAGIC.size + 1) return null
+        if (!header.copyOfRange(0, BACKUP_MAGIC.size).contentEquals(BACKUP_MAGIC)) return null
+        return header[BACKUP_MAGIC.size]
+    }
+
+    private suspend fun restoreZipBytes(zipBytes: ByteArray): BackupResult {
         val stagingDir = File(context.cacheDir, "backup-restore-${Instant.now().toEpochMilli()}").apply {
             deleteRecursively()
             mkdirs()
         }
 
-        try {
+        return try {
             unzipToDirectory(zipBytes, stagingDir)
             if (!File(stagingDir, "index.json").exists()) {
-                return@withContext BackupResult.failure("Backup manifest is missing.")
-            }
+                BackupResult.failure("Backup manifest is missing.")
+            } else {
+                val documentsRoot = encryptedFileStore.storageRoot()
+                documentsRoot.deleteRecursively()
+                documentsRoot.mkdirs()
 
-            val documentsRoot = encryptedFileStore.storageRoot()
-            documentsRoot.deleteRecursively()
-            documentsRoot.mkdirs()
-
-            stagingDir.listFiles().orEmpty().forEach { entry ->
-                if (entry.isFile) {
-                    entry.copyTo(File(documentsRoot, entry.name), overwrite = true)
-                } else {
-                    entry.copyRecursively(target = File(documentsRoot, entry.name), overwrite = true)
+                stagingDir.listFiles().orEmpty().forEach { entry ->
+                    if (entry.isFile) {
+                        entry.copyTo(File(documentsRoot, entry.name), overwrite = true)
+                    } else {
+                        entry.copyRecursively(target = File(documentsRoot, entry.name), overwrite = true)
+                    }
                 }
-            }
 
-            encryptedFileStore.clearAllReadableCache()
-            val documents = repository.loadDocuments()
-            BackupResult.success("Restored ${documents.size} scans from backup.")
+                encryptedFileStore.clearAllReadableCache()
+                repository.invalidateIndexCache()
+                val documents = repository.loadDocuments()
+                BackupResult.success("Restored ${documents.size} scans from backup.")
+            }
         } finally {
             stagingDir.deleteRecursively()
         }
     }
 
-    private fun buildZipBytes(documentsRoot: File, indexFile: File): ByteArray {
+    private fun buildZipBytes(documentsRoot: File, metadataRoot: File): ByteArray {
         val buffer = java.io.ByteArrayOutputStream()
         ZipOutputStream(buffer).use { zip ->
-            documentsRoot.listFiles().orEmpty()
+            metadataRoot.listFiles().orEmpty()
                 .filter { it.isFile && (it.name == "index.json" || it.name == "folders.json") }
                 .forEach { file ->
                     zip.putNextEntry(ZipEntry(file.name))
@@ -148,17 +196,24 @@ class BackupRestoreManager(
     }
 
     companion object {
-        private val BACKUP_MAGIC = "CSBK".encodeToByteArray()
-        private const val BACKUP_VERSION: Byte = 1
+        val BACKUP_MAGIC = "CSBK".encodeToByteArray()
+        const val BACKUP_VERSION_DEVICE: Byte = 1
+        const val BACKUP_VERSION_PASSPHRASE: Byte = 2
     }
 }
 
 data class BackupResult(
     val success: Boolean,
-    val message: String
+    val message: String,
+    val requiresPassphrase: Boolean = false
 ) {
     companion object {
         fun success(message: String) = BackupResult(success = true, message = message)
         fun failure(message: String) = BackupResult(success = false, message = message)
+        fun needsPassphrase() = BackupResult(
+            success = false,
+            message = "Enter the backup passphrase to restore.",
+            requiresPassphrase = true
+        )
     }
 }

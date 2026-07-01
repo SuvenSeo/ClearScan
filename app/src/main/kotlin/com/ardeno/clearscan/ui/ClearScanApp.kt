@@ -39,6 +39,7 @@ import com.ardeno.clearscan.ui.screens.LibraryScreen
 import com.ardeno.clearscan.ui.screens.OnboardingScreen
 import com.ardeno.clearscan.ui.screens.PageEditorMode
 import com.ardeno.clearscan.ui.screens.PageEditorSheet
+import com.ardeno.clearscan.ui.screens.PassphraseBackupDialog
 import com.ardeno.clearscan.ui.screens.PrivacyDashboardScreen
 import com.ardeno.clearscan.ui.screens.SettingsScreen
 import com.ardeno.clearscan.ui.components.AppUpdateDialog
@@ -107,6 +108,10 @@ fun ClearScanApp(
     onAutoPageTurnChange: (Boolean) -> Unit,
     onImageEnhancementChange: (Boolean) -> Unit,
     onDefaultOcrLanguageChange: (OcrLanguage) -> Unit,
+    onPassphraseBackupChange: (Boolean) -> Unit,
+    onWifiOnlySelfHostUploadChange: (Boolean) -> Unit,
+    onSubmitBackupPassphrase: (CharArray, CharArray?) -> Unit,
+    onDismissBackupPassphrase: () -> Unit,
     onCompleteOnboarding: () -> Unit,
     onLibraryViewModeChange: (LibraryViewMode) -> Unit,
     onDismissMessage: () -> Unit,
@@ -283,6 +288,10 @@ fun ClearScanApp(
                     onAutoPageTurnChange = onAutoPageTurnChange,
                     onImageEnhancementChange = onImageEnhancementChange,
                     onDefaultOcrLanguageChange = onDefaultOcrLanguageChange,
+                    passphraseBackupEnabled = state.passphraseBackupEnabled,
+                    wifiOnlySelfHostUpload = state.wifiOnlySelfHostUpload,
+                    onPassphraseBackupChange = onPassphraseBackupChange,
+                    onWifiOnlySelfHostUploadChange = onWifiOnlySelfHostUploadChange,
                     isUpdateChecking = state.isUpdateChecking,
                     onCheckForAppUpdate = onCheckForAppUpdate
                 )
@@ -396,6 +405,14 @@ fun ClearScanApp(
             isDownloading = state.isUpdateDownloading,
             onDismiss = onDismissAppUpdate,
             onDownload = onDownloadAppUpdate
+        )
+    }
+
+    state.backupPassphraseRequest?.let { request ->
+        PassphraseBackupDialog(
+            request = request,
+            onDismiss = onDismissBackupPassphrase,
+            onSubmit = onSubmitBackupPassphrase
         )
     }
 }

@@ -25,6 +25,8 @@ import com.ardeno.clearscan.model.SelfHostTargetType
 @Composable
 fun SelfHostSettingsSection(
     config: SelfHostConfig,
+    wifiOnlySelfHostUpload: Boolean,
+    onWifiOnlySelfHostUploadChange: (Boolean) -> Unit,
     onConfigChange: (SelfHostConfig) -> Unit,
     onSave: () -> Unit,
     modifier: Modifier = Modifier
@@ -53,6 +55,25 @@ fun SelfHostSettingsSection(
             Switch(
                 checked = config.enabled,
                 onCheckedChange = { enabled -> onConfigChange(config.copy(enabled = enabled)) }
+            )
+        }
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(text = "Wi-Fi only uploads")
+                Text(
+                    text = "Block self-host uploads on mobile data.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            Switch(
+                checked = wifiOnlySelfHostUpload,
+                onCheckedChange = onWifiOnlySelfHostUploadChange
             )
         }
 

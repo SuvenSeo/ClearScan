@@ -31,7 +31,8 @@ data class ScanDocument(
     val ocrStatus: OcrStatus = OcrStatus.NotStarted,
     val searchablePdfReady: Boolean = false,
     val scanMode: ScanMode = ScanMode.Document,
-    val ocrLanguage: OcrLanguage = OcrLanguage.Latin
+    val ocrLanguage: OcrLanguage = OcrLanguage.Latin,
+    val pageAnnotations: List<List<PageAnnotation>> = emptyList()
 )
 
 fun ScanDocument.matchesQuery(query: String): Boolean {

@@ -45,6 +45,20 @@ class AppPreferences(context: Context) {
         preferences.edit().putString(KEY_OCR_LANGUAGE, language.name).apply()
     }
 
+    val passphraseBackupEnabled: Boolean
+        get() = preferences.getBoolean(KEY_PASSPHRASE_BACKUP, false)
+
+    val wifiOnlySelfHostUpload: Boolean
+        get() = preferences.getBoolean(KEY_WIFI_ONLY_SELF_HOST, true)
+
+    fun setPassphraseBackupEnabled(enabled: Boolean) {
+        preferences.edit().putBoolean(KEY_PASSPHRASE_BACKUP, enabled).apply()
+    }
+
+    fun setWifiOnlySelfHostUpload(enabled: Boolean) {
+        preferences.edit().putBoolean(KEY_WIFI_ONLY_SELF_HOST, enabled).apply()
+    }
+
     private companion object {
         const val PREFS_NAME = "clearscan-app"
         const val KEY_ONBOARDING_COMPLETE = "onboarding_complete"
@@ -52,5 +66,7 @@ class AppPreferences(context: Context) {
         const val KEY_AUTO_PAGE_TURN = "auto_page_turn_enabled"
         const val KEY_IMAGE_ENHANCEMENT = "image_enhancement_enabled"
         const val KEY_OCR_LANGUAGE = "default_ocr_language"
+        const val KEY_PASSPHRASE_BACKUP = "passphrase_backup_enabled"
+        const val KEY_WIFI_ONLY_SELF_HOST = "wifi_only_self_host_upload"
     }
 }
