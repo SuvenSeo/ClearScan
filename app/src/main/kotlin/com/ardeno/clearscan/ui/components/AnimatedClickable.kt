@@ -35,7 +35,9 @@ fun Modifier.animatedClickable(
             interactionSource = interactionSource,
             indication = null,
             onClick = {
-                haptic?.let(performHaptic)
+                if (enabled) {
+                    haptic?.let(performHaptic)
+                }
                 onClick()
             }
         )

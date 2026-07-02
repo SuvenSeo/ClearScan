@@ -1,5 +1,6 @@
 package com.ardeno.clearscan.ui.components
 
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
@@ -24,6 +25,9 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.unit.dp
 import com.ardeno.clearscan.ui.theme.ClearScanSpacing
+
+private const val SHIMMER_DURATION_MS = 1300
+private const val SHIMMER_BAND_WIDTH = 400f
 
 @Composable
 fun LibraryListSkeleton(
@@ -142,30 +146,34 @@ private fun SkeletonGridItem(modifier: Modifier = Modifier) {
 private fun ShimmerBox(modifier: Modifier = Modifier) {
     val transition = rememberInfiniteTransition(label = "shimmer")
     val offset by transition.animateFloat(
-        initialValue = 0f,
-        targetValue = 1000f,
+        initialValue = -SHIMMER_BAND_WIDTH,
+        targetValue = 2000f,
         animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 1200),
+            animation = tween(
+                durationMillis = SHIMMER_DURATION_MS,
+                easing = LinearEasing
+            ),
             repeatMode = RepeatMode.Restart
         ),
         label = "shimmerOffset"
     )
 
     val base = MaterialTheme.colorScheme.surfaceVariant
-    val highlight = MaterialTheme.colorScheme.surface
+    val highlight = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.12f)
 
     Box(
         modifier = modifier.background(
             brush = Brush.linearGradient(
                 colors = listOf(
                     base,
-                    highlight.copy(alpha = 0.6f),
                     base,
-                    highlight.copy(alpha = 0.6f),
+                    highlight,
+                    base,
                     base
                 ),
-                start = Offset(offset - 300f, 0f),
-                end = Offset(offset, 0f)
+                stops = floatArrayOf(0f, 0.25f, 0.5f, 0.75f, 1f),
+                start = Offset(offset - SHIMMER_BAND_WIDTH / 2, 0f),
+                end = Offset(offset + SHIMMER_BAND_WIDTH / 2, 0f)
             )
         )
     )
