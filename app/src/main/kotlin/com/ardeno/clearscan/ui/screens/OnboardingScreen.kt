@@ -20,6 +20,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CloudOff
 import androidx.compose.material.icons.outlined.DocumentScanner
+import androidx.compose.material.icons.outlined.Folder
+import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
@@ -63,6 +65,16 @@ private val onboardingPages = listOf(
         icon = Icons.Outlined.CloudOff,
         title = "Free. No ads. No cloud.",
         body = "ClearScan is built to stay free — no subscriptions, no watermarks, and no account required."
+    ),
+    OnboardingPage(
+        icon = Icons.Outlined.Folder,
+        title = "Organize with folders and tags",
+        body = "Group scans into folders and add smart tags. Keep every document sorted and easy to find."
+    ),
+    OnboardingPage(
+        icon = Icons.Outlined.Lock,
+        title = "Privacy vault and secure backup",
+        body = "Lock sensitive documents behind biometrics and safeguard your data with encrypted backups."
     )
 )
 
@@ -107,6 +119,17 @@ fun OnboardingScreen(
         ) { page ->
             OnboardingPageContent(page = onboardingPages[page])
         }
+
+        // Slide counter text
+        Text(
+            text = "${pagerState.currentPage + 1} / ${onboardingPages.size}",
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = ClearScanSpacing.sm)
+        )
 
         Row(
             modifier = Modifier

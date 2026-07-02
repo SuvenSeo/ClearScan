@@ -9,4 +9,79 @@
     <string name="shortcut_import_long">Import PDF or images</string>
     <string name="widget_scan_label">Scan document</string>
     <string name="widget_scan_description">Quick scan shortcut for ClearScan</string>
+
+    <!-- Library screen -->
+    <string name="library_title">Library</string>
+    <string name="library_empty">No documents yet</string>
+    <string name="library_empty_hint">Tap the scan button to create your first document</string>
+
+    <!-- Scan -->
+    <string name="scan_title">Scan</string>
+    <string name="scan_document">Scan document</string>
+    <string name="scan_id_card">Scan ID card</string>
+    <string name="scan_auto_capture">Auto-capture</string>
+
+    <!-- Import -->
+    <string name="import_title">Import</string>
+    <string name="import_files">Import PDF or images</string>
+    <string name="import_from_device">From device</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_general">General</string>
+    <string name="settings_ocr">OCR settings</string>
+    <string name="settings_self_host">Self-host export</string>
+
+    <!-- Search -->
+    <string name="search_title">Search</string>
+    <string name="search_hint">Search documents by text</string>
+    <string name="search_no_results">No results found</string>
+
+    <!-- Folders -->
+    <string name="folders_title">Folders</string>
+    <string name="folders_create">Create folder</string>
+    <string name="folders_rename">Rename folder</string>
+    <string name="folders_delete">Delete folder</string>
+
+    <!-- Backup -->
+    <string name="backup_title">Backup</string>
+    <string name="backup_export">Export backup</string>
+    <string name="backup_import">Import backup</string>
+    <string name="backup_passphrase">Passphrase backup</string>
+
+    <!-- Privacy -->
+    <string name="privacy_title">Privacy</string>
+    <string name="privacy_vault">Privacy vault</string>
+    <string name="privacy_vault_description">Lock the app behind biometrics</string>
+    <string name="privacy_audit_log">Export audit log</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_skip">Skip</string>
+    <string name="onboarding_continue">Continue</string>
+    <string name="onboarding_get_started">Get Started</string>
+    <string name="onboarding_slide_1_title">Scan privately</string>
+    <string name="onboarding_slide_1_body">Capture receipts, contracts, and notes with your camera. Everything stays on this device — no cloud uploads.</string>
+    <string name="onboarding_slide_2_title">Search your scans</string>
+    <string name="onboarding_slide_2_body">Local OCR makes every document searchable. Find text inside scans instantly, even offline.</string>
+    <string name="onboarding_slide_3_title">Free. No ads. No cloud.</string>
+    <string name="onboarding_slide_3_body">ClearScan is built to stay free — no subscriptions, no watermarks, and no account required.</string>
+    <string name="onboarding_slide_4_title">Organize with folders and tags</string>
+    <string name="onboarding_slide_4_body">Group scans into folders and add smart tags. Keep every document sorted and easy to find.</string>
+    <string name="onboarding_slide_5_title">Privacy vault and secure backup</string>
+    <string name="onboarding_slide_5_body">Lock sensitive documents behind biometrics and safeguard your data with encrypted backups.</string>
+
+    <!-- Self-host -->
+    <string name="self_host_title">Self-host export</string>
+    <string name="self_host_wifi_only">Wi-Fi only uploads</string>
+    <string name="self_host_wifi_only_description">Block self-host uploads on mobile data</string>
+    <string name="self_host_not_on_wifi">Wi-Fi only upload is enabled. Connect to a Wi-Fi network first.</string>
+    <string name="self_host_save">Save self-host settings</string>
+
+    <!-- General -->
+    <string name="action_save">Save</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_rename">Rename</string>
+    <string name="snackbar_deleted">Deleted 1 document.</string>
+    <string name="snackbar_deleted_plural">Deleted %d documents.</string>
 </resources>

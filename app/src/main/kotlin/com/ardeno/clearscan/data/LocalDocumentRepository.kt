@@ -2,6 +2,7 @@ package com.ardeno.clearscan.data
 
 import android.content.Context
 import android.net.Uri
+import com.ardeno.clearscan.data.db.*
 import com.ardeno.clearscan.image.ImageEnhancer
 import com.ardeno.clearscan.model.DocumentFolder
 import com.ardeno.clearscan.model.OcrStatus
@@ -33,6 +34,7 @@ class LocalDocumentRepository(
     private val encryptedFileStore: EncryptedFileStore = EncryptedFileStore(context, vaultCrypto)
 ) {
     private val appContext = context.applicationContext
+    private val db = ScanDatabase.getInstance(context)
 
     private val documentsRoot: File
         get() = encryptedFileStore.storageRoot()
@@ -44,13 +46,23 @@ class LocalDocumentRepository(
         get() = File(documentsRoot, "folders.json")
 
     suspend fun loadFolders(): List<DocumentFolder> = withContext(Dispatchers.IO) {
-        readFolders()
+        val roomFolders = db.documentFolderDao().getAll()
+        if (roomFolders.isNotEmpty()) {
+            roomFolders.map { it.toFolder() }
+        } else {
+            readFolders().also { folders -> syncFoldersToRoom(folders) }
+        }
     }
 
     suspend fun loadDocuments(): List<ScanDocument> = withContext(Dispatchers.IO) {
         vaultCrypto.ensureVaultKey()
         migrateLegacyPlaintextFiles()
-        readIndex().map(::toReadableDocument)
+        val roomDocs = db.scanDocumentDao().getAll()
+        if (roomDocs.isNotEmpty()) {
+            roomDocs.map { it.toDocument() }.map(::toReadableDocument)
+        } else {
+            readIndex().also { docs -> syncDocumentsToRoom(docs) }.map(::toReadableDocument)
+        }
     }
 
     suspend fun createDocument(
@@ -259,6 +271,8 @@ class LocalDocumentRepository(
             encryptedFileStore.clearReadableCache(document.id)
         }
         writeIndex(documents.filterNot { it.id in ids })
+        runCatching { db.scanDocumentDao().deleteById(it) }
+
         toDelete.size
     }
 
@@ -458,6 +472,12 @@ class LocalDocumentRepository(
 
     private fun writeIndex(documents: List<ScanDocument>) {
         indexFile.writeText(documentsToJsonArray(documents).toString(2))
+        syncDocumentsToRoom(documents)
+    }
+
+    private fun syncDocumentsToRoom(documents: List<ScanDocument>) {
+        val entities = documents.map { it.toEntity() }
+        runCatching { db.scanDocumentDao().upsertAll(entities) }
     }
 
     private fun documentsToJsonArray(documents: List<ScanDocument>): JSONArray {
@@ -567,6 +587,12 @@ class LocalDocumentRepository(
 
     private fun writeFolders(folders: List<DocumentFolder>) {
         foldersFile.writeText(foldersToJsonArray(folders).toString(2))
+        syncFoldersToRoom(folders)
+    }
+
+    private fun syncFoldersToRoom(folders: List<DocumentFolder>) {
+        val entities = folders.map { it.toEntity() }
+        runCatching { db.documentFolderDao().upsertAll(entities) }
     }
 
     private companion object {

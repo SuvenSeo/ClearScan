@@ -99,7 +99,7 @@ class ClearScanViewModel(application: Application) : AndroidViewModel(applicatio
     private val backupRestoreManager = BackupRestoreManager(application, repository, encryptedFileStore, vaultCrypto)
     private val appPreferences = AppPreferences(application)
     private val selfHostSettings = SelfHostSettings(application)
-    private val selfHostExporter = SelfHostExporter()
+    private val selfHostExporter = SelfHostExporter(application)
     private val duplicateDetector = DuplicateDetector()
     private val apkUpdateManager = ApkUpdateManager(application)
     private val _uiState = MutableStateFlow(ClearScanUiState())
@@ -560,7 +560,7 @@ class ClearScanViewModel(application: Application) : AndroidViewModel(applicatio
                     ?: error("No export file is available for this scan.")
                 val exportFile = File(exportPath)
                 require(exportFile.exists()) { "The export file is missing." }
-                selfHostExporter.export(document, exportFile, config)
+                selfHostExporter.export(document, exportFile, config, wifiOnly = _uiState.value.wifiOnlySelfHostUpload)
             }.onSuccess {
                 logDocumentExport(document, exportKind = "self-host")
                 _uiState.update { current ->

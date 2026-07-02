@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ClearScan</string>
+    <string name="shortcut_scan">ස්කෑන් කරන්න</string>
+    <string name="shortcut_import">ආයාත කරන්න</string>
+    <string name="library_title">පුස්තකාලය</string>
+    <string name="library_empty">තවත් ලේඛන නැත</string>
+    <string name="library_empty_hint">ඔබගේ පළමු ලේඛනය සෑදීමට ස්කෑන් බොත්තම ඔබන්න</string>
+    <string name="scan_title">ස්කෑන් කරන්න</string>
+    <string name="scan_document">ලේඛනය ස්කෑන් කරන්න</string>
+    <string name="scan_id_card">හැඳුනුම්පත ස්කෑන් කරන්න</string>
+    <string name="import_title">ආයාත කරන්න</string>
+    <string name="import_files">PDF හෝ රූප ආයාත කරන්න</string>
+    <string name="settings_title">සැකසීම්</string>
+    <string name="settings_ocr">OCR සැකසීම්</string>
+    <string name="search_title">සොයන්න</string>
+    <string name="search_hint">පෙළ අනුව ලේඛන සොයන්න</string>
+    <string name="search_no_results">ප්‍රතිඵල හමු නොවීය</string>
+    <string name="folders_title">ෆෝල්ඩර</string>
+    <string name="folders_create">ෆෝල්ඩරය සාදන්න</string>
+    <string name="folders_rename">ෆෝල්ඩරය නැවත නම් කරන්න</string>
+    <string name="folders_delete">ෆෝල්ඩරය මකන්න</string>
+    <string name="backup_title">උපස්ථය</string>
+    <string name="backup_export">උපස්ථය නිර්යාත කරන්න</string>
+    <string name="backup_import">උපස්ථය ආයාත කරන්න</string>
+    <string name="privacy_title">රහස්‍යතාව</string>
+    <string name="privacy_vault">රහස්‍යතා ගබඩාව</string>
+    <string name="onboarding_slide_1_title">පුද්ගලිකව ස්කෑන් කරන්න</string>
+    <string name="onboarding_slide_2_title">ඔබගේ ස්කෑන් සොයන්න</string>
+    <string name="onboarding_slide_3_title">නිදහස්. දැන්වීම් නැත. වලාකුළු නැත.</string>
+    <string name="onboarding_slide_4_title">ෆෝල්ඩර සහ ටැග් සමඟ සංවිධානය කරන්න</string>
+    <string name="onboarding_slide_5_title">රහස්‍යතා ගබඩාව සහ ආරක්ෂිත උපස්ථය</string>
+    <string name="onboarding_skip">මඟ හරින්න</string>
+    <string name="onboarding_continue">ඉදිරියට</string>
+    <string name="onboarding_get_started">ආරම්භ කරන්න</string>
+    <string name="self_host_title">ස්වයං-සත්කාරක නිර්යාතය</string>
+    <string name="self_host_wifi_only">Wi-Fi පමණක් උඩුගත කිරීම්</string>
+    <string name="self_host_not_on_wifi">Wi-Fi පමණක් උඩුගත කිරීම සක්‍රීයයි. පළමුව Wi-Fi ජාලයකට සම්බන්ධ වන්න.</string>
+    <string name="action_save">සුරකින්න</string>
+    <string name="action_cancel">අවලංගු කරන්න</string>
+    <string name="action_delete">මකන්න</string>
+    <string name="action_rename">නැවත නම් කරන්න</string>
+</resources>

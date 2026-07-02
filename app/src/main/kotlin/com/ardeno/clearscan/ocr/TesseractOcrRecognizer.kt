@@ -25,9 +25,14 @@ class TesseractOcrRecognizer(
         val api = mutex.withLock { apiFor(language) }
         val bitmap = BitmapFactory.decodeFile(path)
             ?: throw IllegalStateException("Unable to decode page image for OCR.")
+        val processed = if (language.enablePreprocessing) {
+            OcrPreprocessor.enhanceForOcr(bitmap).also { if (it !== bitmap) bitmap.recycle() }
+        } else {
+            bitmap
+        }
 
         try {
-            api.setImage(bitmap)
+            api.setImage(processed)
             val text = api.getUTF8Text().orEmpty().trim()
             val lines = extractLines(api).ifEmpty {
                 if (text.isBlank()) {
@@ -53,7 +58,8 @@ class TesseractOcrRecognizer(
                 lines = lines
             )
         } finally {
-            bitmap.recycle()
+            processed.recycle()
+            if (processed !== bitmap) bitmap.recycle()
             api.clear()
         }
     }

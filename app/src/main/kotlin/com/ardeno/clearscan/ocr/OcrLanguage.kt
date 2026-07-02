@@ -11,6 +11,9 @@ enum class OcrLanguage(
     val usesTesseract: Boolean
         get() = tessCode != null
 
+    val enablePreprocessing: Boolean
+        get() = usesTesseract
+
     fun toBenchmarkLanguage(): BenchmarkLanguage? = when (this) {
         Sinhala -> BenchmarkLanguage.Sinhala
         Tamil -> BenchmarkLanguage.Tamil

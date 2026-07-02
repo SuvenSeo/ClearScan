@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ClearScan</string>
+    <string name="shortcut_scan">ஸ்கேன் செய்</string>
+    <string name="shortcut_import">இறக்குமதி</string>
+    <string name="library_title">நூலகம்</string>
+    <string name="library_empty">இன்னும் ஆவணங்கள் இல்லை</string>
+    <string name="library_empty_hint">உங்கள் முதல் ஆவணத்தை உருவாக்க ஸ்கேன் பொத்தானைத் தட்டவும்</string>
+    <string name="scan_title">ஸ்கேன்</string>
+    <string name="scan_document">ஆவணத்தை ஸ்கேன் செய்</string>
+    <string name="scan_id_card">அடையாள அட்டையை ஸ்கேன் செய்</string>
+    <string name="import_title">இறக்குமதி</string>
+    <string name="import_files">PDF அல்லது படங்களை இறக்குமதி செய்</string>
+    <string name="settings_title">அமைப்புகள்</string>
+    <string name="settings_ocr">OCR அமைப்புகள்</string>
+    <string name="search_title">தேடல்</string>
+    <string name="search_hint">உரை வாரியாக ஆவணங்களைத் தேடுக</string>
+    <string name="search_no_results">முடிவுகள் எதுவும் இல்லை</string>
+    <string name="folders_title">கோப்புறைகள்</string>
+    <string name="folders_create">கோப்புறையை உருவாக்கு</string>
+    <string name="folders_rename">கோப்புறையை மறுபெயரிடு</string>
+    <string name="folders_delete">கோப்புறையை நீக்கு</string>
+    <string name="backup_title">காப்புப்பதிவு</string>
+    <string name="backup_export">காப்புப்பதிவை ஏற்றுமதி செய்</string>
+    <string name="backup_import">காப்புப்பதிவை இறக்குமதி செய்</string>
+    <string name="privacy_title">தனியுரிமை</string>
+    <string name="privacy_vault">தனியுரிமை பாதுகாப்பறை</string>
+    <string name="onboarding_slide_1_title">தனிப்பட்ட முறையில் ஸ்கேன் செய்யவும்</string>
+    <string name="onboarding_slide_2_title">உங்கள் ஸ்கேன்களைத் தேடுங்கள்</string>
+    <string name="onboarding_slide_3_title">இலவசம். விளம்பரங்கள் இல்லை. கிளவுட் இல்லை.</string>
+    <string name="onboarding_slide_4_title">கோப்புறைகள் மற்றும் குறிச்சொற்களுடன் ஒழுங்கமைக்கவும்</string>
+    <string name="onboarding_slide_5_title">தனியுரிமை பாதுகாப்பறை மற்றும் பாதுகாப்பான காப்புப்பதிவு</string>
+    <string name="onboarding_skip">தவிர்</string>
+    <string name="onboarding_continue">தொடர்க</string>
+    <string name="onboarding_get_started">தொடங்கு</string>
+    <string name="self_host_title">சுய-ஹோஸ்ட் ஏற்றுமதி</string>
+    <string name="self_host_wifi_only">Wi-Fi மட்டும் பதிவேற்றங்கள்</string>
+    <string name="self_host_not_on_wifi">Wi-Fi மட்டும் பதிவேற்றம் இயக்கப்பட்டுள்ளது. முதலில் Wi-Fi நெட்வொர்க்குடன் இணைக.</string>
+    <string name="action_save">சேமி</string>
+    <string name="action_cancel">ரத்துசெய்</string>
+    <string name="action_delete">நீக்கு</string>
+    <string name="action_rename">மறுபெயரிடு</string>
+</resources>
