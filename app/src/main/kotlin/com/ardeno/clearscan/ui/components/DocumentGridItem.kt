@@ -80,7 +80,7 @@ fun DocumentGridItem(
                         onCheckedChange = { onSelectionToggle?.invoke() },
                         modifier = Modifier
                             .align(Alignment.TopStart)
-                            .padding(4.dp)
+                            .padding(ClearScanSpacing.xs)
                     )
                 }
                 if (document.isFavorite) {
@@ -90,7 +90,7 @@ fun DocumentGridItem(
                         tint = MaterialTheme.colorScheme.tertiary,
                         modifier = Modifier
                             .align(Alignment.TopEnd)
-                            .padding(6.dp)
+                            .padding(ClearScanSpacing.sm)
                             .size(18.dp)
                     )
                 }
@@ -101,7 +101,7 @@ fun DocumentGridItem(
                         tint = MaterialTheme.colorScheme.error,
                         modifier = Modifier
                             .align(Alignment.BottomEnd)
-                            .padding(6.dp)
+                            .padding(ClearScanSpacing.sm)
                             .size(16.dp)
                     )
                 }

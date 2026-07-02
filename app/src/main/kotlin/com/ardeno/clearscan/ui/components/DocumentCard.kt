@@ -92,10 +92,10 @@ fun DocumentCard(
 
             Column(
                 modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(2.dp)
+                verticalArrangement = Arrangement.spacedBy(ClearScanSpacing.xxs)
             ) {
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    horizontalArrangement = Arrangement.spacedBy(ClearScanSpacing.xs),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
@@ -122,7 +122,7 @@ fun DocumentCard(
                     overflow = TextOverflow.Ellipsis
                 )
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    horizontalArrangement = Arrangement.spacedBy(ClearScanSpacing.sm),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     OcrStatusChip(status = document.ocrStatus)
@@ -155,7 +155,7 @@ fun DocumentCard(
 private fun DuplicateBadge() {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp)
+        horizontalArrangement = Arrangement.spacedBy(ClearScanSpacing.xs)
     ) {
         Icon(
             imageVector = Icons.Outlined.ContentCopy,

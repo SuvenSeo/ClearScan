@@ -16,9 +16,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.ardeno.clearscan.model.OcrStatus
+import com.ardeno.clearscan.ui.theme.ClearScanSpacing
 import com.ardeno.clearscan.ui.theme.PillShape
 
 @Composable
@@ -34,7 +34,7 @@ fun OcrStatusChip(status: OcrStatus) {
     Text(
         modifier = Modifier
             .background(tint.copy(alpha = 0.12f), PillShape)
-            .padding(horizontal = 8.dp, vertical = 2.dp),
+            .padding(horizontal = ClearScanSpacing.chipHorizontal, vertical = ClearScanSpacing.chipVertical),
         text = label,
         style = MaterialTheme.typography.labelSmall,
         color = tint
@@ -45,7 +45,7 @@ fun OcrStatusChip(status: OcrStatus) {
 fun PrivacyBadgeRow(modifier: Modifier = Modifier) {
     Row(
         modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        horizontalArrangement = Arrangement.spacedBy(ClearScanSpacing.sm)
     ) {
         PrivacyBadge(icon = Icons.Outlined.CloudOff, label = "Offline")
         PrivacyBadge(icon = Icons.Outlined.Shield, label = "No ads")
@@ -62,8 +62,8 @@ private fun PrivacyBadge(
     Row(
         modifier = Modifier
             .background(tint.copy(alpha = 0.08f), PillShape)
-            .padding(horizontal = 10.dp, vertical = 5.dp),
-        horizontalArrangement = Arrangement.spacedBy(5.dp),
+            .padding(horizontal = ClearScanSpacing.chipHorizontal, vertical = ClearScanSpacing.xs + 1.dp),
+        horizontalArrangement = Arrangement.spacedBy(ClearScanSpacing.xs),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
