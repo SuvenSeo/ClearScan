@@ -6,10 +6,13 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -20,12 +23,16 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Badge
 import androidx.compose.material.icons.outlined.Checklist
+import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.Description
 import androidx.compose.material.icons.outlined.FileUpload
 import androidx.compose.material.icons.outlined.GridView
+import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.SearchOff
 import androidx.compose.material.icons.outlined.ViewList
 import androidx.compose.material.icons.rounded.DocumentScanner
@@ -43,6 +50,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -85,6 +93,10 @@ fun LibraryScreen(
     viewMode: LibraryViewMode,
     isWorking: Boolean,
     showEmptySearch: Boolean = false,
+    showEmptyFolderFilter: Boolean = false,
+    expandedDocumentId: String? = null,
+    expandedDocument: ScanDocument? = null,
+    onCloseDetailPane: () -> Unit = {},
     onQueryChange: (String) -> Unit,
     onViewModeChange: (LibraryViewMode) -> Unit,
     onSelectAllDocuments: () -> Unit,
@@ -108,6 +120,7 @@ fun LibraryScreen(
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val performHaptic = rememberClearScanHaptics()
     var showCreateFolderDialog by remember { mutableStateOf(false) }
+    var showSearchField by remember { mutableStateOf(true) }
 
     if (showCreateFolderDialog) {
         CreateFolderDialog(
@@ -159,6 +172,23 @@ fun LibraryScreen(
                             Icon(
                                 imageVector = Icons.Outlined.Checklist,
                                 contentDescription = "Select documents"
+                            )
+                        }
+                    }
+                    if (!selectionMode) {
+                        IconButton(
+                            onClick = {
+                                performHaptic(ClearScanHaptic.LightTap)
+                                showSearchField = !showSearchField
+                            },
+                            modifier = Modifier.defaultMinSize(
+                                minWidth = ClearScanSpacing.minTouchTarget,
+                                minHeight = ClearScanSpacing.minTouchTarget
+                            )
+                        ) {
+                            Icon(
+                                imageVector = if (showSearchField) Icons.Outlined.SearchOff else Icons.Outlined.Search,
+                                contentDescription = if (showSearchField) "Hide search" else "Show search"
                             )
                         }
                     }
@@ -262,55 +292,53 @@ fun LibraryScreen(
             }
         }
     ) { padding ->
-        Column(
+        BoxWithConstraints(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
         ) {
-            IosSearchField(
-                value = query,
-                onValueChange = onQueryChange,
-                modifier = Modifier.padding(
-                    horizontal = ClearScanSpacing.lg,
-                    vertical = ClearScanSpacing.sm
-                ),
-                placeholder = "Search titles, tags, or OCR text"
-            )
+            val isWide = maxWidth >= 600.dp
+            val showDetailPane = isWide && expandedDocumentId != null && expandedDocument != null
 
-            FolderFilterRow(
-                folders = folders,
-                selectedFolderId = selectedFolderId,
-                showFavoritesOnly = showFavoritesOnly,
-                onSelectAll = { onSelectFolder(null) },
-                onSelectFavorites = onSelectFavorites,
-                onSelectFolder = onSelectFolder,
-                onCreateFolder = { showCreateFolderDialog = true }
-            )
-
-            AnimatedContent(
-                targetState = when {
-                    isWorking && documents.isEmpty() -> LibraryContentState.Loading
-                    documents.isEmpty() && showEmptySearch -> LibraryContentState.EmptySearch
-                    documents.isEmpty() -> LibraryContentState.EmptyLibrary
-                    viewMode == LibraryViewMode.Grid -> LibraryContentState.Grid
-                    else -> LibraryContentState.List
-                },
-                transitionSpec = {
-                    fadeIn(ClearScanMotion.fadeMedium) togetherWith fadeOut(ClearScanMotion.fadeFast)
-                },
-                label = "libraryContent"
-            ) { state ->
-                when (state) {
-                    LibraryContentState.Loading -> {
-                        if (viewMode == LibraryViewMode.Grid) {
-                            LibraryGridSkeleton(modifier = Modifier.fillMaxSize())
-                        } else {
-                            LibraryListSkeleton(modifier = Modifier.fillMaxSize())
+            if (showDetailPane) {
+                Row(Modifier.fillMaxSize()) {
+                    // Left pane: list content (40%)
+                    Column(Modifier.fillMaxHeight().fillMaxWidth(0.4f)) {
+                        AnimatedVisibility(visible = showSearchField) {
+                            IosSearchField(
+                                value = query,
+                                onValueChange = onQueryChange,
+                                modifier = Modifier.padding(
+                                    horizontal = ClearScanSpacing.lg,
+                                    vertical = ClearScanSpacing.sm
+                                ),
+                                placeholder = "Search titles, tags, or OCR text"
+                            )
                         }
-                    }
-                    LibraryContentState.EmptySearch -> EmptySearchState()
-                    LibraryContentState.EmptyLibrary -> {
-                        EmptyLibraryState(
+
+                        FolderFilterRow(
+                            folders = folders,
+                            selectedFolderId = selectedFolderId,
+                            showFavoritesOnly = showFavoritesOnly,
+                            onSelectAll = { onSelectFolder(null) },
+                            onSelectFavorites = onSelectFavorites,
+                            onSelectFolder = onSelectFolder,
+                            onCreateFolder = { showCreateFolderDialog = true }
+                        )
+
+                        LibraryContentPane(
+                            documents = documents,
+                            isWorking = isWorking,
+                            showEmptySearch = showEmptySearch,
+                            viewMode = viewMode,
+                            selectedFolderId = selectedFolderId,
+                            showFavoritesOnly = showFavoritesOnly,
+                            selectionMode = selectionMode,
+                            selectedDocumentIds = selectedDocumentIds,
+                            duplicateDocumentIds = duplicateDocumentIds,
+                            onDocumentClick = onDocumentClick,
+                            onDeleteDocument = onDeleteDocument,
+                            onToggleDocumentSelection = onToggleDocumentSelection,
                             onScanClick = {
                                 performHaptic(ClearScanHaptic.Confirm)
                                 onScanClick()
@@ -318,30 +346,73 @@ fun LibraryScreen(
                             onImportClick = {
                                 performHaptic(ClearScanHaptic.LightTap)
                                 onImportClick()
-                            }
+                            },
+                            modifier = Modifier.fillMaxSize()
                         )
                     }
-                    LibraryContentState.Grid -> {
-                        LibraryGridContent(
-                            documents = documents,
-                            selectionMode = selectionMode,
-                            selectedDocumentIds = selectedDocumentIds,
-                            duplicateDocumentIds = duplicateDocumentIds,
-                            onDocumentClick = onDocumentClick,
-                            onToggleDocumentSelection = onToggleDocumentSelection
+
+                    // Divider
+                    VerticalDivider(
+                        modifier = Modifier.fillMaxHeight(),
+                        color = MaterialTheme.colorScheme.outlineVariant
+                    )
+
+                    // Right pane: document detail (60%)
+                    DocumentDetailPane(
+                        document = expandedDocument,
+                        onClose = onCloseDetailPane,
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .fillMaxWidth(0.6f)
+                    )
+                }
+            } else {
+                Column(Modifier.fillMaxSize()) {
+                    AnimatedVisibility(visible = showSearchField) {
+                        IosSearchField(
+                            value = query,
+                            onValueChange = onQueryChange,
+                            modifier = Modifier.padding(
+                                horizontal = ClearScanSpacing.lg,
+                                vertical = ClearScanSpacing.sm
+                            ),
+                            placeholder = "Search titles, tags, or OCR text"
                         )
                     }
-                    LibraryContentState.List -> {
-                        LibraryListContent(
-                            documents = documents,
-                            selectionMode = selectionMode,
-                            selectedDocumentIds = selectedDocumentIds,
-                            duplicateDocumentIds = duplicateDocumentIds,
-                            onDocumentClick = onDocumentClick,
-                            onDeleteDocument = onDeleteDocument,
-                            onToggleDocumentSelection = onToggleDocumentSelection
-                        )
-                    }
+
+                    FolderFilterRow(
+                        folders = folders,
+                        selectedFolderId = selectedFolderId,
+                        showFavoritesOnly = showFavoritesOnly,
+                        onSelectAll = { onSelectFolder(null) },
+                        onSelectFavorites = onSelectFavorites,
+                        onSelectFolder = onSelectFolder,
+                        onCreateFolder = { showCreateFolderDialog = true }
+                    )
+
+                    LibraryContentPane(
+                        documents = documents,
+                        isWorking = isWorking,
+                        showEmptySearch = showEmptySearch,
+                        viewMode = viewMode,
+                        selectedFolderId = selectedFolderId,
+                        showFavoritesOnly = showFavoritesOnly,
+                        selectionMode = selectionMode,
+                        selectedDocumentIds = selectedDocumentIds,
+                        duplicateDocumentIds = duplicateDocumentIds,
+                        onDocumentClick = onDocumentClick,
+                        onDeleteDocument = onDeleteDocument,
+                        onToggleDocumentSelection = onToggleDocumentSelection,
+                        onScanClick = {
+                            performHaptic(ClearScanHaptic.Confirm)
+                            onScanClick()
+                        },
+                        onImportClick = {
+                            performHaptic(ClearScanHaptic.LightTap)
+                            onImportClick()
+                        },
+                        modifier = Modifier.fillMaxSize()
+                    )
                 }
             }
         }
@@ -352,8 +423,92 @@ private enum class LibraryContentState {
     Loading,
     EmptySearch,
     EmptyLibrary,
+    EmptyFolderFilter,
     Grid,
     List
+}
+
+@Composable
+private fun LibraryContentPane(
+    documents: List<ScanDocument>,
+    isWorking: Boolean,
+    showEmptySearch: Boolean,
+    viewMode: LibraryViewMode,
+    selectedFolderId: String?,
+    showFavoritesOnly: Boolean,
+    selectionMode: Boolean,
+    selectedDocumentIds: Set<String>,
+    duplicateDocumentIds: Set<String>,
+    onDocumentClick: (ScanDocument) -> Unit,
+    onDeleteDocument: (ScanDocument) -> Unit,
+    onToggleDocumentSelection: (String) -> Unit,
+    onScanClick: () -> Unit,
+    onImportClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val hasFolderFilter = selectedFolderId != null || showFavoritesOnly
+    val showEmptyFolderFilter = documents.isEmpty() && hasFolderFilter && !showEmptySearch && !isWorking
+
+    AnimatedContent(
+        targetState = when {
+            isWorking && documents.isEmpty() -> LibraryContentState.Loading
+            documents.isEmpty() && showEmptySearch -> LibraryContentState.EmptySearch
+            documents.isEmpty() && showEmptyFolderFilter -> LibraryContentState.EmptyFolderFilter
+            documents.isEmpty() -> LibraryContentState.EmptyLibrary
+            viewMode == LibraryViewMode.Grid -> LibraryContentState.Grid
+            else -> LibraryContentState.List
+        },
+        transitionSpec = {
+            fadeIn(ClearScanMotion.fadeMedium) togetherWith fadeOut(ClearScanMotion.fadeFast)
+        },
+        label = "libraryContent",
+        modifier = modifier
+    ) { state ->
+        when (state) {
+            LibraryContentState.Loading -> {
+                if (viewMode == LibraryViewMode.Grid) {
+                    LibraryGridSkeleton(modifier = Modifier.fillMaxSize())
+                } else {
+                    LibraryListSkeleton(modifier = Modifier.fillMaxSize())
+                }
+            }
+            LibraryContentState.EmptySearch -> EmptySearchState()
+            LibraryContentState.EmptyFolderFilter -> EmptyFolderFilterState()
+            LibraryContentState.EmptyLibrary -> {
+                EmptyLibraryState(
+                    onScanClick = {
+                        performHaptic(ClearScanHaptic.Confirm)
+                        onScanClick()
+                    },
+                    onImportClick = {
+                        performHaptic(ClearScanHaptic.LightTap)
+                        onImportClick()
+                    }
+                )
+            }
+            LibraryContentState.Grid -> {
+                LibraryGridContent(
+                    documents = documents,
+                    selectionMode = selectionMode,
+                    selectedDocumentIds = selectedDocumentIds,
+                    duplicateDocumentIds = duplicateDocumentIds,
+                    onDocumentClick = onDocumentClick,
+                    onToggleDocumentSelection = onToggleDocumentSelection
+                )
+            }
+            LibraryContentState.List -> {
+                LibraryListContent(
+                    documents = documents,
+                    selectionMode = selectionMode,
+                    selectedDocumentIds = selectedDocumentIds,
+                    duplicateDocumentIds = duplicateDocumentIds,
+                    onDocumentClick = onDocumentClick,
+                    onDeleteDocument = onDeleteDocument,
+                    onToggleDocumentSelection = onToggleDocumentSelection
+                )
+            }
+        }
+    }
 }
 
 @Composable
@@ -516,6 +671,62 @@ private fun EmptyLibraryState(
                 modifier = Modifier.padding(start = ClearScanSpacing.sm),
                 text = "Import PDF or images"
             )
+        }
+    }
+}
+
+@Composable
+private fun EmptyFolderFilterState() {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = ClearScanSpacing.xxxl),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(ClearScanSpacing.lg)
+    ) {
+        EmptyState(
+            icon = Icons.Outlined.SearchOff,
+            title = "No documents in this filter",
+            message = "Try selecting a different folder or clearing the filter to see all documents."
+        )
+    }
+}
+
+@Composable
+private fun DocumentDetailPane(
+    document: ScanDocument,
+    onClose: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .verticalScroll(rememberScrollState())
+            .padding(ClearScanSpacing.xl),
+        verticalArrangement = Arrangement.spacedBy(ClearScanSpacing.lg)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = document.title,
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.weight(1f)
+            )
+            IconButton(
+                onClick = onClose,
+                modifier = Modifier.defaultMinSize(
+                    minWidth = ClearScanSpacing.minTouchTarget,
+                    minHeight = ClearScanSpacing.minTouchTarget
+                )
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.Close,
+                    contentDescription = "Close document detail"
+                )
+            }
         }
     }
 }

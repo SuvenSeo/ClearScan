@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Folder
@@ -25,6 +26,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import com.ardeno.clearscan.ClearScanUiState
 import com.ardeno.clearscan.model.LibraryViewMode
@@ -126,6 +128,9 @@ fun ClearScanApp(
     var pageEditorTarget by remember { mutableStateOf<ScanDocument?>(null) }
     var pageEditorMode by remember { mutableStateOf<PageEditorMode?>(null) }
     var showPrivacyDashboard by rememberSaveable { mutableStateOf(false) }
+
+    val configuration = LocalConfiguration.current
+    val isWide = remember(configuration) { configuration.screenWidthDp >= 600 }
 
     val visibleDocuments = remember(
         state.documents,
@@ -235,6 +240,16 @@ fun ClearScanApp(
                     viewMode = state.libraryViewMode,
                     isWorking = state.isSaving || state.isOcrRunning || state.isPdfToolRunning,
                     showEmptySearch = hasDocuments && !hasSearchResults && state.query.isNotBlank(),
+                    expandedDocumentId = state.expandedDocumentId,
+                    expandedDocument = if (isWide) state.documents.find { it.id == state.expandedDocumentId } else null,
+                    onCloseDetailPane = {
+                        selectedDocument = null
+                        state.expandedDocumentId?.let { id ->
+                            state.documents.find { it.id == id }?.let { doc ->
+                                onToggleDocumentExpanded(doc)
+                            }
+                        }
+                    },
                     onQueryChange = onQueryChange,
                     onViewModeChange = onLibraryViewModeChange,
                     onSelectAllDocuments = { onSelectFolder(null) },
@@ -293,70 +308,73 @@ fun ClearScanApp(
                     onPassphraseBackupChange = onPassphraseBackupChange,
                     onWifiOnlySelfHostUploadChange = onWifiOnlySelfHostUploadChange,
                     isUpdateChecking = state.isUpdateChecking,
-                    onCheckForAppUpdate = onCheckForAppUpdate
+                    onCheckForAppUpdate = onCheckForAppUpdate,
+                    onBackClick = { selectedTab = ClearScanTab.Library }
                 )
             }
             }
         }
     }
 
-    selectedDocument?.let { document ->
-        val currentDocument = state.documents.find { it.id == document.id } ?: document
+    if (!isWide || state.expandedDocumentId == null) {
+        selectedDocument?.let { document ->
+            val currentDocument = state.documents.find { it.id == document.id } ?: document
 
-        DocumentDetailSheet(
-            document = currentDocument,
-            folders = state.folders,
-            isDuplicate = currentDocument.id in state.duplicateDocumentIds,
-            signatureText = state.signatureText,
-            pdfPassword = state.pdfPassword,
-            compressQuality = state.compressQuality,
-            selfHostEnabled = state.selfHostConfig.enabled && state.selfHostConfig.isConfigured,
-            isSelfHostUploading = state.isSelfHostUploading,
-            idRedactionSuggestion = state.idRedactionSuggestions[currentDocument.id],
-            onDismiss = {
-                selectedDocument = null
-                if (state.expandedDocumentId == document.id) {
-                    onToggleDocumentExpanded(document)
-                }
-            },
-            onShare = { onShareDocument(currentDocument) },
-            onExportText = { onExportText(currentDocument) },
-            onPrint = { onPrintDocument(currentDocument) },
-            onUploadToSelfHost = { onUploadToSelfHost(currentDocument) },
-            onRedactIdFields = { onRedactIdFields(currentDocument) },
-            onDelete = {
-                selectedDocument = null
-                onDeleteDocument(currentDocument)
-            },
-            onRetryOcr = { onRetryOcr(currentDocument) },
-            onOcrLanguageChange = { language ->
-                onDocumentOcrLanguageChange(currentDocument, language)
-            },
-            onToggleFavorite = { onToggleFavorite(currentDocument) },
-            onUpdateTags = { tags -> onUpdateTags(currentDocument, tags) },
-            onMoveToFolder = { folderId -> onMoveToFolder(currentDocument, folderId) },
-            onSignatureTextChange = onSignatureTextChange,
-            onPdfPasswordChange = onPdfPasswordChange,
-            onCompressQualityChange = onCompressQualityChange,
-            onSplit = { onSplitDocument(currentDocument) },
-            onRotate = { onRotateDocument(currentDocument) },
-            onSign = { onSignDocument(currentDocument) },
-            onRedact = { onRedactDocument(currentDocument) },
-            onAnnotate = {
-                selectedDocument = null
-                annotatingDocument = currentDocument
-            },
-            onReorderPages = {
-                pageEditorTarget = currentDocument
-                pageEditorMode = PageEditorMode.Reorder
-            },
-            onDeletePages = {
-                pageEditorTarget = currentDocument
-                pageEditorMode = PageEditorMode.Delete
-            },
-            onCompress = { onCompressDocument(currentDocument) },
-            onPasswordProtect = { onPasswordProtectDocument(currentDocument) }
-        )
+            DocumentDetailSheet(
+                document = currentDocument,
+                folders = state.folders,
+                isDuplicate = currentDocument.id in state.duplicateDocumentIds,
+                signatureText = state.signatureText,
+                pdfPassword = state.pdfPassword,
+                compressQuality = state.compressQuality,
+                selfHostEnabled = state.selfHostConfig.enabled && state.selfHostConfig.isConfigured,
+                isSelfHostUploading = state.isSelfHostUploading,
+                idRedactionSuggestion = state.idRedactionSuggestions[currentDocument.id],
+                onDismiss = {
+                    selectedDocument = null
+                    if (state.expandedDocumentId == document.id) {
+                        onToggleDocumentExpanded(document)
+                    }
+                },
+                onShare = { onShareDocument(currentDocument) },
+                onExportText = { onExportText(currentDocument) },
+                onPrint = { onPrintDocument(currentDocument) },
+                onUploadToSelfHost = { onUploadToSelfHost(currentDocument) },
+                onRedactIdFields = { onRedactIdFields(currentDocument) },
+                onDelete = {
+                    selectedDocument = null
+                    onDeleteDocument(currentDocument)
+                },
+                onRetryOcr = { onRetryOcr(currentDocument) },
+                onOcrLanguageChange = { language ->
+                    onDocumentOcrLanguageChange(currentDocument, language)
+                },
+                onToggleFavorite = { onToggleFavorite(currentDocument) },
+                onUpdateTags = { tags -> onUpdateTags(currentDocument, tags) },
+                onMoveToFolder = { folderId -> onMoveToFolder(currentDocument, folderId) },
+                onSignatureTextChange = onSignatureTextChange,
+                onPdfPasswordChange = onPdfPasswordChange,
+                onCompressQualityChange = onCompressQualityChange,
+                onSplit = { onSplitDocument(currentDocument) },
+                onRotate = { onRotateDocument(currentDocument) },
+                onSign = { onSignDocument(currentDocument) },
+                onRedact = { onRedactDocument(currentDocument) },
+                onAnnotate = {
+                    selectedDocument = null
+                    annotatingDocument = currentDocument
+                },
+                onReorderPages = {
+                    pageEditorTarget = currentDocument
+                    pageEditorMode = PageEditorMode.Reorder
+                },
+                onDeletePages = {
+                    pageEditorTarget = currentDocument
+                    pageEditorMode = PageEditorMode.Delete
+                },
+                onCompress = { onCompressDocument(currentDocument) },
+                onPasswordProtect = { onPasswordProtectDocument(currentDocument) }
+            )
+        }
     }
 
     pageEditorTarget?.let { document ->

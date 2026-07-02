@@ -16,6 +16,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.CloudUpload
+import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material.icons.outlined.Refresh
@@ -173,6 +174,23 @@ fun DocumentDetailSheet(
                 .padding(bottom = ClearScanSpacing.xxxl),
             verticalArrangement = Arrangement.spacedBy(ClearScanSpacing.lg)
         ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
+            ) {
+                IconButton(
+                    onClick = onDismiss,
+                    modifier = Modifier.defaultMinSize(
+                        minWidth = ClearScanSpacing.minTouchTarget,
+                        minHeight = ClearScanSpacing.minTouchTarget
+                    )
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.Close,
+                        contentDescription = "Close document detail"
+                    )
+                }
+            }
             DocumentThumbnailHero(document = document)
 
             Column(verticalArrangement = Arrangement.spacedBy(ClearScanSpacing.xs)) {

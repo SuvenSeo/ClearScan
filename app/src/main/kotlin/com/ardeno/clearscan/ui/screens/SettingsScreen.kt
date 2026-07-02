@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.outlined.Backup
 import androidx.compose.material.icons.outlined.CloudOff
 import androidx.compose.material.icons.outlined.Lock
@@ -74,6 +75,7 @@ fun SettingsScreen(
     onWifiOnlySelfHostUploadChange: (Boolean) -> Unit,
     isUpdateChecking: Boolean,
     onCheckForAppUpdate: () -> Unit,
+    onBackClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
@@ -89,6 +91,20 @@ fun SettingsScreen(
                         style = MaterialTheme.typography.displaySmall,
                         fontWeight = FontWeight.Bold
                     )
+                },
+                navigationIcon = {
+                    IconButton(
+                        onClick = onBackClick,
+                        modifier = Modifier.defaultMinSize(
+                            minWidth = ClearScanSpacing.minTouchTarget,
+                            minHeight = ClearScanSpacing.minTouchTarget
+                        )
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Go back"
+                        )
+                    }
                 },
                 scrollBehavior = scrollBehavior,
                 colors = TopAppBarDefaults.largeTopAppBarColors(
@@ -408,7 +424,7 @@ private fun PrivacyDashboardEntryRow(onOpenPrivacyDashboard: () -> Unit) {
             onClick = onOpenPrivacyDashboard,
             shape = MaterialTheme.shapes.medium
         ) {
-            Icon(imageVector = Icons.Outlined.Shield, contentDescription = null)
+            Icon(imageVector = Icons.Outlined.Shield, contentDescription = "Open privacy dashboard")
             Text(modifier = Modifier.padding(start = 8.dp), text = "Open dashboard")
         }
     }
