@@ -12,15 +12,33 @@ class PrivacyStatusProvider(
 ) {
     fun load(): PrivacyStatus {
         val adScan = scanForAdSdks()
+        val cryptoHealthy = vaultCrypto.healthCheck()
+        val storageRoot = encryptedFileStore.storageRoot()
+        val (usedBytes, totalBytes) = computeStorageUsage(storageRoot)
         return PrivacyStatus(
             networkPolicy = "No network calls in core flows. Export and backup are explicit user actions only.",
-            storageLocation = encryptedFileStore.storageRoot().absolutePath,
-            encryptionAtRestEnabled = vaultCrypto.healthCheck(),
+            storageLocation = storageRoot.absolutePath,
+            encryptionAtRestEnabled = cryptoHealthy,
+            encryptionHealthDetails = if (cryptoHealthy) {
+                "AES-GCM 256-bit via Android Keystore · encryption + decryption verified"
+            } else {
+                "Vault encryption is unavailable on this device."
+            },
             adSdkFree = adScan.isClean,
             adSdkNotes = adScan.summary,
             systemBackupExcluded = isSystemBackupExcluded(),
-            exportAuditEntries = exportAuditLog.formattedEntries()
+            exportAuditEntries = exportAuditLog.readEntries().take(20),
+            storageUsedBytes = usedBytes,
+            storageTotalBytes = totalBytes
         )
+    }
+
+    private fun computeStorageUsage(root: File): Pair<Long, Long> {
+        val used = root.walkTopDown()
+            .filter { it.isFile }
+            .sumOf { it.length() }
+        val total = root.totalSpace.coerceAtMost(root.freeSpace + used).coerceAtLeast(used)
+        return Pair(used, total)
     }
 
     private fun isSystemBackupExcluded(): Boolean {
