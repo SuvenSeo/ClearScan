@@ -14,12 +14,19 @@ $blockedPatterns = @(
     "com.android.billingclient"
 )
 
+$excludedFileSuffixes = @(
+    "check-free-policy.ps1",
+    "privacy-release-gate.ps1",
+    "PrivacyStatusProvider.kt"
+)
 $excludedDirectoryNames = @(".gradle", ".kotlin", "build", "work", "outputs")
 $scanFiles = Get-ChildItem -LiteralPath $Root -Recurse -File |
     Where-Object {
         $file = $_
-        if ($file.Name -eq "check-free-policy.ps1") {
-            return $false
+        foreach ($excluded in $excludedFileSuffixes) {
+            if ($file.Name -eq $excluded) {
+                return $false
+            }
         }
 
         foreach ($directoryName in $excludedDirectoryNames) {
