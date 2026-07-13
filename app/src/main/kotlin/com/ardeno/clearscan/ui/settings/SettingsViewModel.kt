@@ -20,6 +20,7 @@ import com.ardeno.clearscan.update.ApkUpdateManager
 import com.ardeno.clearscan.vault.ExportAuditLog
 import com.ardeno.clearscan.vault.PrivacyStatusProvider
 import com.ardeno.clearscan.vault.VaultCrypto
+import com.ardeno.clearscan.vault.VaultKeyMigration
 import com.ardeno.clearscan.vault.VaultSettings
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -40,6 +41,7 @@ class SettingsViewModel(
     private val repository: LocalDocumentRepository,
     private val vaultCrypto: VaultCrypto,
     private val vaultSettings: VaultSettings,
+    private val vaultKeyMigration: VaultKeyMigration,
     private val exportAuditLog: ExportAuditLog,
     private val privacyStatusProvider: PrivacyStatusProvider,
     private val backupRestoreManager: BackupRestoreManager,
@@ -108,10 +110,19 @@ class SettingsViewModel(
     fun setVaultEnabled(enabled: Boolean) {
         scope.launch {
             runCatching {
-                vaultCrypto.ensureVaultKey()
+                if (enabled) {
+                    vaultCrypto.ensureBiometricVaultKey()
+                } else {
+                    vaultCrypto.ensureVaultKey()
+                }
                 vaultCrypto.healthCheck()
             }.onSuccess { healthy ->
                 vaultSettings.setEnabled(enabled)
+                if (enabled) {
+                    vaultSettings.setAuthMode(VaultSettings.AUTH_MODE_BIOMETRIC)
+                } else {
+                    vaultSettings.setAuthMode(VaultSettings.AUTH_MODE_NONE)
+                }
                 _uiState.update { current ->
                     current.copy(
                         vaultEnabled = enabled,
@@ -132,11 +143,23 @@ class SettingsViewModel(
     }
 
     fun unlockVault() {
+        // Unlock is deferred to MainActivity biometric CryptoObject flow.
+    }
+
+    fun onVaultCryptoUnlocked() {
+        vaultCrypto.markSessionAuthorized()
         _uiState.update { it.copy(vaultUnlocked = true) }
         onMessage("Vault unlocked.")
+        scope.launch {
+            runCatching { vaultKeyMigration.migrateIfNeeded() }
+                .onFailure { error ->
+                    onMessage(error.localizedMessage ?: "Vault key migration failed.")
+                }
+        }
     }
 
     fun lockVault() {
+        vaultCrypto.clearSession()
         _uiState.update { current ->
             if (!current.vaultEnabled) current else current.copy(vaultUnlocked = false)
         }

@@ -371,7 +371,7 @@ class MainActivity : FragmentActivity() {
             return
         }
 
-        authenticateForVault(
+        authenticateForVaultCrypto(
             title = "Enable ClearScan vault",
             subtitle = "Confirm your identity before enabling vault lock.",
             onSuccess = { viewModel.setVaultEnabled(true) }
@@ -379,14 +379,14 @@ class MainActivity : FragmentActivity() {
     }
 
     private fun unlockVault() {
-        authenticateForVault(
+        authenticateForVaultCrypto(
             title = "Unlock ClearScan",
             subtitle = "Use biometrics or device credentials to unlock your scans.",
-            onSuccess = viewModel::unlockVault
+            onSuccess = {}
         )
     }
 
-    private fun authenticateForVault(
+    private fun authenticateForVaultCrypto(
         title: String,
         subtitle: String,
         onSuccess: () -> Unit
@@ -406,18 +406,29 @@ class MainActivity : FragmentActivity() {
             }
         }
 
+        val cipher: javax.crypto.Cipher = runCatching { viewModel.createVaultDecryptCipher() }
+            .getOrElse { error ->
+                viewModel.reportMessage(error.localizedMessage ?: "Vault crypto is unavailable.")
+                return
+            }
+
         val prompt = BiometricPrompt(
             this,
             ContextCompat.getMainExecutor(this),
             object : BiometricPrompt.AuthenticationCallback() {
                 override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
                     super.onAuthenticationSucceeded(result)
+                    viewModel.onVaultCryptoUnlocked()
                     onSuccess()
                 }
 
                 override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
                     super.onAuthenticationError(errorCode, errString)
-                    viewModel.reportMessage(errString.toString())
+                    if (errorCode != BiometricPrompt.ERROR_USER_CANCELED &&
+                        errorCode != BiometricPrompt.ERROR_NEGATIVE_BUTTON
+                    ) {
+                        viewModel.reportMessage(errString.toString())
+                    }
                 }
             }
         )
@@ -428,7 +439,7 @@ class MainActivity : FragmentActivity() {
             .setAllowedAuthenticators(authenticators)
             .build()
 
-        prompt.authenticate(promptInfo)
+        prompt.authenticate(promptInfo, BiometricPrompt.CryptoObject(cipher))
     }
 
     private fun startAppUpdateDownload() {

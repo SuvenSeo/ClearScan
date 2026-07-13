@@ -37,8 +37,10 @@ import com.ardeno.clearscan.vault.EncryptedFileStore
 import com.ardeno.clearscan.vault.ExportAuditLog
 import com.ardeno.clearscan.vault.PrivacyStatusProvider
 import com.ardeno.clearscan.vault.VaultCrypto
+import com.ardeno.clearscan.vault.VaultKeyMigration
 import com.ardeno.clearscan.vault.VaultSettings
 import java.io.File
+import javax.crypto.Cipher
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -77,6 +79,7 @@ class ClearScanViewModel(application: Application) : AndroidViewModel(applicatio
     private val pdfToolEngine = PdfToolEngine()
     private val searchablePdfWriter = SearchablePdfWriter()
     private val vaultSettings = VaultSettings(application)
+    private val vaultKeyMigration = VaultKeyMigration(application, vaultCrypto, encryptedFileStore, vaultSettings)
     private val exportAuditLog = ExportAuditLog(application)
     private val privacyStatusProvider = PrivacyStatusProvider(application, encryptedFileStore, exportAuditLog, vaultCrypto)
     private val backupRestoreManager = BackupRestoreManager(application, repository, encryptedFileStore, vaultCrypto)
@@ -93,6 +96,7 @@ class ClearScanViewModel(application: Application) : AndroidViewModel(applicatio
         repository = repository,
         vaultCrypto = vaultCrypto,
         vaultSettings = vaultSettings,
+        vaultKeyMigration = vaultKeyMigration,
         exportAuditLog = exportAuditLog,
         privacyStatusProvider = privacyStatusProvider,
         backupRestoreManager = backupRestoreManager,
@@ -122,7 +126,21 @@ class ClearScanViewModel(application: Application) : AndroidViewModel(applicatio
 
         settingsViewModel.initializeVaultState()
 
+        loadDocumentsWhenAccessible()
+    }
+
+    fun createVaultDecryptCipher(): Cipher = vaultCrypto.createDecryptCipher()
+
+    fun onVaultCryptoUnlocked() {
+        settingsViewModel.onVaultCryptoUnlocked()
+        loadDocumentsWhenAccessible()
+    }
+
+    private fun loadDocumentsWhenAccessible() {
         viewModelScope.launch {
+            if (vaultSettings.isEnabled && vaultCrypto.requiresAuthentication()) {
+                return@launch
+            }
             val documents = repository.loadDocuments()
             val folders = repository.loadFolders()
             val duplicateIds = duplicateDetector.duplicateDocumentIds(documents)

@@ -14,6 +14,7 @@ import com.ardeno.clearscan.ocr.OcrLanguage
 import com.ardeno.clearscan.pdf.PdfToolOutput
 import com.ardeno.clearscan.scanner.ScannerImport
 import com.ardeno.clearscan.vault.EncryptedFileStore
+import com.ardeno.clearscan.vault.MetadataCrypto
 import com.ardeno.clearscan.vault.VaultCrypto
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -33,7 +34,8 @@ import org.json.JSONObject
 class LocalDocumentRepository(
     context: Context,
     private val vaultCrypto: VaultCrypto = VaultCrypto(),
-    private val encryptedFileStore: EncryptedFileStore = EncryptedFileStore(context, vaultCrypto)
+    private val encryptedFileStore: EncryptedFileStore = EncryptedFileStore(context, vaultCrypto),
+    private val metadataCrypto: MetadataCrypto = MetadataCrypto(vaultCrypto)
 ) {
     private val appContext = context.applicationContext
     private val db = ScanDatabase.getInstance(context)
@@ -48,9 +50,11 @@ class LocalDocumentRepository(
         get() = File(documentsRoot, "folders.json")
 
     suspend fun loadFolders(): List<DocumentFolder> = withContext(Dispatchers.IO) {
+        vaultCrypto.ensureVaultKey()
+        migrateLegacyPlaintextMetadata()
         val roomFolders = db.documentFolderDao().getAll()
         if (roomFolders.isNotEmpty()) {
-            roomFolders.map { it.toFolder() }
+            roomFolders.map { it.toDecryptedFolder() }
         } else {
             readFolders().also { folders -> syncFoldersToRoom(folders) }
         }
@@ -59,9 +63,10 @@ class LocalDocumentRepository(
     suspend fun loadDocuments(): List<ScanDocument> = withContext(Dispatchers.IO) {
         vaultCrypto.ensureVaultKey()
         migrateLegacyPlaintextFiles()
+        migrateLegacyPlaintextMetadata()
         val roomDocs = db.scanDocumentDao().getAll()
         if (roomDocs.isNotEmpty()) {
-            roomDocs.map { it.toDocument() }.map(::toReadableDocument)
+            roomDocs.map { it.toDecryptedDocument() }.map(::toReadableDocument)
         } else {
             readIndex().also { docs -> syncDocumentsToRoom(docs) }.map(::toReadableDocument)
         }
@@ -400,6 +405,47 @@ class LocalDocumentRepository(
             }
         )
 
+    private suspend fun migrateLegacyPlaintextMetadata() {
+        migrateLegacyMetadataFile(indexFile)
+        migrateLegacyMetadataFile(foldersFile)
+        migrateLegacyRoomMetadata()
+    }
+
+    private fun migrateLegacyMetadataFile(file: File) {
+        if (!file.exists()) return
+        val bytes = file.readBytes()
+        if (bytes.isEmpty() || MetadataCrypto.isEncryptedEnvelope(bytes)) return
+        val text = bytes.decodeToString()
+        if (!MetadataCrypto.isPlaintextJson(text)) return
+        metadataCrypto.writeJsonFile(file, text)
+    }
+
+    private suspend fun migrateLegacyRoomMetadata() {
+        val documentEntities = db.scanDocumentDao().getAll()
+        val migratedDocs = documentEntities.mapNotNull { entity ->
+            if (!MetadataCrypto.isPlaintextJson(entity.jsonPayload)) return@mapNotNull null
+            entity.copy(jsonPayload = metadataCrypto.encryptPayload(entity.jsonPayload))
+        }
+        if (migratedDocs.isNotEmpty()) {
+            runCatching { db.scanDocumentDao().upsertAll(migratedDocs) }
+        }
+
+        val folderEntities = db.documentFolderDao().getAll()
+        val migratedFolders = folderEntities.mapNotNull { entity ->
+            if (!MetadataCrypto.isPlaintextJson(entity.jsonPayload)) return@mapNotNull null
+            entity.copy(jsonPayload = metadataCrypto.encryptPayload(entity.jsonPayload))
+        }
+        if (migratedFolders.isNotEmpty()) {
+            runCatching { db.documentFolderDao().upsertAll(migratedFolders) }
+        }
+    }
+
+    private fun ScanDocumentEntity.toDecryptedDocument(): ScanDocument =
+        copy(jsonPayload = metadataCrypto.decryptPayload(jsonPayload)).toDocument()
+
+    private fun DocumentFolderEntity.toDecryptedFolder(): DocumentFolder =
+        copy(jsonPayload = metadataCrypto.decryptPayload(jsonPayload)).toFolder()
+
     private suspend fun migrateLegacyPlaintextFiles() {
         if (!indexFile.exists()) return
 
@@ -486,9 +532,7 @@ class LocalDocumentRepository(
     }
 
     private fun readIndex(): List<ScanDocument> {
-        if (!indexFile.exists()) return emptyList()
-
-        val raw = indexFile.readText()
+        val raw = metadataCrypto.readJsonFile(indexFile) ?: return emptyList()
         if (raw.isBlank()) return emptyList()
 
         val array = JSONArray(raw)
@@ -501,12 +545,15 @@ class LocalDocumentRepository(
     }
 
     private suspend fun writeIndex(documents: List<ScanDocument>) {
-        indexFile.writeText(documentsToJsonArray(documents).toString(2))
+        metadataCrypto.writeJsonFile(indexFile, documentsToJsonArray(documents).toString(2))
         syncDocumentsToRoom(documents)
     }
 
     private suspend fun syncDocumentsToRoom(documents: List<ScanDocument>) {
-        val entities = documents.map { it.toEntity() }
+        val entities = documents.map { document ->
+            val entity = document.toEntity()
+            entity.copy(jsonPayload = metadataCrypto.encryptPayload(entity.jsonPayload))
+        }
         runCatching { db.scanDocumentDao().upsertAll(entities) }
     }
 
@@ -597,8 +644,7 @@ class LocalDocumentRepository(
     }
 
     private fun readFolders(): List<DocumentFolder> {
-        if (!foldersFile.exists()) return emptyList()
-        val raw = foldersFile.readText()
+        val raw = metadataCrypto.readJsonFile(foldersFile) ?: return emptyList()
         if (raw.isBlank()) return emptyList()
         val array = JSONArray(raw)
         return buildList {
@@ -616,12 +662,15 @@ class LocalDocumentRepository(
     }
 
     private suspend fun writeFolders(folders: List<DocumentFolder>) {
-        foldersFile.writeText(foldersToJsonArray(folders).toString(2))
+        metadataCrypto.writeJsonFile(foldersFile, foldersToJsonArray(folders).toString(2))
         syncFoldersToRoom(folders)
     }
 
     private suspend fun syncFoldersToRoom(folders: List<DocumentFolder>) {
-        val entities = folders.map { it.toEntity() }
+        val entities = folders.map { folder ->
+            val entity = folder.toEntity()
+            entity.copy(jsonPayload = metadataCrypto.encryptPayload(entity.jsonPayload))
+        }
         runCatching { db.documentFolderDao().upsertAll(entities) }
     }
 
