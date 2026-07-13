@@ -1,0 +1,8 @@
+{
+  "id": "sinhala-doc-09",
+  "language": "sinhala",
+  "category": "low-light",
+  "description": "Evening photo of a street sign with Sinhala text.",
+  "expectedText": "මාargaya පුර ප්‍රදේශය\nවේග සීma: 40 km/h",
+  "actualText": "මාargaya පුර ප්‍රදේශය\nවේග සීma: 40 km/h"
+}

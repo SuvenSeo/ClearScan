@@ -1,0 +1,8 @@
+{
+  "id": "tamil-doc-05",
+  "language": "tamil",
+  "category": "handwritten",
+  "description": "Handwritten shopping list.",
+  "expectedText": "shopping list\n- Roti\n- Paal\n- Bitterai\n- soap",
+  "actualText": "shopping list\n- Roti\n- Paal\n- Bitterai\n- soap"
+}

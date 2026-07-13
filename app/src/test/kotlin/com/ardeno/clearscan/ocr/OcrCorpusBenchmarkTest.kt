@@ -6,19 +6,21 @@ import org.junit.Test
 
 class OcrCorpusBenchmarkTest {
     @Test
-    fun loadsPlaceholderCorpusFromTestResources() {
+    fun loadsExpandedCorpusFromTestResources() {
         val entries = OcrCorpusBenchmark.loadFromClasspath(javaClass.classLoader!!)
 
-        assertEquals(2, entries.size)
+        assertTrue("Expected at least 25 Sinhala entries", entries.count { it.language == BenchmarkLanguage.Sinhala } >= 25)
+        assertTrue("Expected at least 25 Tamil entries", entries.count { it.language == BenchmarkLanguage.Tamil } >= 25)
         assertTrue(entries.any { it.id == "sinhala-synthetic-01" })
         assertTrue(entries.any { it.id == "tamil-synthetic-01" })
     }
 
     @Test
     fun evaluatesClasspathCorpusWithCerAndWer() {
-        val metrics = OcrCorpusBenchmark.evaluateClasspathCorpus(javaClass.classLoader!!)
+        val entries = OcrCorpusBenchmark.loadFromClasspath(javaClass.classLoader!!)
+        val metrics = OcrCorpusBenchmark.evaluate(entries)
 
-        assertEquals(2, metrics.size)
+        assertEquals(entries.count { it.actualText != null }, metrics.size)
 
         val sinhala = metrics.first { it.sampleName == "sinhala-synthetic-01" }
         assertEquals(0.0, sinhala.characterErrorRate, 0.0)

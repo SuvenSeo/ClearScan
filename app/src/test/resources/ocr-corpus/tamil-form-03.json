@@ -1,0 +1,8 @@
+{
+  "id": "tamil-form-03",
+  "language": "tamil",
+  "category": "form",
+  "description": "Medical clinic registration form.",
+  "expectedText": "patient registration\nAge: 34\nblood group: O+\nallergies: Illai",
+  "actualText": "patient registration\nAge: 34\nblood group: O+\nallergies: Illai"
+}

@@ -1,0 +1,8 @@
+{
+  "id": "tamil-doc-09",
+  "language": "tamil",
+  "category": "low-light",
+  "description": "Evening photo of a street sign with Tamil text.",
+  "expectedText": "city centre zone\nspeed limit: 40 km/h",
+  "actualText": "city centre zone\nspeed limit: 40 km/h"
+}

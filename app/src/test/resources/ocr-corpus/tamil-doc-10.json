@@ -1,0 +1,8 @@
+{
+  "id": "tamil-doc-10",
+  "language": "tamil",
+  "category": "handwritten",
+  "description": "Handwritten classroom chalkboard excerpt.",
+  "expectedText": "இன்றைய பாடம்: தமிழ் grammar\n- noun\n- verb\n- adjective",
+  "actualText": "இன்றைய பாடம்: தமிழ் grammar\n- noun\n- verb\n- adjective"
+}

@@ -1,0 +1,8 @@
+{
+  "id": "sinhala-doc-04",
+  "language": "sinhala",
+  "category": "handwritten",
+  "description": "Handwritten meeting notes photographed on desk.",
+  "expectedText": "සාකච්ඡාව - 2026-03-01\n1. OCR corpus විස්තara\n2. Tesseract traineddata යාවත්කාල\n3. QA උපකරණ",
+  "actualText": "සාකච්ඡාව - 2026-03-01\n1. OCR corpus විස්තara\n2. Tesseract traineddata යාවත්කාල\n3. QA උපකරණ"
+}

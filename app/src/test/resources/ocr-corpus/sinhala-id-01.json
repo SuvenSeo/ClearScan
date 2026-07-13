@@ -1,0 +1,8 @@
+{
+  "id": "sinhala-id-01",
+  "language": "sinhala",
+  "category": "form",
+  "description": "National identity card text snippet (synthetic, no real PII).",
+  "expectedText": "ශ්‍රී ලංකා ප්‍රජාතන්ත්‍රවාදී සමාජවාදී ජනරජය\nජාතික හැඳුනුම්පත\nනම: නිශාන් Perera\nජා.හි.ප.: 199512345678",
+  "actualText": "ශ්‍රී ලංකා ප්‍රජාතන්ත්‍රවාදී සමාජවාදී ජනරජය\nජාතික හැඳුනුම්පත\nනම: නිශාන් Perera\nජා.හි.ප.: 199512345678"
+}

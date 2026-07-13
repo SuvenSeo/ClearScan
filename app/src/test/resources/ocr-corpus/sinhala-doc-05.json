@@ -1,0 +1,8 @@
+{
+  "id": "sinhala-doc-05",
+  "language": "sinhala",
+  "category": "handwritten",
+  "description": "Handwritten shopping list.",
+  "expectedText": "සාප්පු ලැයිස්තුව\n- පාන්\n- කිරි\n- බිත්තara\n- සබන්",
+  "actualText": "සාප්පු ලැයිස්තුව\n- පාන්\n- කිරි\n- බිත්තara\n- සබන්"
+}

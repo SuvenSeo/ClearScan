@@ -1,0 +1,8 @@
+{
+  "id": "sinhala-receipt-01",
+  "language": "sinhala",
+  "category": "receipt",
+  "description": "Printed grocery receipt, indoor fluorescent lighting.",
+  "expectedText": "සිංහල සුපිරි වෙළඳසැල\nදිනය: 2026-03-15\nබත් 5kg\t\tRs. 850.00\nකිරි 1L\t\tRs. 420.00\nපාන්\t\tRs. 180.00\nඑකතුව\t\tRs. 1,450.00\nස්තුතියි",
+  "actualText": "සිංහල සුපිරි වෙළඳසැල\nදිනය: 2026-03-15\nබත් 5kg\t\tRs. 850.00\nකිරි 1L\t\tRs. 420.00\nපාන්\t\tRs. 180.00\nඑකතුව\t\tRs. 1,450.00\nස්තුතියි"
+}

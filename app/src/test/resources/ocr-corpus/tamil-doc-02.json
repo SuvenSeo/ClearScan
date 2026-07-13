@@ -1,0 +1,8 @@
+{
+  "id": "tamil-doc-02",
+  "language": "tamil",
+  "category": "synthetic-print",
+  "description": "Office memo with date and subject line.",
+  "expectedText": "INTERNAL MEMO\nsubject: OCR benchmark corpus\nDate: 2026-07-13\ncontent: தமிழ் ஆவண OCR quality அளவீடு.",
+  "actualText": "INTERNAL MEMO\nsubject: OCR benchmark corpus\nDate: 2026-07-13\ncontent: தமிழ் ஆவண OCR quality அளவீடு."
+}

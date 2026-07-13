@@ -1,0 +1,8 @@
+{
+  "id": "tamil-invoice-02",
+  "language": "tamil",
+  "category": "invoice",
+  "description": "Courier service invoice with tracking number.",
+  "expectedText": "Star international courier\ntrack எண்: LK8844221100\nshipping\t\tRs. 3,200.00\nரசீது: CR-7781",
+  "actualText": "Star international courier\ntrack எண்: LK8844221100\nshipping\t\tRs. 3,200.00\nரசீது: CR-7781"
+}

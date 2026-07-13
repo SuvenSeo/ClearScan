@@ -1,0 +1,8 @@
+{
+  "id": "tamil-receipt-03",
+  "language": "tamil",
+  "category": "receipt",
+  "description": "Restaurant bill with service charge.",
+  "expectedText": "இனிய உணவகம்\nமேசai: 12\nசorba rice\t\tRs. 650.00\nNoodles\t\tRs. 480.00\nService 10%\tRs. 113.00\nமொத்தம்\t\tRs. 1,243.00",
+  "actualText": "இனிய உணவகம்\nமேசai: 12\nசorba rice\t\tRs. 650.00\nNoodles\t\tRs. 480.00\nService 10%\tRs. 113.00\nமொத்தம்\t\tRs. 1,243.00"
+}

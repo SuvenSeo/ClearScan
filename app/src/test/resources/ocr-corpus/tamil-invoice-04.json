@@ -1,0 +1,8 @@
+{
+  "id": "tamil-invoice-04",
+  "language": "tamil",
+  "category": "invoice",
+  "description": "School fees invoice with partial OCR mismatch for regression.",
+  "expectedText": "Nuwara school\nfees - Grade 1\nstudent: Saman Perera\nமொத்தம்: Rs. 25,000.00",
+  "actualText": "Nuwara school\nfees - Grade 1\nstudent: Saman\nமொத்தம்: Rs. 25,000.00"
+}

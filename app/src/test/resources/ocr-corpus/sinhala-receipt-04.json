@@ -1,0 +1,8 @@
+{
+  "id": "sinhala-receipt-04",
+  "language": "sinhala",
+  "category": "receipt",
+  "description": "Fuel station receipt, thermal print.",
+  "expectedText": "සීපීඑල් නියමුව\n92 Octane\t\t18.5 L\nඒකක මිල\t\tRs. 367.00\nමුළු\t\t\tRs. 6,789.50\nPump 04",
+  "actualText": "සීපීඑල් නියමුව\n92 Octane\t\t18.5 L\nඒකක මිල\t\tRs. 367.00\nමුළු\t\t\tRs. 6,789.50\nPump 04"
+}

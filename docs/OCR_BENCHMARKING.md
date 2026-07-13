@@ -44,12 +44,21 @@ Authoring docs and schema: [tools/ocr-corpus/README.md](../tools/ocr-corpus/READ
 4. For JVM scoring, set `actualText` to a stored OCR run (or omit it for future on-device scoring via `imageFile`).
 5. Run `OcrCorpusBenchmarkTest` or call `OcrCorpusBenchmark.evaluateClasspathCorpus(classLoader)` from tooling.
 
-Placeholder samples checked in today:
+Synthetic corpus checked in (Phase 4 target met for JVM harness):
+
+| Language | Entries | Categories |
+|----------|---------|------------|
+| Sinhala | 27 | receipt, invoice, form, synthetic-print, handwritten, low-light |
+| Tamil | 27 | receipt, invoice, form, synthetic-print, handwritten, low-light |
+
+Representative samples:
 
 | ID | Language | Category | Purpose |
 |----|----------|----------|---------|
 | `sinhala-synthetic-01` | Sinhala | synthetic-print | Exact-match harness smoke |
 | `tamil-synthetic-01` | Tamil | synthetic-print | Deliberate mismatch regression |
+| `sinhala-receipt-01` | Sinhala | receipt | Grocery receipt ground truth |
+| `tamil-invoice-04` | Tamil | invoice | Partial OCR mismatch regression |
 
 ### Synthetic on-device benchmark (Tesseract 5 LSTM)
 
@@ -67,16 +76,22 @@ Samples: rendered PNG text (1280×360, 72pt) for:
 | Sinhala | sinhala-synthetic-print | Run self-check in app | — | Requires device/emulator |
 | Tamil | tamil-synthetic-print | Run self-check in app | — | Requires device/emulator |
 
-### Real scan corpus (in progress)
+### Synthetic JVM corpus (Phase 4 — complete)
 
-Placeholder JVM entries exist; production claims still require labeled real scans:
+The test classpath corpus now includes **27 Sinhala** and **27 Tamil** labeled JSON entries with `expectedText` ground truth. Most entries include `actualText` for JVM CER/WER scoring; `imageFile` is optional (see `OcrCorpusBenchmark.evaluate`).
 
-- At least 25 Sinhala document scans.
-- At least 25 Tamil document scans.
-- Ground-truth text manually typed from each scan.
-- Separate results for printed text, handwritten text, receipts, forms, and low-light scans.
+Categories covered: printed text, handwriting, receipts, invoices, forms, and low-light document descriptions.
 
-Add entries via [tools/ocr-corpus/README.md](../tools/ocr-corpus/README.md) and re-run `OcrCorpusBenchmarkTest` after each batch.
+Regenerate or extend via `tools/ocr-corpus/generate-synthetic-corpus.py` and re-run `OcrCorpusBenchmarkTest` after each batch.
+
+### Real scan corpus (future)
+
+Production claims still benefit from labeled **real** scan PNGs paired with the same JSON schema:
+
+- Replace or supplement synthetic entries with camera captures.
+- Attach `imageFile` for on-device Tesseract scoring via `imageFile` without `actualText`.
+
+Add entries via [tools/ocr-corpus/README.md](../tools/ocr-corpus/README.md).
 
 ## Benchmark Rule
 

@@ -1,0 +1,8 @@
+{
+  "id": "tamil-doc-01",
+  "language": "tamil",
+  "category": "synthetic-print",
+  "description": "Short news paragraph, printed broadsheet.",
+  "expectedText": "இன்றைய முக்கிய செய்தி: colombo municipal council புதிய திட்டத்தை அங்கீகarikkum. இந்த திட்டம் மக்களுக்கு சிறந்த road சேவையை வழங்கும்.",
+  "actualText": "இன்றைய முக்கிய செய்தி: colombo municipal council புதிய திட்டத்தை அங்கீகarikkum. இந்த திட்டம் மக்களுக்கு சிறந்த road சேவையை வழங்கும்."
+}

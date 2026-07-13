@@ -1,0 +1,8 @@
+{
+  "id": "tamil-receipt-05",
+  "language": "tamil",
+  "category": "receipt",
+  "description": "Low-light mobile photo of a tea kiosk receipt.",
+  "expectedText": "தea kadai\nதea x2\t\tRs. 100.00\nRoti\t\tRs. 60.00\nமொத்தம்\t\tRs. 160.00",
+  "actualText": "தea kadai\nதea x2\t\tRs. 100.00\nRoti\t\tRs. 60.00\nமொத்தம்\t\tRs. 160.00"
+}

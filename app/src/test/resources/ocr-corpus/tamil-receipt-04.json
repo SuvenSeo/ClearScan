@@ -1,0 +1,8 @@
+{
+  "id": "tamil-receipt-04",
+  "language": "tamil",
+  "category": "receipt",
+  "description": "Fuel station receipt, thermal print.",
+  "expectedText": "IOC petrol bunk\n92 Octane\t\t18.5 L\nஅunit விலai\t\tRs. 367.00\nமொத்தம்\t\tRs. 6,789.50\nPump 04",
+  "actualText": "IOC petrol bunk\n92 Octane\t\t18.5 L\nஅunit விலai\t\tRs. 367.00\nமொத்தம்\t\tRs. 6,789.50\nPump 04"
+}

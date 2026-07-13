@@ -1,0 +1,8 @@
+{
+  "id": "sinhala-form-04",
+  "language": "sinhala",
+  "category": "form",
+  "description": "Handwritten job application form fields.",
+  "expectedText": "රැකියා අයදුම්පත\nපදවිය: ගිණුම්කරු\nඅත්දැකීම්: වසර 5\nදිනය: 2026-02-01",
+  "actualText": "රැකියා අයදුම්පත\nපදවිය: ගිණුම්කරු\nඅත්දැකීම්: වසර 5\nදිනය: 2026-02-01"
+}

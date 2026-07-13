@@ -4,25 +4,45 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-$corpusDirs = @(
-    (Join-Path $Root "app/src/test/resources/ocr-corpus"),
-    (Join-Path $Root "tools/ocr-corpus")
-)
+$corpusDir = Join-Path $Root "app/src/test/resources/ocr-corpus"
+$authoringDir = Join-Path $Root "tools/ocr-corpus"
+$minPerLanguage = 25
 
-$jsonCount = 0
-foreach ($dir in $corpusDirs) {
-    if (-not (Test-Path -LiteralPath $dir)) {
-        Write-Warning "OCR corpus directory missing: $dir"
-        continue
-    }
-
-    $jsonCount += @(Get-ChildItem -LiteralPath $dir -Filter "*.json" -File).Count
+if (-not (Test-Path -LiteralPath $corpusDir)) {
+    Write-Warning "OCR corpus directory missing: $corpusDir"
+    exit 1
 }
 
-Write-Host "OCR corpus JSON files: $jsonCount (across $($corpusDirs.Count) directories)"
+$entryFiles = @(Get-ChildItem -LiteralPath $corpusDir -Filter "*.json" -File | Where-Object { $_.Name -ne "index.json" })
+$jsonCount = $entryFiles.Count
 
-if ($jsonCount -lt 10) {
-    Write-Warning "OCR corpus has fewer than 10 JSON files ($jsonCount). Add more entries to improve OCR regression coverage."
+Write-Host "OCR corpus entry JSON files: $jsonCount (in $corpusDir)"
+
+$sinhalaCount = 0
+$tamilCount = 0
+
+foreach ($file in $entryFiles) {
+    $content = Get-Content -LiteralPath $file.FullName -Raw | ConvertFrom-Json
+    switch ($content.language) {
+        "sinhala" { $sinhalaCount++ }
+        "tamil" { $tamilCount++ }
+        default { Write-Warning "Unknown language in $($file.Name): $($content.language)" }
+    }
+}
+
+Write-Host "Sinhala entries: $sinhalaCount"
+Write-Host "Tamil entries: $tamilCount"
+
+if ($sinhalaCount -lt $minPerLanguage) {
+    Write-Warning "OCR corpus has fewer than $minPerLanguage Sinhala entries ($sinhalaCount)."
+}
+
+if ($tamilCount -lt $minPerLanguage) {
+    Write-Warning "OCR corpus has fewer than $minPerLanguage Tamil entries ($tamilCount)."
+}
+
+if (-not (Test-Path -LiteralPath $authoringDir)) {
+    Write-Warning "OCR corpus authoring directory missing: $authoringDir"
 }
 
 $tessdataDir = Join-Path $Root "app/src/main/assets/tessdata"

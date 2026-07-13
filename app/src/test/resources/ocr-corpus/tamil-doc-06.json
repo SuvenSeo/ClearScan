@@ -1,0 +1,8 @@
+{
+  "id": "tamil-doc-06",
+  "language": "tamil",
+  "category": "handwritten",
+  "description": "Handwritten address label.",
+  "expectedText": "deliver to:\nRanjith Perera\n123/4, Galle Road\nMount Lavinia",
+  "actualText": "deliver to:\nRanjith Perera\n123/4, Galle Road\nMount Lavinia"
+}

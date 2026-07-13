@@ -1,0 +1,8 @@
+{
+  "id": "sinhala-invoice-01",
+  "language": "sinhala",
+  "category": "invoice",
+  "description": "Printed A4 tax invoice from a stationery supplier.",
+  "expectedText": "ලංකා ලිපිකර (Pvt) Ltd\nඉන්වොයිස් අංකය: INV-2026-0412\nගනුදෙනුකරු: Ardeno Solutions\nමුද්‍රණ කඩදාසි 500\tRs. 12,500.00\nබදු 18%\t\tRs. 2,250.00\nමුළු ගෙවීම\t\tRs. 14,750.00",
+  "actualText": "ලංකා ලිපිකර (Pvt) Ltd\nඉන්වොයිස් අංකය: INV-2026-0412\nගනුදෙනුකරු: Ardeno Solutions\nමුද්‍රණ කඩදාසි 500\tRs. 12,500.00\nබදු 18%\t\tRs. 2,250.00\nමුළු ගෙවීම\t\tRs. 14,750.00"
+}
