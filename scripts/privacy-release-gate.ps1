@@ -82,20 +82,65 @@ if (-not (Test-Path -LiteralPath $encryptedStorePath)) {
     }
 }
 
-$backupRestorePath = Join-Path $Root "app\src\main\kotlin\com\ardeno\clearscan\backup\BackupRestoreManager.kt"
-if (-not (Test-Path -LiteralPath $backupRestorePath)) {
+$dataExtractionRulesPath = Join-Path $Root "app\src\main\res\xml\data_extraction_rules.xml"
+if (-not (Test-Path -LiteralPath $dataExtractionRulesPath)) {
     $findings += [PSCustomObject]@{
-        Check = "backup-zip-safety"
-        Path = "app/src/main/kotlin/com/ardeno/clearscan/backup/BackupRestoreManager.kt"
-        Pattern = "missing BackupRestoreManager"
+        Check = "data-extraction-rules"
+        Path = "app/src/main/res/xml/data_extraction_rules.xml"
+        Pattern = "missing data_extraction_rules.xml"
     }
 } else {
-    $backupRestore = Get-Content -LiteralPath $backupRestorePath -Raw
-    if ($backupRestore -notmatch 'safeZipEntryPath') {
+    $dataExtractionRules = Get-Content -LiteralPath $dataExtractionRulesPath -Raw
+    if ($dataExtractionRules -notmatch '(?s)<cloud-backup>.*?<exclude\s+domain="database"\s*/>') {
         $findings += [PSCustomObject]@{
-            Check = "backup-zip-safety"
+            Check = "data-extraction-rules"
+            Path = "app/src/main/res/xml/data_extraction_rules.xml"
+            Pattern = 'cloud-backup must exclude domain="database"'
+        }
+    }
+    if ($dataExtractionRules -notmatch '(?s)<device-transfer>.*?<exclude\s+domain="database"\s*/>') {
+        $findings += [PSCustomObject]@{
+            Check = "data-extraction-rules"
+            Path = "app/src/main/res/xml/data_extraction_rules.xml"
+            Pattern = 'device-transfer must exclude domain="database"'
+        }
+    }
+}
+
+$filePathsPath = Join-Path $Root "app\src\main\res\xml\file_paths.xml"
+if (-not (Test-Path -LiteralPath $filePathsPath)) {
+    $findings += [PSCustomObject]@{
+        Check = "file-paths"
+        Path = "app/src/main/res/xml/file_paths.xml"
+        Pattern = "missing file_paths.xml"
+    }
+} else {
+    $filePaths = Get-Content -LiteralPath $filePathsPath -Raw
+    if ($filePaths -notmatch '(?s)<cache-path\b.*?name="vault_read".*?path="vault-read/"') {
+        $findings += [PSCustomObject]@{
+            Check = "file-paths"
+            Path = "app/src/main/res/xml/file_paths.xml"
+            Pattern = 'cache-path must expose vault-read cache (name="vault_read", path="vault-read/")'
+        }
+    }
+}
+
+$backupRestoreManagerPath = Join-Path $Root "app\src\main\kotlin\com\ardeno\clearscan\backup\BackupRestoreManager.kt"
+if (-not (Test-Path -LiteralPath $backupRestoreManagerPath)) {
+    $findings += [PSCustomObject]@{
+        Check = "zip-slip"
+        Path = "app/src/main/kotlin/com/ardeno/clearscan/backup/BackupRestoreManager.kt"
+        Pattern = "missing BackupRestoreManager.kt"
+    }
+} else {
+    $backupRestoreManager = Get-Content -LiteralPath $backupRestoreManagerPath -Raw
+    $hasSafeZipEntryPath = $backupRestoreManager -match 'safeZipEntryPath'
+    $hasCanonicalPathCheck = $backupRestoreManager -match 'canonicalFile'
+    if (-not $hasSafeZipEntryPath -and -not $hasCanonicalPathCheck) {
+        $findings += [PSCustomObject]@{
+            Check = "zip-slip"
             Path = "app/src/main/kotlin/com/ardeno/clearscan/backup/BackupRestoreManager.kt"
-            Pattern = "safeZipEntryPath not found (zip path traversal guard missing)"
+            Pattern = "must define safeZipEntryPath or canonical path check for zip extraction"
         }
     }
 }
@@ -106,4 +151,4 @@ if ($findings.Count -gt 0) {
     exit 1
 }
 
-Write-Host "Privacy release gate passed: no ad/billing SDK markers, allowBackup=false, encrypted storage present, backup zip path validation present."
+Write-Host "Privacy release gate passed: no ad/billing SDK markers, allowBackup=false, encrypted storage present, data extraction rules exclude database, vault-read cache path configured, zip-slip guards present."
