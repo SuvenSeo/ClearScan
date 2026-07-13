@@ -97,10 +97,12 @@ Done when:
 
 ## Phase 5 - Security, Backup, And Privacy Dashboard
 
-Status: implemented foundation.
+Status: implemented foundation — metadata encryption and biometric-bound keys added in v0.2.3.
 
 - Encrypt document blobs at rest with Android Keystore AES/GCM (`EncryptedFileStore`, `.enc` files).
-- Migrate legacy plaintext scans on first load after upgrade.
+- Encrypt library metadata at rest (`index.json`, `folders.json`, Room `json_payload`) via `MetadataCrypto` CSC1 envelope.
+- Optional biometric-bound Keystore key with `BiometricPrompt.CryptoObject` unlock path.
+- Migrate legacy plaintext scans and metadata on first load after upgrade.
 - Explicit encrypted local backup/restore via SAF (`.csbak`, Keystore-bound to device).
 - Optional passphrase-protected backup for cross-device restore.
 - Privacy dashboard: offline policy, storage path, export audit log, ad SDK scan, encryption health.
