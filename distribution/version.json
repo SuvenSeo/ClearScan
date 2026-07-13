@@ -1,8 +1,8 @@
 {
-  "versionCode": 4,
-  "versionName": "0.2.2",
-  "apkUrl": "https://github.com/SuvenSeo/ClearScan/releases/download/v0.2.2/ClearScan-v0.2.2-debug.apk",
-  "releaseNotes": "Audit remediation: security fixes (zip-slip, APK SHA256 verify, vault cache wipe), duplicate detection, Room delete fix, SettingsViewModel extraction, expanded tests and CI gates.",
+  "versionCode": 5,
+  "versionName": "0.2.3",
+  "apkUrl": "https://github.com/SuvenSeo/ClearScan/releases/download/v0.2.3/ClearScan-v0.2.3-debug.apk",
+  "releaseNotes": "Full remediation: metadata encryption (index.json + Room), biometric-bound Keystore vault keys, ViewModel split (Library + domain processors), si/ta localization foundation, 27-entry Sinhala/Tamil OCR corpus, CamScanner competitive research, Robolectric unit-test harness.",
   "minVersionCode": 1,
-  "sha256": "e580b6eedb9c07b9921edfddc26114ca12ab6fa0e91ccd5ecb1c7ac5470811c6"
+  "sha256": "8c7fa8b13e7d57aa505954c0c6264ae639d6ba38675e3b730841571d20f98be9"
 }
