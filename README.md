@@ -73,8 +73,8 @@ Privacy release gate (pre-release):
 
 The verified debug APK is published on GitHub Releases:
 
-- Latest build: https://github.com/SuvenSeo/ClearScan/releases/tag/v0.2.1
-- APK: `ClearScan-v0.2.1-debug.apk` ([direct download](https://github.com/SuvenSeo/ClearScan/releases/download/v0.2.1/ClearScan-v0.2.1-debug.apk))
+- Latest build: https://github.com/SuvenSeo/ClearScan/releases/tag/v0.2.2
+- APK: `ClearScan-v0.2.2-debug.apk` ([direct download](https://github.com/SuvenSeo/ClearScan/releases/download/v0.2.2/ClearScan-v0.2.2-debug.apk))
 
 In-app updates (opt-in): see [docs/APP_UPDATES.md](docs/APP_UPDATES.md). The app reads `distribution/version.json` on `main` and downloads newer APKs from GitHub Releases.
 
