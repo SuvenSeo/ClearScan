@@ -17,6 +17,8 @@ import com.ardeno.clearscan.vault.EncryptedFileStore
 import com.ardeno.clearscan.vault.VaultCrypto
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import com.ardeno.clearscan.duplicate.ImagePerceptualHasher
+import com.ardeno.clearscan.duplicate.PerceptualHash
 import com.ardeno.clearscan.model.ReceiptFields
 import java.io.File
 import java.time.Instant
@@ -74,12 +76,16 @@ class LocalDocumentRepository(
         val createdAt = Instant.now()
         val id = "${createdAt.toEpochMilli()}-${UUID.randomUUID().toString().take(8)}"
         val documentDir = File(documentsRoot, id).apply { mkdirs() }
-        val pageFiles = import.pageUris.mapIndexed { index, uri ->
+        val plaintextPageFiles = import.pageUris.mapIndexed { index, uri ->
             val file = File(documentDir, "page-${index + 1}.jpg")
             copyUriToFile(uri, file)
             if (import.enhanceImages) {
                 enhanceImageFile(file)
             }
+            file
+        }
+        val pageHashes = computePageHashes(plaintextPageFiles)
+        val pageFiles = plaintextPageFiles.map { file ->
             encryptedFileStore.encryptPlaintextFile(file).absolutePath
         }
         val pdfPath = import.pdfUri?.let { uri ->
@@ -107,7 +113,8 @@ class LocalDocumentRepository(
             tags = tags,
             ocrStatus = OcrStatus.Queued,
             ocrLanguage = ocrLanguage,
-            scanMode = import.scanMode
+            scanMode = import.scanMode,
+            pageHashes = pageHashes
         )
 
         writeIndex(listOf(storedDocument) + readIndex())
@@ -123,13 +130,17 @@ class LocalDocumentRepository(
         val createdAt = Instant.now()
         val id = "${createdAt.toEpochMilli()}-${UUID.randomUUID().toString().take(8)}"
         val documentDir = File(documentsRoot, id).apply { mkdirs() }
-        val pageFiles = pagePaths.mapIndexed { index, sourcePath ->
+        val plaintextPageFiles = pagePaths.mapIndexed { index, sourcePath ->
             val source = File(sourcePath)
             val file = File(documentDir, "page-${index + 1}.jpg")
             source.copyTo(file, overwrite = true)
             if (enhanceImages) {
                 enhanceImageFile(file)
             }
+            file
+        }
+        val pageHashes = computePageHashes(plaintextPageFiles)
+        val pageFiles = plaintextPageFiles.map { file ->
             encryptedFileStore.encryptPlaintextFile(file).absolutePath
         }
         val pageCount = pageFiles.size.coerceAtLeast(1)
@@ -144,7 +155,8 @@ class LocalDocumentRepository(
             tags = listOf("page-turn"),
             ocrStatus = OcrStatus.Queued,
             scanMode = ScanMode.Document,
-            ocrLanguage = ocrLanguage
+            ocrLanguage = ocrLanguage,
+            pageHashes = pageHashes
         )
 
         writeIndex(listOf(storedDocument) + readIndex())
@@ -160,9 +172,13 @@ class LocalDocumentRepository(
         val createdAt = Instant.now()
         val id = "${createdAt.toEpochMilli()}-${UUID.randomUUID().toString().take(8)}"
         val documentDir = File(documentsRoot, id).apply { mkdirs() }
-        val pageFiles = output.pageImageFiles.mapIndexed { index, source ->
+        val plaintextPageFiles = output.pageImageFiles.mapIndexed { index, source ->
             val target = File(documentDir, "page-${index + 1}.jpg")
             source.copyTo(target, overwrite = true)
+            target
+        }
+        val pageHashes = computePageHashes(plaintextPageFiles)
+        val pageFiles = plaintextPageFiles.map { target ->
             encryptedFileStore.encryptPlaintextFile(target).absolutePath
         }
         val pdfPath = output.pdfFile?.let { source ->
@@ -183,7 +199,8 @@ class LocalDocumentRepository(
             sourceDocumentIds = sourceDocuments.map { it.id },
             ocrText = output.ocrText,
             ocrStatus = if (output.ocrText.isBlank()) OcrStatus.NotStarted else OcrStatus.Ready,
-            searchablePdfReady = output.searchablePdfReady
+            searchablePdfReady = output.searchablePdfReady,
+            pageHashes = pageHashes
         )
 
         writeIndex(listOf(storedDocument) + readIndex())
@@ -271,7 +288,9 @@ class LocalDocumentRepository(
             encryptedFileStore.clearReadableCache(document.id)
         }
         writeIndex(documents.filterNot { it.id in ids })
-        runCatching { db.scanDocumentDao().deleteById(it) }
+        ids.forEach { id ->
+            runCatching { db.scanDocumentDao().deleteById(id) }
+        }
 
         toDelete.size
     }
@@ -440,6 +459,13 @@ class LocalDocumentRepository(
             target.outputStream().use { output ->
                 input.copyTo(output)
             }
+        }
+    }
+
+    private fun computePageHashes(plaintextPageFiles: List<File>): List<String> {
+        val hasher = ImagePerceptualHasher()
+        return plaintextPageFiles.mapNotNull { file ->
+            hasher.hashImageFile(file.absolutePath)?.let { PerceptualHash.toHex(it) }
         }
     }
 
