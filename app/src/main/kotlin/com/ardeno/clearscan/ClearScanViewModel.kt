@@ -19,10 +19,12 @@ import com.ardeno.clearscan.model.DocumentFolder
 import com.ardeno.clearscan.model.LibraryViewMode
 import com.ardeno.clearscan.model.OcrStatus
 import com.ardeno.clearscan.model.PageAnnotation
+import com.ardeno.clearscan.model.ReceiptFields
 import com.ardeno.clearscan.model.ScanDocument
 import com.ardeno.clearscan.model.ScanMode
 import com.ardeno.clearscan.ocr.IdRedactionSuggester
 import com.ardeno.clearscan.ocr.IdRedactionSuggestion
+import com.ardeno.clearscan.ocr.DocumentOcrResult
 import com.ardeno.clearscan.ocr.OcrBenchmark
 import com.ardeno.clearscan.ocr.OcrBenchmarkRunner
 import com.ardeno.clearscan.ocr.OcrEngine
@@ -146,9 +148,7 @@ class ClearScanViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
     override fun onCleared() {
-        kotlinx.coroutines.runBlocking {
-            ocrEngine.close()
-        }
+        ocrEngine.close()
         super.onCleared()
     }
 
@@ -449,6 +449,9 @@ class ClearScanViewModel(application: Application) : AndroidViewModel(applicatio
     fun lockVault() {
         _uiState.update { current ->
             if (!current.vaultEnabled) current else current.copy(vaultUnlocked = false, message = "Vault locked.")
+        }
+        viewModelScope.launch {
+            repository.clearReadableCache()
         }
     }
 
@@ -845,19 +848,20 @@ class ClearScanViewModel(application: Application) : AndroidViewModel(applicatio
                 val suggestedTags = DocumentTagger.suggestTags(result.text)
                 val receiptFields = ReceiptFieldExtractor.extract(result.text)
                     .takeIf { fields -> fields.hasAnyField }
-                repository.updateOcrResult(
+                val updatedDocument = repository.updateOcrResult(
                     id = document.id,
                     ocrText = result.text,
                     searchablePdfPath = searchablePdf?.absolutePath,
                     status = OcrStatus.Ready,
                     tags = suggestedTags,
                     receiptFields = receiptFields
-                ) to result
-            }.onSuccess { (updatedDocument, result) ->
-                updatedDocument?.let { replaceDocument(it) }
-                val suggestedTags = DocumentTagger.suggestTags(result.text)
-                val receiptFields = ReceiptFieldExtractor.extract(result.text)
-                    .takeIf { fields -> fields.hasAnyField }
+                )
+                OcrSuccess(updatedDocument, result, suggestedTags, receiptFields)
+            }.onSuccess { ocrSuccess ->
+                ocrSuccess.updatedDocument?.let { replaceDocument(it) }
+                val result = ocrSuccess.result
+                val suggestedTags = ocrSuccess.suggestedTags
+                val receiptFields = ocrSuccess.receiptFields
                 val idSuggestion = if (document.scanMode == ScanMode.IdCard || document.tags.contains("id-card")) {
                     IdRedactionSuggester.suggest(result.pages)
                         ?: IdRedactionSuggester.suggestFromText(result.text)
@@ -1111,3 +1115,10 @@ class ClearScanViewModel(application: Application) : AndroidViewModel(applicatio
         _uiState.update { it.copy(isOcrRunning = activeOcrJobs > 0) }
     }
 }
+
+private data class OcrSuccess(
+    val updatedDocument: ScanDocument?,
+    val result: DocumentOcrResult,
+    val suggestedTags: List<String>,
+    val receiptFields: ReceiptFields?
+)

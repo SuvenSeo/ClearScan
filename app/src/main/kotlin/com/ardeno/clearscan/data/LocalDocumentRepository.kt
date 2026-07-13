@@ -366,6 +366,10 @@ class LocalDocumentRepository(
         // Index is persisted on disk; Room migration may add caching later.
     }
 
+    suspend fun clearReadableCache() = withContext(Dispatchers.IO) {
+        encryptedFileStore.clearAllReadableCache()
+    }
+
     private fun toReadableDocument(document: ScanDocument): ScanDocument =
         document.copy(
             pdfPath = document.pdfPath?.let { encryptedFileStore.decryptToCache(it, document.id).absolutePath },
