@@ -43,9 +43,7 @@ class PrivacyStatusProvider(
 
     private fun isSystemBackupExcluded(): Boolean {
         val appInfo = context.applicationInfo
-        val disabled = (appInfo.flags and ApplicationInfo.FLAG_ALLOW_BACKUP) == 0
-        val rulesFile = File(context.applicationInfo.dataDir, "../shared_prefs").exists()
-        return disabled || rulesFile
+        return (appInfo.flags and ApplicationInfo.FLAG_ALLOW_BACKUP) == 0
     }
 
     private fun scanForAdSdks(): AdSdkScan {
