@@ -23,13 +23,13 @@ object OcrPreprocessor {
         var min = 255
         var max = 0
         for (i in pixels.indices) {
-            val luma = Color.luminance(pixels[i]).toInt().coerceIn(0, 255)
+            val luma = luminance(pixels[i]).toInt().coerceIn(0, 255)
             if (luma < min) min = luma
             if (luma > max) max = luma
         }
         val range = (max - min).coerceAtLeast(1)
         for (i in pixels.indices) {
-            val luma = Color.luminance(pixels[i]).toInt().coerceIn(0, 255)
+            val luma = luminance(pixels[i]).toInt().coerceIn(0, 255)
             val stretched = ((luma - min) * 255 / range).coerceIn(0, 255)
             val alpha = Color.alpha(pixels[i])
             pixels[i] = Color.argb(alpha, stretched, stretched, stretched)
@@ -39,7 +39,7 @@ object OcrPreprocessor {
     private fun otsuThreshold(pixels: IntArray): Int {
         val histogram = IntArray(256)
         for (i in pixels.indices) {
-            val luma = Color.luminance(pixels[i]).toInt().coerceIn(0, 255)
+            val luma = luminance(pixels[i]).toInt().coerceIn(0, 255)
             histogram[luma]++
         }
         val total = pixels.size
@@ -71,13 +71,13 @@ object OcrPreprocessor {
 
     private fun binarize(pixels: IntArray, threshold: Int) {
         for (i in pixels.indices) {
-            val luma = Color.luminance(pixels[i]).toInt().coerceIn(0, 255)
+            val luma = luminance(pixels[i]).toInt().coerceIn(0, 255)
             val binary = if (luma >= threshold) 255 else 0
             val alpha = Color.alpha(pixels[i])
             pixels[i] = Color.argb(alpha, binary, binary, binary)
         }
     }
 
-    private fun Color.Companion.luminance(color: Int): Float =
+    private fun luminance(color: Int): Float =
         0.299f * Color.red(color) + 0.587f * Color.green(color) + 0.114f * Color.blue(color)
 }

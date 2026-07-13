@@ -164,14 +164,11 @@ private fun ShimmerBox(modifier: Modifier = Modifier) {
     Box(
         modifier = modifier.background(
             brush = Brush.linearGradient(
-                colors = listOf(
-                    base,
-                    base,
-                    highlight,
-                    base,
-                    base
-                ),
-                stops = floatArrayOf(0f, 0.25f, 0.5f, 0.75f, 1f),
+                0f to base,
+                0.25f to base,
+                0.5f to highlight,
+                0.75f to base,
+                1f to base,
                 start = Offset(offset - SHIMMER_BAND_WIDTH / 2, 0f),
                 end = Offset(offset + SHIMMER_BAND_WIDTH / 2, 0f)
             )

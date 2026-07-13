@@ -39,11 +39,11 @@ fun SelectionActionBar(
     AnimatedVisibility(
         visible = isVisible,
         enter = slideInVertically(
-            animationSpec = ClearScanMotion.springSnappy,
+            animationSpec = ClearScanMotion.springSnappyOffset,
             initialOffsetY = { it }
         ),
         exit = slideOutVertically(
-            animationSpec = ClearScanMotion.springStiff,
+            animationSpec = ClearScanMotion.springStiffOffset,
             targetOffsetY = { it }
         )
     ) {

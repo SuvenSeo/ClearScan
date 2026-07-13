@@ -8,10 +8,10 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ScanDocumentDao {
-    @Query("SELECT * FROM documents ORDER BY updatedAt DESC")
+    @Query("SELECT * FROM documents ORDER BY updated_at DESC")
     fun getAllFlow(): Flow<List<ScanDocumentEntity>>
 
-    @Query("SELECT * FROM documents ORDER BY updatedAt DESC")
+    @Query("SELECT * FROM documents ORDER BY updated_at DESC")
     suspend fun getAll(): List<ScanDocumentEntity>
 
     @Query("SELECT * FROM documents WHERE id = :id")

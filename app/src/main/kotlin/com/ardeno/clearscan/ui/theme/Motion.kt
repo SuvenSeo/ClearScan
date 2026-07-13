@@ -39,6 +39,18 @@ object ClearScanMotion {
         stiffness = stiffnessStandard
     )
 
+    /** Snappy spring for offset transitions. */
+    val springSnappyOffset = spring<IntOffset>(
+        dampingRatio = dampingSlightBounce,
+        stiffness = stiffnessStandard
+    )
+
+    /** Snappy spring for size transitions. */
+    val springSnappySize = spring<IntSize>(
+        dampingRatio = dampingSlightBounce,
+        stiffness = stiffnessStandard
+    )
+
     /** Gentle, soft spring for appearance animations. */
     val springGentle = spring<Float>(
         dampingRatio = dampingModerateBounce,
@@ -71,6 +83,12 @@ object ClearScanMotion {
 
     /** Stiff, no-bounce for immediate visual feedback (dragging, resizing). */
     val springStiff = spring<Float>(
+        dampingRatio = dampingNoBounce,
+        stiffness = stiffnessStandard
+    )
+
+    /** Stiff, no-bounce spring for offset transitions. */
+    val springStiffOffset = spring<IntOffset>(
         dampingRatio = dampingNoBounce,
         stiffness = stiffnessStandard
     )

@@ -42,6 +42,8 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -107,12 +109,12 @@ fun OnboardingScreen(
     // Animated gradient colors that blend between slides
     val gradientStart by animateColorAsState(
         targetValue = slideGradients[pagerState.currentPage].first,
-        animationSpec = ClearScanMotion.springStiff,
+        animationSpec = ClearScanMotion.springStiffColor,
         label = "gradientStart"
     )
     val gradientEnd by animateColorAsState(
         targetValue = slideGradients[pagerState.currentPage].second,
-        animationSpec = ClearScanMotion.springStiff,
+        animationSpec = ClearScanMotion.springStiffColor,
         label = "gradientEnd"
     )
 
@@ -127,8 +129,10 @@ fun OnboardingScreen(
         modifier = modifier
             .fillMaxSize()
             .background(
-                Brush.diagonalGradient(
-                    colors = listOf(gradientStart, gradientEnd)
+                Brush.linearGradient(
+                    colors = listOf(gradientStart, gradientEnd),
+                    start = Offset.Zero,
+                    end = Offset(1000f, 1000f)
                 )
             )
             .padding(horizontal = ClearScanSpacing.xxl)
@@ -163,9 +167,7 @@ fun OnboardingScreen(
                 .weight(1f)
                 .fillMaxWidth()
         ) { page ->
-            val pageParallaxOffset = with(pagerState) {
-                calculateCurrentOffsetForPage(page)
-            }
+            val pageParallaxOffset = (pagerState.currentPage - page) + pagerState.currentPageOffsetFraction
             OnboardingPageContent(
                 page = onboardingPages[page],
                 parallaxOffset = pageParallaxOffset
@@ -255,7 +257,7 @@ fun OnboardingScreen(
                 onClick = {
                     performHaptic(ClearScanHaptic.Selection)
                     scope.launch {
-                        pagerState.animateToPage(pagerState.currentPage + 1)
+                        pagerState.animateScrollToPage(pagerState.currentPage + 1)
                     }
                 },
                 modifier = Modifier
@@ -276,10 +278,11 @@ private fun OnboardingPageContent(
     parallaxOffset: Float
 ) {
     // Parallax: icon container drifts at 0.25× the page-swipe speed.
-    // calculateCurrentOffsetForPage returns 0 for the current page,
+    // currentPageOffsetFraction returns 0 for the current page,
     // ±1 for immediate neighbours, so this naturally moves icons
     // in the swipe direction.
-    val iconTranslationX = parallaxOffset * 24.dp
+    val density = LocalDensity.current
+    val iconTranslationX = parallaxOffset * with(density) { 24.dp.toPx() }
 
     Column(
         modifier = Modifier

@@ -11,6 +11,7 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -419,8 +420,8 @@ private fun ExpandableAuditEntry(
 
         AnimatedVisibility(
             visible = expanded,
-            enter = expandVertically(animationSpec = ClearScanMotion.springSnappy) + fadeIn(ClearScanMotion.fadeFast),
-            exit = shrinkVertically(animationSpec = ClearScanMotion.springSnappy) + fadeOut(ClearScanMotion.fadeFast)
+            enter = expandVertically(animationSpec = ClearScanMotion.springSnappySize) + fadeIn(ClearScanMotion.fadeFast),
+            exit = shrinkVertically(animationSpec = ClearScanMotion.springSnappySize) + fadeOut(ClearScanMotion.fadeFast)
         ) {
             Column(
                 modifier = Modifier

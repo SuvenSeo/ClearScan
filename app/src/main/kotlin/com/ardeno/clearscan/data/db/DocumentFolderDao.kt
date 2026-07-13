@@ -8,10 +8,10 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface DocumentFolderDao {
-    @Query("SELECT * FROM folders ORDER BY updatedAt DESC")
+    @Query("SELECT * FROM folders ORDER BY updated_at DESC")
     fun getAllFlow(): Flow<List<DocumentFolderEntity>>
 
-    @Query("SELECT * FROM folders ORDER BY updatedAt DESC")
+    @Query("SELECT * FROM folders ORDER BY updated_at DESC")
     suspend fun getAll(): List<DocumentFolderEntity>
 
     @Query("SELECT * FROM folders WHERE id = :id")

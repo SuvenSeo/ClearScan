@@ -400,7 +400,7 @@ class LocalDocumentRepository(
             }
         )
 
-    private fun migrateLegacyPlaintextFiles() {
+    private suspend fun migrateLegacyPlaintextFiles() {
         if (!indexFile.exists()) return
 
         var changed = false
@@ -437,7 +437,7 @@ class LocalDocumentRepository(
         return encryptedFileStore.encryptPlaintextFile(file).absolutePath
     }
 
-    private fun updateDocument(
+    private suspend fun updateDocument(
         id: String,
         transform: (ScanDocument) -> ScanDocument
     ): ScanDocument? {
@@ -500,12 +500,12 @@ class LocalDocumentRepository(
         }
     }
 
-    private fun writeIndex(documents: List<ScanDocument>) {
+    private suspend fun writeIndex(documents: List<ScanDocument>) {
         indexFile.writeText(documentsToJsonArray(documents).toString(2))
         syncDocumentsToRoom(documents)
     }
 
-    private fun syncDocumentsToRoom(documents: List<ScanDocument>) {
+    private suspend fun syncDocumentsToRoom(documents: List<ScanDocument>) {
         val entities = documents.map { it.toEntity() }
         runCatching { db.scanDocumentDao().upsertAll(entities) }
     }
@@ -615,12 +615,12 @@ class LocalDocumentRepository(
         }
     }
 
-    private fun writeFolders(folders: List<DocumentFolder>) {
+    private suspend fun writeFolders(folders: List<DocumentFolder>) {
         foldersFile.writeText(foldersToJsonArray(folders).toString(2))
         syncFoldersToRoom(folders)
     }
 
-    private fun syncFoldersToRoom(folders: List<DocumentFolder>) {
+    private suspend fun syncFoldersToRoom(folders: List<DocumentFolder>) {
         val entities = folders.map { it.toEntity() }
         runCatching { db.documentFolderDao().upsertAll(entities) }
     }

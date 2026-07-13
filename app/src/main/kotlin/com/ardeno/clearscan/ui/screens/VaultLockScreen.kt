@@ -60,7 +60,7 @@ fun VaultLockScreen(
         label = "pulseScale"
     )
 
-    val offsetX = remember { Animatable(0f, label = "shakeOffset") }
+    val offsetX = remember { Animatable(0f) }
     LaunchedEffect(authError) {
         if (authError) {
             offsetX.animateTo(12f, tween(40))

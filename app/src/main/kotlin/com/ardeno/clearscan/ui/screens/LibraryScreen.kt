@@ -58,7 +58,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.semantics.testTag
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -347,6 +347,7 @@ fun LibraryScreen(
                                 performHaptic(ClearScanHaptic.LightTap)
                                 onImportClick()
                             },
+                            onPerformHaptic = performHaptic,
                             modifier = Modifier.fillMaxSize()
                         )
                     }
@@ -411,6 +412,7 @@ fun LibraryScreen(
                             performHaptic(ClearScanHaptic.LightTap)
                             onImportClick()
                         },
+                        onPerformHaptic = performHaptic,
                         modifier = Modifier.fillMaxSize()
                     )
                 }
@@ -444,6 +446,7 @@ private fun LibraryContentPane(
     onToggleDocumentSelection: (String) -> Unit,
     onScanClick: () -> Unit,
     onImportClick: () -> Unit,
+    onPerformHaptic: (ClearScanHaptic) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val hasFolderFilter = selectedFolderId != null || showFavoritesOnly
@@ -477,11 +480,11 @@ private fun LibraryContentPane(
             LibraryContentState.EmptyLibrary -> {
                 EmptyLibraryState(
                     onScanClick = {
-                        performHaptic(ClearScanHaptic.Confirm)
+                        onPerformHaptic(ClearScanHaptic.Confirm)
                         onScanClick()
                     },
                     onImportClick = {
-                        performHaptic(ClearScanHaptic.LightTap)
+                        onPerformHaptic(ClearScanHaptic.LightTap)
                         onImportClick()
                     }
                 )
