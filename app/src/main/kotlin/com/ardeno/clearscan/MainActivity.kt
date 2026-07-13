@@ -56,7 +56,7 @@ class MainActivity : FragmentActivity() {
                 pdfUri = pdfUri,
                 pageUris = pageUris,
                 scanMode = pendingScanMode,
-                enhanceImages = viewModel.uiState.value.imageEnhancementEnabled
+                enhanceImages = viewModel.uiState.value.settings.imageEnhancementEnabled
             )
         )
     }
@@ -178,7 +178,7 @@ class MainActivity : FragmentActivity() {
 
     private fun startDocumentScanner() {
         pendingScanMode = ScanMode.Document
-        if (viewModel.uiState.value.autoPageTurnEnabled) {
+        if (viewModel.uiState.value.settings.autoPageTurnEnabled) {
             pageTurnLauncher.launch(Intent(this, PageTurnCaptureActivity::class.java))
             return
         }
@@ -366,7 +366,7 @@ class MainActivity : FragmentActivity() {
 
     private fun toggleVault() {
         val state = viewModel.uiState.value
-        if (state.vaultEnabled) {
+        if (state.settings.vaultEnabled) {
             viewModel.setVaultEnabled(false)
             return
         }
