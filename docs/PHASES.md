@@ -44,7 +44,9 @@ Done when:
 
 ## Phase 3 - Free PDF Tools
 
-Status: Tier 1 PDF editor tools complete; annotation and organization features in progress.
+Status: feature-complete pending QA.
+
+Implemented (code in tree):
 
 - Share/export via Android FileProvider.
 - Delete scans from app-private storage.
@@ -68,10 +70,10 @@ Status: Tier 1 PDF editor tools complete; annotation and organization features i
 
 Done when:
 
-- Implemented tools work offline.
+- Implemented tools work offline on real devices (QA pass).
 - Files are generated in app-private storage before explicit export.
 - No tool requires payment, account, or cloud.
-- Library supports folders, tags, favorites, batch actions, and duplicate badges.
+- Library supports folders, tags, favorites, batch actions, and duplicate badges in end-to-end smoke tests.
 
 ## Phase 4 - Language And Platform Expansion
 
@@ -99,6 +101,7 @@ Status: implemented foundation.
 - Encrypt document blobs at rest with Android Keystore AES/GCM (`EncryptedFileStore`, `.enc` files).
 - Migrate legacy plaintext scans on first load after upgrade.
 - Explicit encrypted local backup/restore via SAF (`.csbak`, Keystore-bound to device).
+- Optional passphrase-protected backup for cross-device restore.
 - Privacy dashboard: offline policy, storage path, export audit log, ad SDK scan, encryption health.
 - Biometric vault lock composes with encryption at rest.
 
@@ -107,6 +110,7 @@ Done when:
 - `:app:assembleDebug` passes.
 - New scans are stored as encrypted blobs; OCR/PDF tools read from decrypted cache.
 - Export backup and restore round-trip on the same device.
+- Passphrase backup restores on a second device with the same passphrase.
 - Privacy dashboard reflects storage path and export audit entries after share.
 
 ## Phase 6 - Tier 3 Local Intelligence (Selective)
