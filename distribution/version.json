@@ -3,5 +3,6 @@
   "versionName": "0.2.1",
   "apkUrl": "https://github.com/SuvenSeo/ClearScan/releases/download/v0.2.1/ClearScan-v0.2.1-debug.apk",
   "releaseNotes": "In-app GitHub updater, folders, PDF tools, encryption, backup, Sinhala/Tamil OCR, self-host export, page-turn capture.",
-  "minVersionCode": 1
+  "minVersionCode": 1,
+  "_comment_sha256": "Optional sha256: lowercase hex digest of the APK (64 chars). Omit to skip client-side verification."
 }

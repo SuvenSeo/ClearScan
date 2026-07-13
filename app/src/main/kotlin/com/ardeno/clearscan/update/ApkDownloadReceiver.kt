@@ -36,10 +36,21 @@ class ApkDownloadReceiver : BroadcastReceiver() {
         }
 
         val apkFile = ApkUpdateSession.expectedApkFile
+        val expectedSha256 = ApkUpdateSession.expectedSha256
         ApkUpdateSession.clear()
 
         if (apkFile == null || !apkFile.exists()) {
             Toast.makeText(context, "Downloaded APK is missing.", Toast.LENGTH_LONG).show()
+            return
+        }
+
+        if (!ApkIntegrityVerifier.verify(apkFile, expectedSha256)) {
+            apkFile.delete()
+            Toast.makeText(
+                context,
+                "Downloaded APK failed integrity verification.",
+                Toast.LENGTH_LONG
+            ).show()
             return
         }
 
