@@ -1,45 +1,41 @@
 package com.ardeno.clearscan
 
 import android.app.Application
+import android.net.Uri
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import android.net.Uri
 import com.ardeno.clearscan.backup.BackupRestoreManager
 import com.ardeno.clearscan.data.AppPreferences
 import com.ardeno.clearscan.data.LocalDocumentRepository
 import com.ardeno.clearscan.data.SelfHostSettings
+import com.ardeno.clearscan.domain.CaptureProcessor
+import com.ardeno.clearscan.domain.DocumentActionsHandler
+import com.ardeno.clearscan.domain.OcrProcessor
+import com.ardeno.clearscan.domain.PdfToolsProcessor
 import com.ardeno.clearscan.duplicate.DuplicateDetector
 import com.ardeno.clearscan.export.SelfHostExporter
-import com.ardeno.clearscan.intelligence.DocumentTagger
-import com.ardeno.clearscan.intelligence.ReceiptFieldExtractor
 import com.ardeno.clearscan.model.DocumentFolder
 import com.ardeno.clearscan.model.LibraryViewMode
 import com.ardeno.clearscan.model.OcrStatus
 import com.ardeno.clearscan.model.PageAnnotation
-import com.ardeno.clearscan.model.ReceiptFields
 import com.ardeno.clearscan.model.ScanDocument
-import com.ardeno.clearscan.model.ScanMode
-import com.ardeno.clearscan.ocr.IdRedactionSuggester
 import com.ardeno.clearscan.ocr.IdRedactionSuggestion
-import com.ardeno.clearscan.ocr.DocumentOcrResult
 import com.ardeno.clearscan.ocr.OcrEngine
 import com.ardeno.clearscan.ocr.OcrLanguage
 import com.ardeno.clearscan.pdf.PdfCompressQuality
 import com.ardeno.clearscan.pdf.PdfToolEngine
 import com.ardeno.clearscan.pdf.SearchablePdfWriter
-import com.ardeno.clearscan.scanner.FileImportResolver
 import com.ardeno.clearscan.scanner.ScannerImport
-import com.ardeno.clearscan.update.ApkUpdateManager
-import com.ardeno.clearscan.ui.settings.BackupImportReload
+import com.ardeno.clearscan.ui.library.LibraryViewModel
 import com.ardeno.clearscan.ui.settings.SettingsUiState
 import com.ardeno.clearscan.ui.settings.SettingsViewModel
+import com.ardeno.clearscan.update.ApkUpdateManager
 import com.ardeno.clearscan.vault.EncryptedFileStore
 import com.ardeno.clearscan.vault.ExportAuditLog
 import com.ardeno.clearscan.vault.PrivacyStatusProvider
 import com.ardeno.clearscan.vault.VaultCrypto
 import com.ardeno.clearscan.vault.VaultKeyMigration
 import com.ardeno.clearscan.vault.VaultSettings
-import java.io.File
 import javax.crypto.Cipher
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -88,7 +84,92 @@ class ClearScanViewModel(application: Application) : AndroidViewModel(applicatio
     private val duplicateDetector = DuplicateDetector()
     private val apkUpdateManager = ApkUpdateManager(application)
     private val _uiState = MutableStateFlow(ClearScanUiState())
-    private var activeOcrJobs = 0
+
+    private val libraryViewModel = LibraryViewModel(
+        scope = viewModelScope,
+        repository = repository,
+        duplicateDetector = duplicateDetector,
+        onMessage = ::reportMessage
+    )
+
+    private val ocrProcessor = OcrProcessor(
+        scope = viewModelScope,
+        repository = repository,
+        ocrEngine = ocrEngine,
+        searchablePdfWriter = searchablePdfWriter,
+        onReplaceDocument = libraryViewModel::replaceDocument,
+        onOcrRunningChanged = { running -> _uiState.update { it.copy(isOcrRunning = running) } },
+        onMessage = ::reportMessage,
+        onIdRedactionSuggestion = { docId, suggestion ->
+            _uiState.update { current ->
+                current.copy(idRedactionSuggestions = current.idRedactionSuggestions + (docId to suggestion))
+            }
+        }
+    )
+
+    private val pdfToolsProcessor = PdfToolsProcessor(
+        scope = viewModelScope,
+        repository = repository,
+        pdfToolEngine = pdfToolEngine,
+        getDocuments = { libraryViewModel.uiState.value.documents },
+        getSelectedIds = { libraryViewModel.uiState.value.selectedDocumentIds },
+        getSignatureText = { _uiState.value.signatureText },
+        getPdfPassword = { _uiState.value.pdfPassword },
+        getCompressQuality = { _uiState.value.compressQuality },
+        getIdRedactionSuggestions = { _uiState.value.idRedactionSuggestions },
+        onPdfToolRunningChanged = { running ->
+            _uiState.update { current ->
+                current.copy(isPdfToolRunning = running, message = if (running) null else current.message)
+            }
+        },
+        onDocumentsUpdated = { documents, expandedId, message ->
+            libraryViewModel.setDocuments(documents, expandedId)
+            reportMessage(message)
+        },
+        onMessage = ::reportMessage,
+        onExitSelectionMode = libraryViewModel::exitSelectionMode
+    )
+
+    private val captureProcessor = CaptureProcessor(
+        application = application,
+        scope = viewModelScope,
+        repository = repository,
+        appPreferences = appPreferences,
+        onSavingChanged = { saving ->
+            _uiState.update { current ->
+                current.copy(isSaving = saving, message = if (saving) null else current.message)
+            }
+        },
+        onDocumentCaptured = { document, message ->
+            libraryViewModel.addDocuments(listOf(document), document.id)
+            _uiState.update { it.copy(isSaving = false) }
+            reportMessage(message)
+        },
+        onCaptureFailed = { message ->
+            _uiState.update { it.copy(isSaving = false) }
+            reportMessage(message)
+        },
+        runOcr = ocrProcessor::runOcr
+    )
+
+    private val documentActionsHandler = DocumentActionsHandler(
+        scope = viewModelScope,
+        repository = repository,
+        selfHostExporter = selfHostExporter,
+        getFolders = { libraryViewModel.uiState.value.folders },
+        getSelectedIds = { libraryViewModel.uiState.value.selectedDocumentIds },
+        getSettings = { _uiState.value.settings },
+        onReplaceDocument = libraryViewModel::replaceDocument,
+        onRefreshAfterDeletion = libraryViewModel::refreshDocumentsAfterDeletion,
+        onMessage = ::reportMessage,
+        onSelfHostUploadingChanged = { uploading ->
+            _uiState.update { current ->
+                current.copy(isSelfHostUploading = uploading, message = if (uploading) null else current.message)
+            }
+        },
+        exportPathFor = ::exportPathFor,
+        logDocumentExport = { document, exportKind -> logDocumentExport(document, exportKind) }
+    )
 
     private val settingsViewModel = SettingsViewModel(
         application = application,
@@ -105,7 +186,7 @@ class ClearScanViewModel(application: Application) : AndroidViewModel(applicatio
         apkUpdateManager = apkUpdateManager,
         duplicateDetector = duplicateDetector,
         onMessage = ::reportMessage,
-        onBackupImportSuccess = ::applyBackupImport
+        onBackupImportSuccess = libraryViewModel::applyBackupImport
     )
 
     val uiState: StateFlow<ClearScanUiState> = _uiState.asStateFlow()
@@ -119,13 +200,30 @@ class ClearScanViewModel(application: Application) : AndroidViewModel(applicatio
         }
 
         viewModelScope.launch {
+            libraryViewModel.uiState.collect { library ->
+                _uiState.update { current ->
+                    current.copy(
+                        documents = library.documents,
+                        folders = library.folders,
+                        selectedFolderId = library.selectedFolderId,
+                        showFavoritesOnly = library.showFavoritesOnly,
+                        selectionMode = library.selectionMode,
+                        selectedDocumentIds = library.selectedDocumentIds,
+                        duplicateDocumentIds = library.duplicateDocumentIds,
+                        expandedDocumentId = library.expandedDocumentId,
+                        query = library.query
+                    )
+                }
+            }
+        }
+
+        viewModelScope.launch {
             settingsViewModel.uiState.collect { settings ->
                 _uiState.update { it.copy(settings = settings) }
             }
         }
 
         settingsViewModel.initializeVaultState()
-
         loadDocumentsWhenAccessible()
     }
 
@@ -137,30 +235,16 @@ class ClearScanViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
     private fun loadDocumentsWhenAccessible() {
-        viewModelScope.launch {
-            if (vaultSettings.isEnabled && vaultCrypto.requiresAuthentication()) {
-                return@launch
-            }
-            val documents = repository.loadDocuments()
-            val folders = repository.loadFolders()
-            val duplicateIds = duplicateDetector.duplicateDocumentIds(documents)
-            _uiState.update { current ->
-                current.copy(
-                    documents = documents,
-                    folders = folders,
-                    duplicateDocumentIds = duplicateIds
-                )
-            }
+        if (vaultSettings.isEnabled && vaultCrypto.requiresAuthentication()) return
+        libraryViewModel.loadInitial { documents ->
             documents
                 .filter { it.ocrStatus == OcrStatus.Queued || it.ocrStatus == OcrStatus.Processing }
-                .forEach { document ->
-                    runOcr(document)
-                }
+                .forEach { document -> ocrProcessor.runOcr(document) }
         }
     }
 
     override fun onCleared() {
-        ocrEngine.close()
+        ocrProcessor.close()
         super.onCleared()
     }
 
@@ -178,189 +262,42 @@ class ClearScanViewModel(application: Application) : AndroidViewModel(applicatio
 
     fun setImageEnhancementEnabled(enabled: Boolean) = settingsViewModel.setImageEnhancementEnabled(enabled)
 
-    fun setSelectedFolder(folderId: String?) {
-        _uiState.update {
-            it.copy(
-                selectedFolderId = folderId,
-                showFavoritesOnly = false
-            )
-        }
-    }
+    fun setSelectedFolder(folderId: String?) = libraryViewModel.setSelectedFolder(folderId)
 
-    fun setShowFavoritesOnly(showFavoritesOnly: Boolean) {
-        _uiState.update {
-            it.copy(
-                showFavoritesOnly = showFavoritesOnly,
-                selectedFolderId = if (showFavoritesOnly) null else it.selectedFolderId
-            )
-        }
-    }
+    fun setShowFavoritesOnly(showFavoritesOnly: Boolean) = libraryViewModel.setShowFavoritesOnly(showFavoritesOnly)
 
-    fun enterSelectionMode() {
-        _uiState.update { it.copy(selectionMode = true, selectedDocumentIds = emptySet()) }
-    }
+    fun enterSelectionMode() = libraryViewModel.enterSelectionMode()
 
-    fun exitSelectionMode() {
-        _uiState.update { it.copy(selectionMode = false, selectedDocumentIds = emptySet()) }
-    }
+    fun exitSelectionMode() = libraryViewModel.exitSelectionMode()
 
-    fun toggleDocumentSelection(documentId: String) {
-        _uiState.update { current ->
-            val nextSelection = if (documentId in current.selectedDocumentIds) {
-                current.selectedDocumentIds - documentId
-            } else {
-                current.selectedDocumentIds + documentId
-            }
-            current.copy(selectedDocumentIds = nextSelection)
-        }
-    }
+    fun toggleDocumentSelection(documentId: String) = libraryViewModel.toggleDocumentSelection(documentId)
 
-    fun selectAllVisibleDocuments(visibleDocumentIds: List<String>) {
-        _uiState.update { it.copy(selectedDocumentIds = visibleDocumentIds.toSet()) }
-    }
+    fun selectAllVisibleDocuments(visibleDocumentIds: List<String>) =
+        libraryViewModel.selectAllVisibleDocuments(visibleDocumentIds)
 
-    fun createFolder(name: String) {
-        viewModelScope.launch {
-            runCatching {
-                repository.createFolder(name)
-            }.onSuccess { folder ->
-                _uiState.update { current ->
-                    current.copy(
-                        folders = listOf(folder) + current.folders,
-                        message = "Created folder \"${folder.name}\"."
-                    )
-                }
-            }.onFailure { error ->
-                reportMessage(error.localizedMessage ?: "Could not create folder.")
-            }
-        }
-    }
+    fun createFolder(name: String) = libraryViewModel.createFolder(name)
 
-    fun renameFolder(folderId: String, name: String) {
-        viewModelScope.launch {
-            runCatching {
-                repository.renameFolder(folderId, name)
-            }.onSuccess { folder ->
-                if (folder != null) {
-                    _uiState.update { current ->
-                        current.copy(
-                            folders = current.folders.map { existing ->
-                                if (existing.id == folder.id) folder else existing
-                            },
-                            message = "Renamed folder to \"${folder.name}\"."
-                        )
-                    }
-                }
-            }.onFailure { error ->
-                reportMessage(error.localizedMessage ?: "Could not rename folder.")
-            }
-        }
-    }
+    fun renameFolder(folderId: String, name: String) = libraryViewModel.renameFolder(folderId, name)
 
-    fun deleteFolder(folderId: String) {
-        viewModelScope.launch {
-            val deleted = repository.deleteFolder(folderId)
-            if (deleted) {
-                _uiState.update { current ->
-                    current.copy(
-                        folders = current.folders.filterNot { it.id == folderId },
-                        documents = current.documents.map { document ->
-                            if (document.folderId == folderId) {
-                                document.copy(folderId = null)
-                            } else {
-                                document
-                            }
-                        },
-                        selectedFolderId = current.selectedFolderId.takeUnless { it == folderId },
-                        message = "Folder deleted."
-                    )
-                }
-            }
-        }
-    }
+    fun deleteFolder(folderId: String) = libraryViewModel.deleteFolder(folderId)
 
-    fun updateDocumentTags(document: ScanDocument, tags: List<String>) {
-        viewModelScope.launch {
-            repository.updateDocumentTags(document.id, tags)?.let { updated ->
-                replaceDocument(updated)
-                _uiState.update { it.copy(message = "Tags updated.") }
-            }
-        }
-    }
+    fun updateDocumentTags(document: ScanDocument, tags: List<String>) =
+        documentActionsHandler.updateDocumentTags(document, tags)
 
-    fun toggleDocumentFavorite(document: ScanDocument) {
-        viewModelScope.launch {
-            repository.setDocumentFavorite(document.id, !document.isFavorite)?.let { updated ->
-                replaceDocument(updated)
-                val label = if (updated.isFavorite) "Added to favorites." else "Removed from favorites."
-                _uiState.update { it.copy(message = label) }
-            }
-        }
-    }
+    fun toggleDocumentFavorite(document: ScanDocument) =
+        documentActionsHandler.toggleDocumentFavorite(document)
 
-    fun moveDocumentToFolder(document: ScanDocument, folderId: String?) {
-        viewModelScope.launch {
-            repository.moveDocumentToFolder(document.id, folderId)?.let { updated ->
-                replaceDocument(updated)
-                val folderName = folderId?.let { id ->
-                    _uiState.value.folders.find { it.id == id }?.name
-                }
-                val message = when (folderName) {
-                    null -> "Moved to library."
-                    else -> "Moved to \"$folderName\"."
-                }
-                _uiState.update { it.copy(message = message) }
-            }
-        }
-    }
+    fun moveDocumentToFolder(document: ScanDocument, folderId: String?) =
+        documentActionsHandler.moveDocumentToFolder(document, folderId)
 
-    fun deleteSelectedDocuments() {
-        val selectedIds = _uiState.value.selectedDocumentIds
-        if (selectedIds.isEmpty()) {
-            reportMessage("Select at least one document.")
-            return
-        }
-        viewModelScope.launch {
-            val deletedCount = repository.deleteDocuments(selectedIds)
-            refreshDocumentsAfterDeletion(deletedIds = selectedIds, deletedCount = deletedCount)
-        }
-    }
+    fun deleteSelectedDocuments() = documentActionsHandler.deleteSelectedDocuments()
 
-    fun mergeSelectedDocuments() {
-        val selectedIds = _uiState.value.selectedDocumentIds
-        val selectedDocuments = _uiState.value.documents.filter { it.id in selectedIds }
-        if (selectedDocuments.size < 2) {
-            reportMessage("Select at least two documents to merge.")
-            return
-        }
-        runPdfTool(
-            successMessage = "Merged ${selectedDocuments.size} selected scans.",
-            sourceDocuments = selectedDocuments
-        ) { workingDir ->
-            listOf(
-                repository.createGeneratedDocument(
-                    output = pdfToolEngine.merge(selectedDocuments, workingDir),
-                    sourceDocuments = selectedDocuments
-                )
-            )
-        }
-        exitSelectionMode()
-    }
+    fun mergeSelectedDocuments() = pdfToolsProcessor.mergeSelectedDocuments()
 
-    fun exportPathsForSelectedDocuments(): List<Pair<String, String>> {
-        val selectedIds = _uiState.value.selectedDocumentIds
-        return _uiState.value.documents
-            .filter { it.id in selectedIds }
-            .mapNotNull { document ->
-                exportPathFor(document)?.let { path ->
-                    path to exportMimeTypeFor(document)
-                }
-            }
-    }
+    fun exportPathsForSelectedDocuments(): List<Pair<String, String>> =
+        libraryViewModel.exportPathsForSelectedDocuments(::exportPathFor, ::exportMimeTypeFor)
 
-    fun updateQuery(query: String) {
-        _uiState.update { it.copy(query = query) }
-    }
+    fun updateQuery(query: String) = libraryViewModel.updateQuery(query)
 
     fun updateSignatureText(signatureText: String) {
         _uiState.update { it.copy(signatureText = signatureText) }
@@ -374,22 +311,9 @@ class ClearScanViewModel(application: Application) : AndroidViewModel(applicatio
         _uiState.update { it.copy(compressQuality = quality) }
     }
 
-    fun toggleDocumentExpanded(document: ScanDocument) {
-        _uiState.update { current ->
-            current.copy(
-                expandedDocumentId = if (current.expandedDocumentId == document.id) null else document.id
-            )
-        }
-    }
+    fun toggleDocumentExpanded(document: ScanDocument) = libraryViewModel.toggleDocumentExpanded(document)
 
-    fun deleteDocument(document: ScanDocument) {
-        viewModelScope.launch {
-            val deleted = repository.deleteDocument(document.id)
-            if (deleted) {
-                refreshDocumentsAfterDeletion(deletedIds = setOf(document.id), deletedCount = 1)
-            }
-        }
-    }
+    fun deleteDocument(document: ScanDocument) = documentActionsHandler.deleteDocument(document)
 
     fun setDefaultOcrLanguage(language: OcrLanguage) = settingsViewModel.setDefaultOcrLanguage(language)
 
@@ -399,18 +323,17 @@ class ClearScanViewModel(application: Application) : AndroidViewModel(applicatio
 
     fun setDocumentOcrLanguage(document: ScanDocument, language: OcrLanguage) {
         if (document.ocrLanguage == language) return
-
         viewModelScope.launch {
             val updated = repository.updateOcrLanguage(document.id, language)
             if (updated != null) {
-                replaceDocument(updated)
-                runOcr(updated.copy(ocrStatus = OcrStatus.Queued))
+                libraryViewModel.replaceDocument(updated)
+                ocrProcessor.runOcr(updated.copy(ocrStatus = OcrStatus.Queued))
             }
         }
     }
 
     fun retryOcr(document: ScanDocument) {
-        runOcr(document.copy(ocrStatus = OcrStatus.Queued))
+        ocrProcessor.runOcr(document.copy(ocrStatus = OcrStatus.Queued))
     }
 
     fun setVaultEnabled(enabled: Boolean) = settingsViewModel.setVaultEnabled(enabled)
@@ -419,224 +342,44 @@ class ClearScanViewModel(application: Application) : AndroidViewModel(applicatio
 
     fun lockVault() = settingsViewModel.lockVault()
 
-    fun mergeAllDocuments() {
-        val documents = _uiState.value.documents
-        if (documents.size < 2) {
-            reportMessage("Add at least two scans before merging.")
-            return
-        }
-        runPdfTool(
-            successMessage = "Merged ${documents.size} scans.",
-            sourceDocuments = documents
-        ) { workingDir ->
-            listOf(
-                repository.createGeneratedDocument(
-                    output = pdfToolEngine.merge(documents, workingDir),
-                    sourceDocuments = documents
-                )
-            )
-        }
-    }
+    fun mergeAllDocuments() = pdfToolsProcessor.mergeAllDocuments()
 
-    fun splitDocument(document: ScanDocument) {
-        runPdfTool(
-            successMessage = "Split ${document.title} into single-page PDFs.",
-            sourceDocuments = listOf(document)
-        ) { workingDir ->
-            pdfToolEngine.split(document, workingDir).map { output ->
-                repository.createGeneratedDocument(output, listOf(document))
-            }
-        }
-    }
+    fun splitDocument(document: ScanDocument) = pdfToolsProcessor.splitDocument(document)
 
-    fun rotateDocument(document: ScanDocument) {
-        runSingleDocumentTool(
-            document = document,
-            successMessage = "Created rotated copy.",
-            output = { workingDir -> pdfToolEngine.rotateClockwise(document, workingDir) }
-        )
-    }
+    fun rotateDocument(document: ScanDocument) = pdfToolsProcessor.rotateDocument(document)
 
-    fun signDocument(document: ScanDocument) {
-        val signature = _uiState.value.signatureText.ifBlank { "ClearScan" }
-        runSingleDocumentTool(
-            document = document,
-            successMessage = "Created signed copy.",
-            output = { workingDir -> pdfToolEngine.sign(document, signature, workingDir) }
-        )
-    }
+    fun signDocument(document: ScanDocument) = pdfToolsProcessor.signDocument(document)
 
-    fun redactDocument(document: ScanDocument) {
-        runSingleDocumentTool(
-            document = document,
-            successMessage = "Created redacted copy.",
-            output = { workingDir -> pdfToolEngine.redactHeader(document, workingDir) }
-        )
-    }
+    fun redactDocument(document: ScanDocument) = pdfToolsProcessor.redactDocument(document)
 
-    fun redactIdSensitiveFields(document: ScanDocument) {
-        val suggestion = _uiState.value.idRedactionSuggestions[document.id]
-            ?: IdRedactionSuggester.suggestFromText(document.ocrText)
-        if (suggestion == null) {
-            reportMessage("No sensitive ID fields were detected to redact.")
-            return
-        }
-        runSingleDocumentTool(
-            document = document,
-            successMessage = "Created ID-redacted copy.",
-            output = { workingDir ->
-                pdfToolEngine.redactIdSensitiveFields(document, suggestion.regions, workingDir)
-            }
-        )
-    }
+    fun redactIdSensitiveFields(document: ScanDocument) = pdfToolsProcessor.redactIdSensitiveFields(document)
 
     fun updateSelfHostConfig(config: com.ardeno.clearscan.data.SelfHostConfig) =
         settingsViewModel.updateSelfHostConfig(config)
 
     fun saveSelfHostConfig() = settingsViewModel.saveSelfHostConfig()
 
-    fun uploadToSelfHost(document: ScanDocument) {
-        val settings = _uiState.value.settings
-        val config = settings.selfHostConfig
-        if (!config.enabled) {
-            reportMessage("Enable self-host export in Settings first.")
-            return
-        }
-        if (!config.isConfigured) {
-            reportMessage("Add your self-host endpoint and credentials in Settings.")
-            return
-        }
+    fun uploadToSelfHost(document: ScanDocument) = documentActionsHandler.uploadToSelfHost(document)
 
-        viewModelScope.launch {
-            _uiState.update { it.copy(isSelfHostUploading = true, message = null) }
-            runCatching {
-                val exportPath = exportPathFor(document)
-                    ?: error("No export file is available for this scan.")
-                val exportFile = File(exportPath)
-                require(exportFile.exists()) { "The export file is missing." }
-                selfHostExporter.export(
-                    document,
-                    exportFile,
-                    config,
-                    wifiOnly = settings.wifiOnlySelfHostUpload
-                )
-            }.onSuccess {
-                logDocumentExport(document, exportKind = "self-host")
-                _uiState.update { current ->
-                    current.copy(
-                        isSelfHostUploading = false,
-                        message = "Uploaded ${document.title} to your self-host target."
-                    )
-                }
-            }.onFailure { error ->
-                _uiState.update { current ->
-                    current.copy(
-                        isSelfHostUploading = false,
-                        message = error.localizedMessage ?: "Self-host upload failed."
-                    )
-                }
-            }
-        }
-    }
-
-    fun applyAnnotations(
-        document: ScanDocument,
-        annotationsByPage: Map<Int, List<PageAnnotation>>
-    ) {
-        viewModelScope.launch {
-            val pageAnnotations = List(document.pageCount) { pageIndex ->
-                annotationsByPage[pageIndex].orEmpty()
-            }
-            val updatedSource = repository.updatePageAnnotations(document.id, pageAnnotations)
-            if (updatedSource != null) {
-                replaceDocument(updatedSource)
-            }
-            runSingleDocumentTool(
-                document = updatedSource ?: document,
-                successMessage = "Created annotated copy.",
-                output = { workingDir ->
-                    pdfToolEngine.applyAnnotations(
-                        updatedSource ?: document,
-                        annotationsByPage,
-                        workingDir
-                    )
-                }
-            )
-        }
-    }
-
-    fun passwordProtectDocument(document: ScanDocument) {
-        val password = _uiState.value.pdfPassword
-        runSingleDocumentTool(
+    fun applyAnnotations(document: ScanDocument, annotationsByPage: Map<Int, List<PageAnnotation>>) {
+        pdfToolsProcessor.applyAnnotations(
             document = document,
-            successMessage = "Created password-protected PDF.",
-            output = { workingDir -> pdfToolEngine.passwordProtect(document, password, workingDir) }
+            annotationsByPage = annotationsByPage,
+            onReplaceDocument = libraryViewModel::replaceDocument
         )
     }
 
-    fun reorderDocument(document: ScanDocument, pageOrder: List<Int>) {
-        runSingleDocumentTool(
-            document = document,
-            successMessage = "Created reordered copy.",
-            output = { workingDir -> pdfToolEngine.reorderPages(document, pageOrder, workingDir) }
-        )
-    }
+    fun passwordProtectDocument(document: ScanDocument) = pdfToolsProcessor.passwordProtectDocument(document)
 
-    fun deletePagesFromDocument(document: ScanDocument, pageIndicesToKeep: List<Int>) {
-        runSingleDocumentTool(
-            document = document,
-            successMessage = "Created copy with selected pages removed.",
-            output = { workingDir -> pdfToolEngine.deletePages(document, pageIndicesToKeep, workingDir) }
-        )
-    }
+    fun reorderDocument(document: ScanDocument, pageOrder: List<Int>) =
+        pdfToolsProcessor.reorderDocument(document, pageOrder)
 
-    fun compressDocument(document: ScanDocument) {
-        val quality = _uiState.value.compressQuality
-        runSingleDocumentTool(
-            document = document,
-            successMessage = "Created compressed copy (${quality.label.lowercase()}).",
-            output = { workingDir -> pdfToolEngine.compress(document, quality, workingDir) }
-        )
-    }
+    fun deletePagesFromDocument(document: ScanDocument, pageIndicesToKeep: List<Int>) =
+        pdfToolsProcessor.deletePagesFromDocument(document, pageIndicesToKeep)
 
-    fun importFiles(uris: List<Uri>) {
-        if (uris.isEmpty()) {
-            reportMessage("No files were selected.")
-            return
-        }
+    fun compressDocument(document: ScanDocument) = pdfToolsProcessor.compressDocument(document)
 
-        viewModelScope.launch {
-            _uiState.update { it.copy(isSaving = true, message = null) }
-
-            runCatching {
-                val import = FileImportResolver.resolve(getApplication(), uris)
-                repository.createDocument(
-                    import = import,
-                    ocrLanguage = appPreferences.defaultOcrLanguage,
-                    titlePrefix = "Import"
-                )
-            }.onSuccess { document ->
-                val duplicateIds = duplicateDetector.duplicateDocumentIds(listOf(document) + _uiState.value.documents)
-                _uiState.update { current ->
-                    current.copy(
-                        documents = listOf(document) + current.documents,
-                        duplicateDocumentIds = duplicateIds,
-                        isSaving = false,
-                        expandedDocumentId = document.id,
-                        message = "Imported ${document.pageCount} page${if (document.pageCount == 1) "" else "s"}. OCR is starting."
-                    )
-                }
-                runOcr(document)
-            }.onFailure { error ->
-                _uiState.update { current ->
-                    current.copy(
-                        isSaving = false,
-                        message = error.localizedMessage ?: "Could not import the selected files."
-                    )
-                }
-            }
-        }
-    }
+    fun importFiles(uris: List<Uri>) = captureProcessor.importFiles(uris)
 
     fun runSinhalaTamilBenchmarkSelfCheck() = settingsViewModel.runSinhalaTamilBenchmarkSelfCheck()
 
@@ -664,150 +407,9 @@ class ClearScanViewModel(application: Application) : AndroidViewModel(applicatio
             else -> "image/jpeg"
         }
 
-    private fun runOcr(document: ScanDocument) {
-        viewModelScope.launch {
-            incrementOcrJobs()
+    fun saveScan(import: ScannerImport) = captureProcessor.saveScan(import)
 
-            repository.markOcrProcessing(document.id)?.let { processingDocument ->
-                replaceDocument(processingDocument)
-            }
-
-            runCatching {
-                val result = ocrEngine.recognize(document, document.ocrLanguage)
-                val searchablePdf = searchablePdfWriter.write(
-                    document = document,
-                    ocrResult = result,
-                    targetDir = repository.documentDirectory(document)
-                )
-                val suggestedTags = DocumentTagger.suggestTags(result.text)
-                val receiptFields = ReceiptFieldExtractor.extract(result.text)
-                    .takeIf { fields -> fields.hasAnyField }
-                val updatedDocument = repository.updateOcrResult(
-                    id = document.id,
-                    ocrText = result.text,
-                    searchablePdfPath = searchablePdf?.absolutePath,
-                    status = OcrStatus.Ready,
-                    tags = suggestedTags,
-                    receiptFields = receiptFields
-                )
-                OcrSuccess(updatedDocument, result, suggestedTags, receiptFields)
-            }.onSuccess { ocrSuccess ->
-                ocrSuccess.updatedDocument?.let { replaceDocument(it) }
-                val result = ocrSuccess.result
-                val suggestedTags = ocrSuccess.suggestedTags
-                val receiptFields = ocrSuccess.receiptFields
-                val idSuggestion = if (document.scanMode == ScanMode.IdCard || document.tags.contains("id-card")) {
-                    IdRedactionSuggester.suggest(result.pages)
-                        ?: IdRedactionSuggester.suggestFromText(result.text)
-                } else {
-                    null
-                }
-                _uiState.update { current ->
-                    val intelligenceNote = buildList {
-                        if (suggestedTags.isNotEmpty()) add(suggestedTags.joinToString())
-                        receiptFields?.amount?.let { add("amount $it") }
-                    }.takeIf { it.isNotEmpty() }?.joinToString(" · ")
-
-                    current.copy(
-                        message = when {
-                            idSuggestion != null ->
-                                "OCR finished for ${document.title}. Sensitive fields detected — review redaction."
-                            intelligenceNote != null ->
-                                "OCR finished for ${document.title}. Tags: $intelligenceNote"
-                            else -> "OCR finished for ${document.title}."
-                        },
-                        idRedactionSuggestions = if (idSuggestion != null) {
-                            current.idRedactionSuggestions + (document.id to idSuggestion)
-                        } else {
-                            current.idRedactionSuggestions
-                        }
-                    )
-                }
-            }.onFailure { error ->
-                repository.markOcrFailed(document.id)?.let { failedDocument ->
-                    replaceDocument(failedDocument)
-                }
-                _uiState.update { current ->
-                    current.copy(message = error.localizedMessage ?: "OCR failed for ${document.title}.")
-                }
-            }
-
-            decrementOcrJobs()
-        }
-    }
-
-    fun saveScan(import: ScannerImport) {
-        viewModelScope.launch {
-            _uiState.update { it.copy(isSaving = true, message = null) }
-
-            runCatching {
-                repository.createDocument(
-                    import = import.copy(enhanceImages = appPreferences.imageEnhancementEnabled),
-                    ocrLanguage = appPreferences.defaultOcrLanguage
-                )
-            }.onSuccess { document ->
-                val duplicateIds = duplicateDetector.duplicateDocumentIds(listOf(document) + _uiState.value.documents)
-                _uiState.update { current ->
-                    current.copy(
-                        documents = listOf(document) + current.documents,
-                        duplicateDocumentIds = duplicateIds,
-                        isSaving = false,
-                        expandedDocumentId = document.id,
-                        message = when (import.scanMode) {
-                            ScanMode.IdCard -> "Saved ${document.pageCount} page ID scan. OCR is starting."
-                            ScanMode.Document -> "Saved ${document.pageCount} page scan. OCR is starting."
-                        }
-                    )
-                }
-                runOcr(document)
-            }.onFailure { error ->
-                _uiState.update { current ->
-                    current.copy(
-                        isSaving = false,
-                        message = error.localizedMessage ?: "Could not save this scan."
-                    )
-                }
-            }
-        }
-    }
-
-    fun savePageTurnCapture(pagePaths: List<String>) {
-        if (pagePaths.isEmpty()) {
-            reportMessage("No pages were captured.")
-            return
-        }
-
-        viewModelScope.launch {
-            _uiState.update { it.copy(isSaving = true, message = null) }
-
-            runCatching {
-                repository.createDocumentFromPagePaths(
-                    pagePaths = pagePaths,
-                    enhanceImages = appPreferences.imageEnhancementEnabled,
-                    ocrLanguage = appPreferences.defaultOcrLanguage
-                )
-            }.onSuccess { document ->
-                val duplicateIds = duplicateDetector.duplicateDocumentIds(listOf(document) + _uiState.value.documents)
-                _uiState.update { current ->
-                    current.copy(
-                        documents = listOf(document) + current.documents,
-                        duplicateDocumentIds = duplicateIds,
-                        isSaving = false,
-                        expandedDocumentId = document.id,
-                        message = "Saved ${document.pageCount} auto-captured page${if (document.pageCount == 1) "" else "s"}. OCR is starting."
-                    )
-                }
-                runOcr(document)
-            }.onFailure { error ->
-                _uiState.update { current ->
-                    current.copy(
-                        isSaving = false,
-                        message = error.localizedMessage ?: "Could not save page-turn capture."
-                    )
-                }
-            }
-        }
-    }
+    fun savePageTurnCapture(pagePaths: List<String>) = captureProcessor.savePageTurnCapture(pagePaths)
 
     fun reportMessage(message: String) {
         _uiState.update { it.copy(message = message) }
@@ -822,110 +424,4 @@ class ClearScanViewModel(application: Application) : AndroidViewModel(applicatio
     fun dismissAppUpdate() = settingsViewModel.dismissAppUpdate()
 
     fun downloadPendingAppUpdate() = settingsViewModel.downloadPendingAppUpdate()
-
-    private fun applyBackupImport(reload: BackupImportReload) {
-        _uiState.update { current ->
-            current.copy(
-                documents = reload.documents,
-                folders = reload.folders,
-                duplicateDocumentIds = reload.duplicateDocumentIds,
-                expandedDocumentId = null
-            )
-        }
-    }
-
-    private fun runSingleDocumentTool(
-        document: ScanDocument,
-        successMessage: String,
-        output: suspend (java.io.File) -> com.ardeno.clearscan.pdf.PdfToolOutput
-    ) {
-        runPdfTool(
-            successMessage = successMessage,
-            sourceDocuments = listOf(document)
-        ) { workingDir ->
-            listOf(repository.createGeneratedDocument(output(workingDir), listOf(document)))
-        }
-    }
-
-    private fun runPdfTool(
-        successMessage: String,
-        sourceDocuments: List<ScanDocument>,
-        block: suspend (java.io.File) -> List<ScanDocument>
-    ) {
-        viewModelScope.launch {
-            _uiState.update { it.copy(isPdfToolRunning = true, message = null) }
-            val workingDir = repository.newWorkingDirectory("pdf-tool")
-            runCatching {
-                block(workingDir)
-            }.onSuccess { generatedDocuments ->
-                workingDir.deleteRecursively()
-                val nextDocuments = generatedDocuments + _uiState.value.documents
-                val duplicateIds = duplicateDetector.duplicateDocumentIds(nextDocuments)
-                _uiState.update { current ->
-                    current.copy(
-                        documents = nextDocuments,
-                        duplicateDocumentIds = duplicateIds,
-                        expandedDocumentId = generatedDocuments.firstOrNull()?.id ?: current.expandedDocumentId,
-                        isPdfToolRunning = false,
-                        message = successMessage
-                    )
-                }
-            }.onFailure { error ->
-                workingDir.deleteRecursively()
-                _uiState.update { current ->
-                    current.copy(
-                        isPdfToolRunning = false,
-                        message = error.localizedMessage ?: "PDF tool failed."
-                    )
-                }
-            }
-        }
-    }
-
-    private fun replaceDocument(document: ScanDocument) {
-        _uiState.update { current ->
-            val nextDocuments = current.documents.map { existing ->
-                if (existing.id == document.id) document else existing
-            }
-            current.copy(
-                documents = nextDocuments,
-                duplicateDocumentIds = duplicateDetector.duplicateDocumentIds(nextDocuments)
-            )
-        }
-    }
-
-    private fun refreshDocumentsAfterDeletion(deletedIds: Set<String>, deletedCount: Int) {
-        _uiState.update { current ->
-            val nextDocuments = current.documents.filterNot { it.id in deletedIds }
-            current.copy(
-                documents = nextDocuments,
-                duplicateDocumentIds = duplicateDetector.duplicateDocumentIds(nextDocuments),
-                expandedDocumentId = current.expandedDocumentId.takeUnless { it in deletedIds },
-                selectedDocumentIds = current.selectedDocumentIds - deletedIds,
-                selectionMode = current.selectionMode && (current.selectedDocumentIds - deletedIds).isNotEmpty(),
-                message = if (deletedCount == 1) {
-                    "Deleted 1 document."
-                } else {
-                    "Deleted $deletedCount documents."
-                }
-            )
-        }
-    }
-
-    private fun incrementOcrJobs() {
-        activeOcrJobs += 1
-        _uiState.update { it.copy(isOcrRunning = true) }
-    }
-
-    private fun decrementOcrJobs() {
-        activeOcrJobs = (activeOcrJobs - 1).coerceAtLeast(0)
-        _uiState.update { it.copy(isOcrRunning = activeOcrJobs > 0) }
-    }
 }
-
-private data class OcrSuccess(
-    val updatedDocument: ScanDocument?,
-    val result: DocumentOcrResult,
-    val suggestedTags: List<String>,
-    val receiptFields: ReceiptFields?
-)
