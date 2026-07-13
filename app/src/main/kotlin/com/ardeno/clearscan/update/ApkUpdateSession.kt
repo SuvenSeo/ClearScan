@@ -10,8 +10,12 @@ object ApkUpdateSession {
     @Volatile
     var expectedApkFile: File? = null
 
+    @Volatile
+    var expectedSha256: String? = null
+
     fun clear() {
         pendingDownloadId = -1L
         expectedApkFile = null
+        expectedSha256 = null
     }
 }

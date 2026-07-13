@@ -74,6 +74,7 @@ class ApkUpdateManager(
         val downloadId = downloadManager.enqueue(request)
         ApkUpdateSession.pendingDownloadId = downloadId
         ApkUpdateSession.expectedApkFile = destination
+        ApkUpdateSession.expectedSha256 = update.sha256
         return downloadId
     }
 
