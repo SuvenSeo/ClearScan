@@ -26,8 +26,8 @@ ClearScan treats scanned documents as sensitive by default.
 ## Storage Strategy
 
 - Store encrypted document blobs under `filesDir/documents/{documentId}/`.
-- Store metadata in a local `index.json` until Room is introduced.
-- Store folders in `folders.json` beside the document index.
+- Store document metadata in `index.json` and mirror it to Room (`ScanDatabase`) on every write (JSON + Room dual-write).
+- Store folders in `folders.json` and mirror to Room on every write.
 - Store OCR text and searchable PDF paths in the local index (paths reference encrypted blobs).
 - Legacy plaintext files are migrated to encrypted blobs on first load after upgrade.
 - Export audit events are stored locally in `filesDir/export-audit.json`.
@@ -37,6 +37,7 @@ ClearScan treats scanned documents as sensitive by default.
 - **At rest:** `VaultCrypto` generates a hardware-backed AES/GCM key in Android Keystore (`clearscan_vault_aes`). `EncryptedFileStore` wraps each file with a `CSC1` header, IV, and ciphertext.
 - **Readable cache:** Decrypted files live under `cacheDir/vault-read/{documentId}/` and are invalidated when the encrypted source changes.
 - **Explicit backup:** Settings → Backup exports a `.csbak` file (SAF `CreateDocument`). The archive is a zip of `index.json`, `folders.json`, and encrypted blobs, then encrypted again with the vault key. Restore replaces local storage on the same device (Keystore-bound).
+- **Passphrase backup (optional):** Users can protect a backup with a passphrase instead of device-bound Keystore encryption. Passphrase backups use PBKDF2 + AES/GCM and can be restored on another device when the same passphrase is supplied.
 
 ## Network Strategy
 

@@ -7,7 +7,7 @@ ClearScan is an Android-first, local-first document scanner planned as a free Ca
 - Phase 0 product and technical direction: complete.
 - Phase 1 scanner foundation: complete.
 - Phase 2 OCR and searchable PDFs: implemented foundation (real scan accuracy QA still needed).
-- Phase 3 free PDF tools: Tier 1 complete; annotation, folders, tags, and batch tools in progress.
+- Phase 3 free PDF tools: feature-complete pending QA (annotation, folders, tags, batch, duplicates implemented).
 - Phase 4 language and platform expansion: in progress (Sinhala/Tamil OCR benchmarking, self-host export, ID scan mode).
 - Phase 5 security, backup, and privacy dashboard: implemented foundation.
 - Phase 6 Tier 3 local intelligence: implemented foundation (page-turn capture, receipt extraction, auto-tagging, image enhancement).
@@ -71,11 +71,10 @@ Privacy release gate (pre-release):
 
 ## Final Debug Build
 
-The verified debug APKs are published on GitHub Releases:
+The verified debug APK is published on GitHub Releases:
 
-- Latest advanced build: https://github.com/SuvenSeo/ClearScan/releases/tag/v0.2.0-advanced
-- APK: `ClearScan-v0.2.0-debug.apk`
-- SHA256: `CBDB600397F02DE841B58F889A61813BDA5607B2ABCCFB6825A564D65E5CA32D`
+- Latest build: https://github.com/SuvenSeo/ClearScan/releases/tag/v0.2.1
+- APK: `ClearScan-v0.2.1-debug.apk` ([direct download](https://github.com/SuvenSeo/ClearScan/releases/download/v0.2.1/ClearScan-v0.2.1-debug.apk))
 
 In-app updates (opt-in): see [docs/APP_UPDATES.md](docs/APP_UPDATES.md). The app reads `distribution/version.json` on `main` and downloads newer APKs from GitHub Releases.
 
