@@ -38,6 +38,21 @@ ClearScan treats scanned documents as sensitive by default.
 - **Readable cache:** Decrypted files live under `cacheDir/vault-read/{documentId}/` and are invalidated when the encrypted source changes.
 - **Explicit backup:** Settings → Backup exports a `.csbak` file (SAF `CreateDocument`). The archive is a zip of `index.json`, `folders.json`, and encrypted blobs, then encrypted again with the vault key. Restore replaces local storage on the same device (Keystore-bound).
 - **Passphrase backup (optional):** Users can protect a backup with a passphrase instead of device-bound Keystore encryption. Passphrase backups use PBKDF2 + AES/GCM and can be restored on another device when the same passphrase is supplied.
+- **Backup zip safety:** `BackupRestoreManager.unzipToDirectory` resolves each zip entry through `safeZipEntryPath`, which rejects `..`, absolute paths, and paths that escape the staging directory via canonical-path comparison.
+
+## Metadata Cleartext Gap
+
+**Current state:** Page images and PDFs are encrypted at rest, but the local index (`index.json`, mirrored to Room) stores document metadata and OCR text in cleartext inside app-private storage. This includes titles, folder names, timestamps, page counts, and OCR corpus strings used for search.
+
+**Why it matters:** App-private storage is not world-readable, but it is not separately encrypted. A rooted device, adb backup of app data (when allowed), or forensic imaging could recover metadata and OCR text even when `.enc` blobs remain protected by Keystore.
+
+**Vault lock behavior:** When vault mode is enabled, `ClearScanViewModel.lockVault()` sets `vaultUnlocked = false` (hiding the library UI) and calls `LocalDocumentRepository.clearReadableCache()`, which deletes `cacheDir/vault-read/`. Decrypted page/PDF copies used for OCR, PDF tools, and export are removed on lock; they are recreated on demand after unlock.
+
+**Planned hardening (not yet shipped):**
+
+- Encrypt index metadata and OCR text at rest with the same vault key used for page blobs.
+- Minimize or redact OCR corpus in persistent storage where search can use on-demand decryption.
+- Extend release-gate checks to assert metadata encryption once implemented.
 
 ## Network Strategy
 
