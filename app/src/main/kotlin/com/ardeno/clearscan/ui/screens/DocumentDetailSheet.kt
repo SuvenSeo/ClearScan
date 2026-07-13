@@ -238,7 +238,7 @@ fun DocumentDetailSheet(
                         leadingIcon = {
                             Icon(
                                 imageVector = if (document.isFavorite) Icons.Filled.Star else Icons.Outlined.Star,
-                                contentDescription = null
+                                contentDescription = if (document.isFavorite) "Remove from favorites" else "Add to favorites"
                             )
                         }
                     )
@@ -359,7 +359,7 @@ fun DocumentDetailSheet(
                         .defaultMinSize(minHeight = ClearScanSpacing.minTouchTarget),
                     shape = MaterialTheme.shapes.medium
                 ) {
-                    Icon(Icons.Outlined.CloudUpload, contentDescription = null)
+                    Icon(Icons.Outlined.CloudUpload, contentDescription = "Upload to self-host")
                     Text(
                         modifier = Modifier.padding(start = ClearScanSpacing.sm),
                         text = if (isSelfHostUploading) "Uploading…" else "Upload to self-host"
@@ -416,7 +416,7 @@ fun DocumentDetailSheet(
                         .defaultMinSize(minHeight = ClearScanSpacing.minTouchTarget),
                     shape = MaterialTheme.shapes.medium
                 ) {
-                    Icon(Icons.Outlined.Refresh, contentDescription = null)
+                    Icon(Icons.Outlined.Refresh, contentDescription = "Retry OCR")
                     Text(modifier = Modifier.padding(start = ClearScanSpacing.sm), text = "Retry OCR")
                 }
             }
@@ -618,7 +618,7 @@ private fun FolderPicker(
             readOnly = true,
             label = { Text("Folder") },
             leadingIcon = {
-                Icon(Icons.Outlined.Folder, contentDescription = null)
+                Icon(Icons.Outlined.Folder, contentDescription = "Folder")
             },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
             shape = MaterialTheme.shapes.medium,

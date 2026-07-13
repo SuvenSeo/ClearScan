@@ -153,7 +153,7 @@ fun SelfHostSettingsSection(
             modifier = Modifier.fillMaxWidth(),
             shape = MaterialTheme.shapes.medium
         ) {
-            Icon(Icons.Outlined.CloudUpload, contentDescription = null)
+            Icon(Icons.Outlined.CloudUpload, contentDescription = "Save self-host settings")
             Text(modifier = Modifier.padding(start = 8.dp), text = "Save self-host settings")
         }
     }
