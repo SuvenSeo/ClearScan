@@ -252,7 +252,7 @@ private fun VaultSettingsRow(
             ) {
                 Icon(
                     imageVector = if (vaultEnabled) Icons.Outlined.LockOpen else Icons.Outlined.Lock,
-                    contentDescription = null
+                    contentDescription = if (vaultEnabled) "Disable vault" else "Enable vault"
                 )
                 Text(
                     modifier = Modifier.padding(start = 8.dp),
@@ -388,7 +388,7 @@ private fun BackupGroupedRow(
                 modifier = Modifier.weight(1f),
                 shape = MaterialTheme.shapes.medium
             ) {
-                Icon(imageVector = Icons.Outlined.Backup, contentDescription = null)
+                Icon(imageVector = Icons.Outlined.Backup, contentDescription = "Export backup")
                 Text(modifier = Modifier.padding(start = 8.dp), text = "Export")
             }
             FilledTonalButton(
@@ -397,7 +397,7 @@ private fun BackupGroupedRow(
                 modifier = Modifier.weight(1f),
                 shape = MaterialTheme.shapes.medium
             ) {
-                Icon(imageVector = Icons.Outlined.Restore, contentDescription = null)
+                Icon(imageVector = Icons.Outlined.Restore, contentDescription = "Restore backup")
                 Text(modifier = Modifier.padding(start = 8.dp), text = "Restore")
             }
         }
@@ -457,7 +457,7 @@ private fun BenchmarkGroupedRow(
         ) {
             Icon(
                 imageVector = Icons.Outlined.TextFields,
-                contentDescription = null
+                contentDescription = "Run OCR benchmark"
             )
             Text(
                 modifier = Modifier.padding(start = 8.dp),
@@ -492,7 +492,7 @@ private fun AppUpdateSettingsRow(
             enabled = !isChecking,
             shape = MaterialTheme.shapes.medium
         ) {
-            Icon(imageVector = Icons.Outlined.SystemUpdate, contentDescription = null)
+            Icon(imageVector = Icons.Outlined.SystemUpdate, contentDescription = "Check for updates")
             Text(
                 modifier = Modifier.padding(start = 8.dp),
                 text = if (isChecking) "Checking…" else "Check for updates"

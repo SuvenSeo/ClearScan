@@ -651,7 +651,7 @@ private fun EmptyLibraryState(
         ) {
             Icon(
                 imageVector = Icons.Rounded.DocumentScanner,
-                contentDescription = null
+                contentDescription = "Scan document"
             )
             Text(
                 modifier = Modifier.padding(start = ClearScanSpacing.sm),
@@ -665,7 +665,7 @@ private fun EmptyLibraryState(
         ) {
             Icon(
                 imageVector = Icons.Outlined.FileUpload,
-                contentDescription = null
+                contentDescription = "Import PDF or images"
             )
             Text(
                 modifier = Modifier.padding(start = ClearScanSpacing.sm),

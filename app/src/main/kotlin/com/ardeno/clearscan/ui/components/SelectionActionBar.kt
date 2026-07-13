@@ -80,19 +80,19 @@ fun SelectionActionBar(
                         onClick = onMerge,
                         enabled = selectedCount >= 2
                     ) {
-                        Icon(Icons.Outlined.MergeType, contentDescription = null)
+                        Icon(Icons.Outlined.MergeType, contentDescription = "Merge selected documents")
                     }
                     FilledTonalButton(
                         onClick = onExport,
                         enabled = selectedCount > 0
                     ) {
-                        Icon(Icons.Outlined.Share, contentDescription = null)
+                        Icon(Icons.Outlined.Share, contentDescription = "Share selected documents")
                     }
                     FilledTonalButton(
                         onClick = onDelete,
                         enabled = selectedCount > 0
                     ) {
-                        Icon(Icons.Outlined.Delete, contentDescription = null)
+                        Icon(Icons.Outlined.Delete, contentDescription = "Delete selected documents")
                     }
                 }
             }
