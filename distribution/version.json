@@ -4,5 +4,5 @@
   "apkUrl": "https://github.com/SuvenSeo/ClearScan/releases/download/v0.2.2/ClearScan-v0.2.2-debug.apk",
   "releaseNotes": "Audit remediation: security fixes (zip-slip, APK SHA256 verify, vault cache wipe), duplicate detection, Room delete fix, SettingsViewModel extraction, expanded tests and CI gates.",
   "minVersionCode": 1,
-  "_comment_sha256": "Optional sha256: lowercase hex digest of the APK (64 chars). Omit to skip client-side verification."
+  "sha256": "e580b6eedb9c07b9921edfddc26114ca12ab6fa0e91ccd5ecb1c7ac5470811c6"
 }

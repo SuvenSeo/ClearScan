@@ -71,7 +71,7 @@ class DuplicateDetectorTest {
             sampleDocument("doc-1", listOf(hash1)),
             sampleDocument("doc-2", listOf(hash2)),
             sampleDocument("doc-3", listOf(hash3)),
-            sampleDocument("doc-4", listOf(PerceptualHash.toHex(0xFFFFFFFFFFFFFFFFL)))
+            sampleDocument("doc-4", listOf(PerceptualHash.toHex(-1L)))
         )
 
         val groups = DuplicateDetector().findDuplicateGroups(documents)
