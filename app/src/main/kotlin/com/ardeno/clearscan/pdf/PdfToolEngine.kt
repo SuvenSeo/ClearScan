@@ -348,9 +348,7 @@ class PdfToolEngine {
         pdfFileName: String
     ): PdfToolOutput = withContext(Dispatchers.IO) {
         val sourcePaths = resolveSourcePagePaths(document, workingDir)
-        require(pageIndices.isNotEmpty()) { "Keep at least one page." }
-        require(pageIndices.all { it in sourcePaths.indices }) { "One or more page selections are invalid." }
-        require(pageIndices.distinct().size == pageIndices.size) { "Duplicate pages are not allowed." }
+        validatePageIndices(pageIndices, sourcePaths.size)
 
         val pages = pageIndices.mapIndexed { outputIndex, sourceIndex ->
             val source = File(sourcePaths[sourceIndex])
@@ -517,23 +515,32 @@ class PdfToolEngine {
         width: Int,
         height: Int
     ): PageSize {
-        val longEdge = 842
-        val shortEdge = 595
-        if (width > height) {
-            return PageSize(
-                width = longEdge,
-                height = ((height.toFloat() / width.toFloat()) * longEdge).roundToInt().coerceAtLeast(shortEdge)
-            )
-        }
-
-        return PageSize(
-            width = shortEdge,
-            height = ((height.toFloat() / width.toFloat()) * shortEdge).roundToInt().coerceAtLeast(shortEdge)
-        )
+        val (pageWidth, pageHeight) = computePdfPageSize(width, height)
+        return PageSize(pageWidth, pageHeight)
     }
 
     private data class PageSize(
         val width: Int,
         val height: Int
     )
+}
+
+internal fun validatePageIndices(pageIndices: List<Int>, sourcePageCount: Int) {
+    require(pageIndices.isNotEmpty()) { "Keep at least one page." }
+    require(pageIndices.all { it in 0 until sourcePageCount }) { "One or more page selections are invalid." }
+    require(pageIndices.distinct().size == pageIndices.size) { "Duplicate pages are not allowed." }
+}
+
+internal fun computePdfPageSize(bitmapWidth: Int, bitmapHeight: Int): Pair<Int, Int> {
+    val longEdge = 842
+    val shortEdge = 595
+    if (bitmapWidth > bitmapHeight) {
+        return longEdge to (
+            (bitmapHeight.toFloat() / bitmapWidth.toFloat()) * longEdge
+            ).roundToInt().coerceAtLeast(shortEdge)
+    }
+
+    return shortEdge to (
+        (bitmapHeight.toFloat() / bitmapWidth.toFloat()) * shortEdge
+        ).roundToInt().coerceAtLeast(shortEdge)
 }
