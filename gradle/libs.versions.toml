@@ -12,6 +12,7 @@ androidxTestEspresso = "3.6.1"
 androidxTestRunner = "1.6.2"
 composeUiTest = "1.8.3"
 junit = "4.13.2"
+robolectric = "4.14.1"
 kotlin = "2.3.21"
 lifecycle = "2.9.0"
 mlkitDocumentScanner = "16.0.0"
@@ -46,6 +47,7 @@ androidx-test-runner = { module = "androidx.test:runner", version.ref = "android
 compose-ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4", version.ref = "composeUiTest" }
 compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "composeUiTest" }
 junit = { module = "junit:junit", version.ref = "junit" }
+robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
 lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle" }
 lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle" }
 lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle" }

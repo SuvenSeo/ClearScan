@@ -41,12 +41,19 @@ Sources:
 - OCR text search.
 - Locally generated searchable PDF export.
 - Free local PDF editor actions: merge, split, rotate, typed signature, header redaction, and password-protected PDF copy.
-- Biometric/device-credential vault gate.
-- Sinhala/Tamil OCR benchmark harness for measured CER/WER scoring.
+- Biometric/device-credential vault gate with optional biometric-bound Keystore keys.
+- Encrypted metadata at rest (`index.json`, Room `json_payload`) via `MetadataCrypto`.
+- Sinhala/Tamil OCR benchmark harness with 25+ labeled corpus entries per language (CER/WER scoring).
+- Compose UI localization foundation for English, Sinhala (si), and Tamil (ta).
 - Android share-sheet export with no cloud account.
 - Delete from local storage.
 - Folders, tags, favorites, batch library actions, and duplicate detection.
 - Free-policy script for ad, billing, and monetization SDK checks.
+- ViewModel decomposition: `LibraryViewModel`, `SettingsViewModel`, and domain processors for OCR/PDF/capture.
+
+## Deep Competitive Research
+
+For product architecture, monetization, feature parity matrix, and user-pain-point analysis, see [CAMSCANNER_RESEARCH.md](CAMSCANNER_RESEARCH.md).
 
 ## Features ClearScan Should Keep Free
 

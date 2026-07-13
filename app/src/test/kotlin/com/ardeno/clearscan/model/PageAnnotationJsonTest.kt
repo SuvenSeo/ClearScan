@@ -1,10 +1,12 @@
 package com.ardeno.clearscan.model
 
+import com.ardeno.clearscan.testing.RobolectricUnitTest
+
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
-class PageAnnotationJsonTest {
+class PageAnnotationJsonTest : RobolectricUnitTest() {
     @Test
     fun encodesAndDecodesAllAnnotationTypes() {
         val pages = listOf(

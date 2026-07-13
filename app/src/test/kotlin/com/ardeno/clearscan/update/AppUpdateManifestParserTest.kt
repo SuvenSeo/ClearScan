@@ -1,5 +1,7 @@
 package com.ardeno.clearscan.update
 
+import com.ardeno.clearscan.testing.RobolectricUnitTest
+
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
@@ -7,7 +9,7 @@ import org.junit.Test
 import java.io.File
 import kotlin.io.path.createTempFile
 
-class AppUpdateManifestParserTest {
+class AppUpdateManifestParserTest : RobolectricUnitTest() {
     @Test
     fun parse_validManifest() {
         val json = """
@@ -62,7 +64,7 @@ class AppUpdateManifestParserTest {
         assertNull(info.sha256)
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException::class)
     fun parse_invalidSha256Rejected() {
         val json = """
             {
@@ -73,9 +75,7 @@ class AppUpdateManifestParserTest {
             }
         """.trimIndent()
 
-        assertFailsWith<IllegalArgumentException> {
-            AppUpdateManifestParser.parse(json)
-        }
+        AppUpdateManifestParser.parse(json)
     }
 
     @Test

@@ -26,8 +26,8 @@ android {
         applicationId = "com.ardeno.clearscan"
         minSdk = 26
         targetSdk = 36
-        versionCode = 4
-        versionName = "0.2.2"
+        versionCode = 5
+        versionName = "0.2.3"
 
         buildConfigField(
             "String",
@@ -89,7 +89,8 @@ android {
     }
 
     testOptions {
-        unitTests.isReturnDefaultValues = true
+        unitTests.isIncludeAndroidResources = true
+        unitTests.isReturnDefaultValues = false
     }
 }
 
@@ -126,6 +127,7 @@ dependencies {
     debugImplementation(libs.compose.ui.test.manifest)
 
     testImplementation(libs.junit)
+    testImplementation(libs.robolectric)
     testImplementation(libs.room.testing)
 
     androidTestImplementation(libs.androidx.test.ext.junit)

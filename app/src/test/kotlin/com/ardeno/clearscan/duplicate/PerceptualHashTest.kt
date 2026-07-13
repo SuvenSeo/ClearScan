@@ -1,11 +1,12 @@
 package com.ardeno.clearscan.duplicate
 
+import com.ardeno.clearscan.testing.RobolectricUnitTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
-class PerceptualHashTest {
+class PerceptualHashTest : RobolectricUnitTest() {
     @Test
     fun identicalPixelsProduceZeroHammingDistance() {
         val pixels = IntArray(PerceptualHash.HASH_WIDTH * PerceptualHash.HASH_HEIGHT) { 128 }
@@ -30,9 +31,10 @@ class PerceptualHashTest {
             val column = index % PerceptualHash.HASH_WIDTH
             if (column < PerceptualHash.HASH_WIDTH / 2) 20 else 220
         }
-        val rightDark = IntArray(PerceptualHash.HASH_WIDTH * PerceptualHash.HASH_HEIGHT) { index ->
+        val checkerboard = IntArray(PerceptualHash.HASH_WIDTH * PerceptualHash.HASH_HEIGHT) { index ->
             val column = index % PerceptualHash.HASH_WIDTH
-            if (column < PerceptualHash.HASH_WIDTH / 2) 220 else 20
+            val row = index / PerceptualHash.HASH_WIDTH
+            if ((column + row) % 2 == 0) 0 else 255
         }
 
         val first = PerceptualHash.computeDifferenceHash(
@@ -41,7 +43,7 @@ class PerceptualHashTest {
             PerceptualHash.HASH_HEIGHT
         )
         val second = PerceptualHash.computeDifferenceHash(
-            rightDark,
+            checkerboard,
             PerceptualHash.HASH_WIDTH,
             PerceptualHash.HASH_HEIGHT
         )

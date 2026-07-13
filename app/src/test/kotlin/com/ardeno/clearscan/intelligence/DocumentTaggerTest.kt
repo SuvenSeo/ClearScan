@@ -1,10 +1,12 @@
 package com.ardeno.clearscan.intelligence
 
+import com.ardeno.clearscan.testing.RobolectricUnitTest
+
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
-class DocumentTaggerTest {
+class DocumentTaggerTest : RobolectricUnitTest() {
     @Test
     fun suggestsReceiptTag() {
         val tags = DocumentTagger.suggestTags("Store receipt\nSubtotal 12.00\nThank you")

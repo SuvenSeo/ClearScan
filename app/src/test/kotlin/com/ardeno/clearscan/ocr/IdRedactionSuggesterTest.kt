@@ -1,10 +1,12 @@
 package com.ardeno.clearscan.ocr
 
+import com.ardeno.clearscan.testing.RobolectricUnitTest
+
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
-class IdRedactionSuggesterTest {
+class IdRedactionSuggesterTest : RobolectricUnitTest() {
     @Test
     fun suggestFromText_detectsPassportMrz() {
         val suggestion = IdRedactionSuggester.suggestFromText(

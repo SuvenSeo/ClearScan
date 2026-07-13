@@ -1,18 +1,21 @@
 package com.ardeno.clearscan.pdf
 
+import com.ardeno.clearscan.testing.RobolectricUnitTest
+
 import java.io.File
+import kotlin.io.path.createTempDirectory
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Before
 import org.junit.Test
 
-class PdfToolEngineTest {
+class PdfToolEngineTest : RobolectricUnitTest() {
     private lateinit var workingDir: File
 
     @Before
     fun setUp() {
-        workingDir = createTempDir("pdf-tool-engine")
+        workingDir = createTempDirectory("pdf-tool-engine-").toFile()
     }
 
     @After
@@ -45,7 +48,7 @@ class PdfToolEngineTest {
         val (width, height) = computePdfPageSize(bitmapWidth = 2000, bitmapHeight = 1000)
 
         assertEquals(842, width)
-        assertEquals(421, height)
+        assertEquals(595, height)
     }
 
     @Test

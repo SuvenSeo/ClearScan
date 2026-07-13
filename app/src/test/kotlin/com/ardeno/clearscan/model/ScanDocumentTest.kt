@@ -1,12 +1,14 @@
 package com.ardeno.clearscan.model
 
+import com.ardeno.clearscan.testing.RobolectricUnitTest
+
 import java.time.Instant
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
-class ScanDocumentTest {
+class ScanDocumentTest : RobolectricUnitTest() {
     @Test
     fun newDocumentDefaultsToPrivateLocalState() {
         val document = ScanDocument(

@@ -1,18 +1,21 @@
 package com.ardeno.clearscan.backup
 
+import com.ardeno.clearscan.testing.RobolectricUnitTest
+
 import java.io.File
+import kotlin.io.path.createTempDirectory
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 
-class BackupZipSafetyTest {
+class BackupZipSafetyTest : RobolectricUnitTest() {
     private lateinit var targetDir: File
 
     @Before
     fun setUp() {
-        targetDir = createTempDir("backup-zip-safety")
+        targetDir = createTempDirectory("backup-zip-safety-").toFile()
     }
 
     @After

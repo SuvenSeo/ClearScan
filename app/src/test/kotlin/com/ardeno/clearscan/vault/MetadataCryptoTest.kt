@@ -1,5 +1,7 @@
 package com.ardeno.clearscan.vault
 
+import com.ardeno.clearscan.testing.RobolectricUnitTest
+
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotEquals
@@ -8,7 +10,7 @@ import org.junit.Test
 import java.io.File
 import java.nio.file.Files
 
-class MetadataCryptoTest {
+class MetadataCryptoTest : RobolectricUnitTest() {
 
     private val crypto = MetadataCrypto(FakeVaultCipher())
 

@@ -1,5 +1,7 @@
 package com.ardeno.clearscan.intelligence
 
+import com.ardeno.clearscan.testing.RobolectricUnitTest
+
 import com.ardeno.clearscan.model.ReceiptFields
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -7,7 +9,7 @@ import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
-class ReceiptFieldExtractorTest {
+class ReceiptFieldExtractorTest : RobolectricUnitTest() {
     @Test
     fun extractsReceiptFieldsFromTypicalText() {
         val text = """

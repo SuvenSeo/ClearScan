@@ -1,10 +1,12 @@
 package com.ardeno.clearscan.backup
 
+import com.ardeno.clearscan.testing.RobolectricUnitTest
+
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertThrows
 import org.junit.Test
 
-class PassphraseBackupCryptoTest {
+class PassphraseBackupCryptoTest : RobolectricUnitTest() {
     private val crypto = PassphraseBackupCrypto()
 
     @Test

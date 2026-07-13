@@ -1,5 +1,6 @@
 package com.ardeno.clearscan.data.db
 
+import com.ardeno.clearscan.testing.RobolectricUnitTest
 import com.ardeno.clearscan.model.DocumentFolder
 import com.ardeno.clearscan.model.NormalizedPoint
 import com.ardeno.clearscan.model.NormalizedRect
@@ -9,6 +10,7 @@ import com.ardeno.clearscan.model.ReceiptFields
 import com.ardeno.clearscan.model.ScanDocument
 import com.ardeno.clearscan.model.ScanMode
 import com.ardeno.clearscan.ocr.OcrLanguage
+import org.json.JSONObject
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
@@ -16,7 +18,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.time.Instant
 
-class ScanDatabaseTest {
+class ScanDatabaseTest : RobolectricUnitTest() {
 
     @Test
     fun scanDocumentEntity_roundtrip_allFields() {
@@ -216,11 +218,12 @@ class ScanDatabaseTest {
         )
 
         val entity = doc.toEntity()
-        assertTrue(entity.jsonPayload.contains("\"id\":\"json-test-1\""))
-        assertTrue(entity.jsonPayload.contains("\"title\":\"JSON Payload\""))
-        assertTrue(entity.jsonPayload.contains("\"pageCount\":2"))
-        assertTrue(entity.jsonPayload.contains("\"pdfPath\":\"/path/doc.pdf\""))
-        assertTrue(entity.jsonPayload.contains("\"ocrStatus\":\"NotStarted\""))
+        val json = JSONObject(entity.jsonPayload)
+        assertEquals("json-test-1", json.getString("id"))
+        assertEquals("JSON Payload", json.getString("title"))
+        assertEquals(2, json.getInt("pageCount"))
+        assertEquals("/path/doc.pdf", json.getString("pdfPath"))
+        assertEquals("NotStarted", json.getString("ocrStatus"))
     }
 
     @Test
@@ -229,8 +232,9 @@ class ScanDatabaseTest {
         val folder = DocumentFolder(id = "f-1", name = "Work", createdAt = now)
 
         val entity = folder.toEntity()
-        assertTrue(entity.jsonPayload.contains("\"id\":\"f-1\""))
-        assertTrue(entity.jsonPayload.contains("\"name\":\"Work\""))
-        assertTrue(entity.jsonPayload.contains("\"createdAt\""))
+        val json = JSONObject(entity.jsonPayload)
+        assertEquals("f-1", json.getString("id"))
+        assertEquals("Work", json.getString("name"))
+        assertTrue(json.has("createdAt"))
     }
 }

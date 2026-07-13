@@ -14,6 +14,12 @@ ClearScan is an Android-first, local-first document scanner planned as a free Ca
 
 See [docs/PHASES.md](docs/PHASES.md) for done-when criteria per phase.
 
+## Current Release
+
+**v0.2.3** — Full remediation pass: metadata encryption, biometric-bound vault keys, ViewModel split, si/ta localization foundation, expanded OCR corpus (27 entries per language), CamScanner competitive research, Robolectric unit-test harness.
+
+Download: [GitHub Releases](https://github.com/SuvenSeo/ClearScan/releases/latest)
+
 ## Current App Scope
 
 - Native Kotlin + Jetpack Compose app shell.
@@ -25,8 +31,10 @@ See [docs/PHASES.md](docs/PHASES.md) for done-when criteria per phase.
 - OCR text search across saved documents.
 - Searchable PDF export generated locally from page images plus OCR text.
 - PDF editor actions: merge all scans, split into page PDFs, rotate pages, add typed signature, redact a header band, and create password-protected PDFs.
-- Biometric/device-credential vault gate with Android Keystore crypto health check.
-- Sinhala/Tamil OCR benchmark harness for CER/WER scoring plus labeled corpus loader (`tools/ocr-corpus/`).
+- Biometric/device-credential vault gate with Android Keystore crypto health check and optional biometric-bound keys.
+- Encrypted metadata at rest for `index.json`, folders index, and Room document payloads.
+- Sinhala/Tamil OCR benchmark harness for CER/WER scoring plus 27-entry labeled corpus per language (`tools/ocr-corpus/`).
+- Compose UI string resources for English, Sinhala (si), and Tamil (ta) on core screens.
 - Encrypted document storage at rest, privacy dashboard, and encrypted local backup/restore.
 - Self-host export (WebDAV / paperless-ngx), ID scan mode with redaction suggestions.
 - Page-turn capture, receipt field extraction, offline auto-tagging, and scan quality enhancement.

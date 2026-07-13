@@ -1,11 +1,13 @@
 package com.ardeno.clearscan.pdf
 
+import com.ardeno.clearscan.testing.RobolectricUnitTest
+
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
-class PdfCompressQualityTest {
+class PdfCompressQualityTest : RobolectricUnitTest() {
     @Test
     fun entries_coverAllCompressionPresets() {
         assertEquals(3, PdfCompressQuality.entries.size)

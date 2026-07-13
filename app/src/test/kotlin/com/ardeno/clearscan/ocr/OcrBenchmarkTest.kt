@@ -1,10 +1,12 @@
 package com.ardeno.clearscan.ocr
 
+import com.ardeno.clearscan.testing.RobolectricUnitTest
+
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
-class OcrBenchmarkTest {
+class OcrBenchmarkTest : RobolectricUnitTest() {
     @Test
     fun exactMatchHasZeroErrorRates() {
         val metrics = OcrBenchmark.evaluate(

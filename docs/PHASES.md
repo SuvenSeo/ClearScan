@@ -77,10 +77,11 @@ Done when:
 
 ## Phase 4 - Language And Platform Expansion
 
-Status: in progress — self-host export and ID scan mode implemented; Sinhala/Tamil OCR benchmarking continues.
+Status: in progress — self-host export and ID scan mode implemented; Sinhala/Tamil OCR corpus expanded to 27 synthetic entries per language; real scan PNG fixtures still needed.
 
-- Sinhala/Tamil OCR CER/WER benchmark scoring harness.
-- Planned: real Sinhala/Tamil scan corpus and OCR engine comparison.
+- Sinhala/Tamil OCR CER/WER benchmark scoring harness with 27-entry classpath corpus per language.
+- Planned: real Sinhala/Tamil scan image corpus and on-device Tesseract benchmarks.
+- Compose `stringResource()` localization for en/si/ta on library, settings, onboarding, vault lock, and tab shell.
 - iOS SwiftUI/VisionKit parity plan.
 - **Self-host export (opt-in):** WebDAV upload for Nextcloud/generic endpoints; paperless-ngx REST upload via API token. Credentials stored in EncryptedSharedPreferences; explicit per-document Upload action only.
 - **ID / passport scan mode:** ML Kit base scanner preset (2-page limit), `id-card` tagging, no export watermark, OCR-driven sensitive-field redaction suggestions with one-tap ID redaction tool.

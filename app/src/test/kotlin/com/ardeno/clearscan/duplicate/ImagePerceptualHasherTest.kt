@@ -1,5 +1,7 @@
 package com.ardeno.clearscan.duplicate
 
+import com.ardeno.clearscan.testing.RobolectricUnitTest
+
 import android.graphics.Bitmap
 import android.graphics.Color
 import java.io.File
@@ -8,7 +10,7 @@ import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Test
 
-class ImagePerceptualHasherTest {
+class ImagePerceptualHasherTest : RobolectricUnitTest() {
     @Test
     fun missingFileReturnsNull() {
         val hasher = ImagePerceptualHasher()

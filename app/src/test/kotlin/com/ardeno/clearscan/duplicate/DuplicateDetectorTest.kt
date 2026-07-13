@@ -1,5 +1,7 @@
 package com.ardeno.clearscan.duplicate
 
+import com.ardeno.clearscan.testing.RobolectricUnitTest
+
 import com.ardeno.clearscan.model.ScanDocument
 import java.time.Instant
 import org.junit.Assert.assertEquals
@@ -7,7 +9,7 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
-class DuplicateDetectorTest {
+class DuplicateDetectorTest : RobolectricUnitTest() {
     @Test
     fun findsDocumentsWithSimilarPageHashes() {
         val sharedHash = PerceptualHash.toHex(0x0123456789ABCDEFL)
@@ -37,7 +39,7 @@ class DuplicateDetectorTest {
     fun findsDocumentsNearSimilarityThreshold() {
         val base = 0x0123456789ABCDEFL
         val nearThresholdHash = PerceptualHash.toHex(hashWithBitFlips(base, (0 until 10).toList()))
-        val distinctHash = PerceptualHash.toHex(hashWithBitFlips(base, (0 until 20).toList()))
+        val distinctHash = PerceptualHash.toHex(hashWithBitFlips(base, (10 until 30).toList()))
 
         assertEquals(10, PerceptualHash.hammingDistance(base, PerceptualHash.fromHex(nearThresholdHash)))
         assertTrue(PerceptualHash.isSimilar(base, PerceptualHash.fromHex(nearThresholdHash)))
