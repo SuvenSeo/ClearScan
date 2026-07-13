@@ -17,8 +17,20 @@ jobs:
           distribution: temurin
           java-version: 17
 
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
+
+      - name: Lint
+        run: ./gradlew :app:lintRelease --stacktrace
+
+      - name: Unit tests
+        run: ./gradlew :app:testReleaseUnitTest --stacktrace
 
       - name: Assemble release APK
         run: ./gradlew :app:assembleRelease --stacktrace

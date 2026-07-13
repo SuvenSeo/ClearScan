@@ -20,12 +20,22 @@ jobs:
           distribution: temurin
           java-version: 17
 
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
       - name: Free policy check
         shell: pwsh
         run: ./scripts/check-free-policy.ps1
+
+      - name: Privacy release gate
+        shell: pwsh
+        run: ./scripts/privacy-release-gate.ps1
 
       - name: Lint
         run: ./gradlew :app:lintDebug --stacktrace
