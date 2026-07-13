@@ -82,10 +82,28 @@ if (-not (Test-Path -LiteralPath $encryptedStorePath)) {
     }
 }
 
+$backupRestorePath = Join-Path $Root "app\src\main\kotlin\com\ardeno\clearscan\backup\BackupRestoreManager.kt"
+if (-not (Test-Path -LiteralPath $backupRestorePath)) {
+    $findings += [PSCustomObject]@{
+        Check = "backup-zip-safety"
+        Path = "app/src/main/kotlin/com/ardeno/clearscan/backup/BackupRestoreManager.kt"
+        Pattern = "missing BackupRestoreManager"
+    }
+} else {
+    $backupRestore = Get-Content -LiteralPath $backupRestorePath -Raw
+    if ($backupRestore -notmatch 'safeZipEntryPath') {
+        $findings += [PSCustomObject]@{
+            Check = "backup-zip-safety"
+            Path = "app/src/main/kotlin/com/ardeno/clearscan/backup/BackupRestoreManager.kt"
+            Pattern = "safeZipEntryPath not found (zip path traversal guard missing)"
+        }
+    }
+}
+
 if ($findings.Count -gt 0) {
     Write-Host "Privacy release gate failed:"
     $findings | Format-Table -AutoSize
     exit 1
 }
 
-Write-Host "Privacy release gate passed: no ad/billing SDK markers, allowBackup=false, encrypted storage present."
+Write-Host "Privacy release gate passed: no ad/billing SDK markers, allowBackup=false, encrypted storage present, backup zip path validation present."

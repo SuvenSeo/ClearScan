@@ -23,8 +23,10 @@ ClearScan is a local-first document scanner for Android. This policy describes w
 
 ## Encryption
 
-- Document files are encrypted at rest using Android Keystore AES-GCM.
-- Optional encrypted backups (`.csbak`) use either device-bound keys or a passphrase you choose.
+- **Page images and PDFs** are encrypted at rest using Android Keystore AES-GCM (`.enc` blobs in app-private storage).
+- **OCR text and document metadata** (titles, folder names, page counts, paths in the local index) are stored in app-private storage (`index.json`, Room) **without separate encryption**. A device backup or rooted access could read this metadata even when page blobs stay encrypted.
+- **Vault lock** hides the scan library behind biometric/device credential. When you lock the vault, decrypted page/PDF cache files are cleared from app cache; metadata remains on disk in cleartext.
+- **Encrypted backups** (`.csbak`) wrap index metadata and encrypted blobs in a zip, then encrypt the archive again. Device-bound backups use the vault Keystore key; **passphrase backups** use PBKDF2 + AES-GCM so you can restore on another device with the same passphrase.
 
 ## Permissions
 
