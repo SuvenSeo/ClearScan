@@ -9,4 +9,7 @@
     <cache-path
         name="text_exports"
         path="text-exports/" />
+    <cache-path
+        name="vault_read"
+        path="vault-read/" />
 </paths>

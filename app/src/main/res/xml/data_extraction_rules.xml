@@ -2,8 +2,14 @@
 <data-extraction-rules>
     <cloud-backup>
         <exclude domain="file" path="documents/" />
+        <exclude domain="database" />
+        <exclude domain="file" path="export-audit.json" />
+        <exclude domain="sharedpref" />
     </cloud-backup>
     <device-transfer>
         <exclude domain="file" path="documents/" />
+        <exclude domain="database" />
+        <exclude domain="file" path="export-audit.json" />
+        <exclude domain="sharedpref" />
     </device-transfer>
 </data-extraction-rules>
