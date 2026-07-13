@@ -182,7 +182,7 @@ class BackupRestoreManager(
         ZipInputStream(zipBytes.inputStream()).use { zip ->
             var entry = zip.nextEntry
             while (entry != null) {
-                val outFile = File(targetDir, entry.name)
+                val outFile = safeZipEntryPath(targetDir, entry.name)
                 if (entry.isDirectory) {
                     outFile.mkdirs()
                 } else {
@@ -199,6 +199,33 @@ class BackupRestoreManager(
         val BACKUP_MAGIC = "CSBK".encodeToByteArray()
         const val BACKUP_VERSION_DEVICE: Byte = 1
         const val BACKUP_VERSION_PASSPHRASE: Byte = 2
+
+        @JvmStatic
+        fun safeZipEntryPath(targetDir: File, entryName: String): File {
+            require(entryName.isNotEmpty()) { "Zip entry name is empty" }
+            if (entryName.contains("..")) {
+                throw SecurityException("Zip entry contains path traversal: $entryName")
+            }
+            if (
+                entryName.startsWith("/") ||
+                entryName.startsWith("\\") ||
+                (entryName.length >= 2 && entryName[1] == ':')
+            ) {
+                throw SecurityException("Zip entry is an absolute path: $entryName")
+            }
+
+            val destination = File(targetDir, entryName.replace('\\', '/'))
+            val targetCanonical = targetDir.canonicalFile
+            val destCanonical = destination.canonicalFile
+            val targetPrefix = targetCanonical.path + File.separator
+            if (
+                destCanonical.path != targetCanonical.path &&
+                !destCanonical.path.startsWith(targetPrefix)
+            ) {
+                throw SecurityException("Zip entry escapes target directory: $entryName")
+            }
+            return destination
+        }
     }
 }
 
