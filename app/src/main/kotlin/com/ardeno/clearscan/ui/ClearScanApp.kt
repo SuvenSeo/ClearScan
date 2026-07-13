@@ -167,7 +167,7 @@ fun ClearScanApp(
         return
     }
 
-    if (state.vaultEnabled && !state.vaultUnlocked) {
+    if (state.settings.vaultEnabled && !state.settings.vaultUnlocked) {
         VaultLockScreen(
             onUnlockVault = onUnlockVault,
             modifier = Modifier.padding(0.dp)
@@ -175,9 +175,9 @@ fun ClearScanApp(
         return
     }
 
-    if (showPrivacyDashboard && state.privacyStatus != null) {
+    if (showPrivacyDashboard && state.settings.privacyStatus != null) {
         PrivacyDashboardScreen(
-            status = state.privacyStatus,
+            status = state.settings.privacyStatus,
             onBack = {
                 showPrivacyDashboard = false
                 onClosePrivacyDashboard()
@@ -282,13 +282,13 @@ fun ClearScanApp(
             ClearScanTab.Settings -> {
                 SettingsScreen(
                     modifier = Modifier.padding(padding),
-                    vaultEnabled = state.vaultEnabled,
-                    benchmarkSummary = state.benchmarkSummary,
-                    isBackupRunning = state.isBackupRunning,
-                    autoPageTurnEnabled = state.autoPageTurnEnabled,
-                    imageEnhancementEnabled = state.imageEnhancementEnabled,
-                    defaultOcrLanguage = state.defaultOcrLanguage,
-                    selfHostConfig = state.selfHostConfig,
+                    vaultEnabled = state.settings.vaultEnabled,
+                    benchmarkSummary = state.settings.benchmarkSummary,
+                    isBackupRunning = state.settings.isBackupRunning,
+                    autoPageTurnEnabled = state.settings.autoPageTurnEnabled,
+                    imageEnhancementEnabled = state.settings.imageEnhancementEnabled,
+                    defaultOcrLanguage = state.settings.defaultOcrLanguage,
+                    selfHostConfig = state.settings.selfHostConfig,
                     onSelfHostConfigChange = onSelfHostConfigChange,
                     onSaveSelfHostConfig = onSaveSelfHostConfig,
                     onToggleVault = onToggleVault,
@@ -303,11 +303,11 @@ fun ClearScanApp(
                     onAutoPageTurnChange = onAutoPageTurnChange,
                     onImageEnhancementChange = onImageEnhancementChange,
                     onDefaultOcrLanguageChange = onDefaultOcrLanguageChange,
-                    passphraseBackupEnabled = state.passphraseBackupEnabled,
-                    wifiOnlySelfHostUpload = state.wifiOnlySelfHostUpload,
+                    passphraseBackupEnabled = state.settings.passphraseBackupEnabled,
+                    wifiOnlySelfHostUpload = state.settings.wifiOnlySelfHostUpload,
                     onPassphraseBackupChange = onPassphraseBackupChange,
                     onWifiOnlySelfHostUploadChange = onWifiOnlySelfHostUploadChange,
-                    isUpdateChecking = state.isUpdateChecking,
+                    isUpdateChecking = state.settings.isUpdateChecking,
                     onCheckForAppUpdate = onCheckForAppUpdate,
                     onBackClick = { selectedTab = ClearScanTab.Library }
                 )
@@ -327,7 +327,7 @@ fun ClearScanApp(
                 signatureText = state.signatureText,
                 pdfPassword = state.pdfPassword,
                 compressQuality = state.compressQuality,
-                selfHostEnabled = state.selfHostConfig.enabled && state.selfHostConfig.isConfigured,
+                selfHostEnabled = state.settings.selfHostConfig.enabled && state.settings.selfHostConfig.isConfigured,
                 isSelfHostUploading = state.isSelfHostUploading,
                 idRedactionSuggestion = state.idRedactionSuggestions[currentDocument.id],
                 onDismiss = {
@@ -417,16 +417,16 @@ fun ClearScanApp(
         )
     }
 
-    state.pendingAppUpdate?.let { update ->
+    state.settings.pendingAppUpdate?.let { update ->
         AppUpdateDialog(
             update = update,
-            isDownloading = state.isUpdateDownloading,
+            isDownloading = state.settings.isUpdateDownloading,
             onDismiss = onDismissAppUpdate,
             onDownload = onDownloadAppUpdate
         )
     }
 
-    state.backupPassphraseRequest?.let { request ->
+    state.settings.backupPassphraseRequest?.let { request ->
         PassphraseBackupDialog(
             request = request,
             onDismiss = onDismissBackupPassphrase,

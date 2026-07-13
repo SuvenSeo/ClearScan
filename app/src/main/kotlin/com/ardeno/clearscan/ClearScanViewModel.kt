@@ -4,12 +4,9 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import android.net.Uri
-import com.ardeno.clearscan.backup.BackupPassphraseAction
-import com.ardeno.clearscan.backup.BackupPassphraseRequest
 import com.ardeno.clearscan.backup.BackupRestoreManager
 import com.ardeno.clearscan.data.AppPreferences
 import com.ardeno.clearscan.data.LocalDocumentRepository
-import com.ardeno.clearscan.data.SelfHostConfig
 import com.ardeno.clearscan.data.SelfHostSettings
 import com.ardeno.clearscan.duplicate.DuplicateDetector
 import com.ardeno.clearscan.export.SelfHostExporter
@@ -25,8 +22,6 @@ import com.ardeno.clearscan.model.ScanMode
 import com.ardeno.clearscan.ocr.IdRedactionSuggester
 import com.ardeno.clearscan.ocr.IdRedactionSuggestion
 import com.ardeno.clearscan.ocr.DocumentOcrResult
-import com.ardeno.clearscan.ocr.OcrBenchmark
-import com.ardeno.clearscan.ocr.OcrBenchmarkRunner
 import com.ardeno.clearscan.ocr.OcrEngine
 import com.ardeno.clearscan.ocr.OcrLanguage
 import com.ardeno.clearscan.pdf.PdfCompressQuality
@@ -34,12 +29,12 @@ import com.ardeno.clearscan.pdf.PdfToolEngine
 import com.ardeno.clearscan.pdf.SearchablePdfWriter
 import com.ardeno.clearscan.scanner.FileImportResolver
 import com.ardeno.clearscan.scanner.ScannerImport
-import com.ardeno.clearscan.update.AppUpdateCheckResult
 import com.ardeno.clearscan.update.ApkUpdateManager
-import com.ardeno.clearscan.update.AppUpdateInfo
+import com.ardeno.clearscan.ui.settings.BackupImportReload
+import com.ardeno.clearscan.ui.settings.SettingsUiState
+import com.ardeno.clearscan.ui.settings.SettingsViewModel
 import com.ardeno.clearscan.vault.EncryptedFileStore
 import com.ardeno.clearscan.vault.ExportAuditLog
-import com.ardeno.clearscan.vault.PrivacyStatus
 import com.ardeno.clearscan.vault.PrivacyStatusProvider
 import com.ardeno.clearscan.vault.VaultCrypto
 import com.ardeno.clearscan.vault.VaultSettings
@@ -66,26 +61,12 @@ data class ClearScanUiState(
     val pdfPassword: String = "",
     val compressQuality: PdfCompressQuality = PdfCompressQuality.Balanced,
     val expandedDocumentId: String? = null,
-    val vaultEnabled: Boolean = false,
-    val vaultUnlocked: Boolean = true,
-    val benchmarkSummary: String? = null,
+    val settings: SettingsUiState = SettingsUiState(),
     val message: String? = null,
     val hasCompletedOnboarding: Boolean = false,
     val libraryViewMode: LibraryViewMode = LibraryViewMode.List,
-    val privacyStatus: PrivacyStatus? = null,
-    val isBackupRunning: Boolean = false,
-    val selfHostConfig: SelfHostConfig = SelfHostConfig(),
     val isSelfHostUploading: Boolean = false,
-    val idRedactionSuggestions: Map<String, IdRedactionSuggestion> = emptyMap(),
-    val autoPageTurnEnabled: Boolean = false,
-    val imageEnhancementEnabled: Boolean = true,
-    val defaultOcrLanguage: OcrLanguage = OcrLanguage.Latin,
-    val isUpdateChecking: Boolean = false,
-    val isUpdateDownloading: Boolean = false,
-    val pendingAppUpdate: AppUpdateInfo? = null,
-    val backupPassphraseRequest: BackupPassphraseRequest? = null,
-    val passphraseBackupEnabled: Boolean = false,
-    val wifiOnlySelfHostUpload: Boolean = true
+    val idRedactionSuggestions: Map<String, IdRedactionSuggestion> = emptyMap()
 )
 
 class ClearScanViewModel(application: Application) : AndroidViewModel(application) {
@@ -100,12 +81,28 @@ class ClearScanViewModel(application: Application) : AndroidViewModel(applicatio
     private val privacyStatusProvider = PrivacyStatusProvider(application, encryptedFileStore, exportAuditLog, vaultCrypto)
     private val backupRestoreManager = BackupRestoreManager(application, repository, encryptedFileStore, vaultCrypto)
     private val appPreferences = AppPreferences(application)
-    private val selfHostSettings = SelfHostSettings(application)
     private val selfHostExporter = SelfHostExporter(application)
     private val duplicateDetector = DuplicateDetector()
     private val apkUpdateManager = ApkUpdateManager(application)
     private val _uiState = MutableStateFlow(ClearScanUiState())
     private var activeOcrJobs = 0
+
+    private val settingsViewModel = SettingsViewModel(
+        application = application,
+        scope = viewModelScope,
+        repository = repository,
+        vaultCrypto = vaultCrypto,
+        vaultSettings = vaultSettings,
+        exportAuditLog = exportAuditLog,
+        privacyStatusProvider = privacyStatusProvider,
+        backupRestoreManager = backupRestoreManager,
+        appPreferences = appPreferences,
+        selfHostSettings = SelfHostSettings(application),
+        apkUpdateManager = apkUpdateManager,
+        duplicateDetector = duplicateDetector,
+        onMessage = ::reportMessage,
+        onBackupImportSuccess = ::applyBackupImport
+    )
 
     val uiState: StateFlow<ClearScanUiState> = _uiState.asStateFlow()
 
@@ -113,30 +110,27 @@ class ClearScanViewModel(application: Application) : AndroidViewModel(applicatio
         _uiState.update { current ->
             current.copy(
                 hasCompletedOnboarding = appPreferences.hasCompletedOnboarding,
-                libraryViewMode = appPreferences.libraryViewMode,
-                selfHostConfig = selfHostSettings.load(),
-                autoPageTurnEnabled = appPreferences.autoPageTurnEnabled,
-                imageEnhancementEnabled = appPreferences.imageEnhancementEnabled,
-                defaultOcrLanguage = appPreferences.defaultOcrLanguage,
-                passphraseBackupEnabled = appPreferences.passphraseBackupEnabled,
-                wifiOnlySelfHostUpload = appPreferences.wifiOnlySelfHostUpload
+                libraryViewMode = appPreferences.libraryViewMode
             )
         }
 
         viewModelScope.launch {
-            runCatching { vaultCrypto.ensureVaultKey() }
+            settingsViewModel.uiState.collect { settings ->
+                _uiState.update { it.copy(settings = settings) }
+            }
+        }
+
+        settingsViewModel.initializeVaultState()
+
+        viewModelScope.launch {
             val documents = repository.loadDocuments()
             val folders = repository.loadFolders()
             val duplicateIds = duplicateDetector.duplicateDocumentIds(documents)
             _uiState.update { current ->
-                val vaultEnabled = vaultSettings.isEnabled
                 current.copy(
                     documents = documents,
                     folders = folders,
-                    duplicateDocumentIds = duplicateIds,
-                    vaultEnabled = vaultEnabled,
-                    vaultUnlocked = !vaultEnabled,
-                    privacyStatus = privacyStatusProvider.load()
+                    duplicateDocumentIds = duplicateIds
                 )
             }
             documents
@@ -162,15 +156,9 @@ class ClearScanViewModel(application: Application) : AndroidViewModel(applicatio
         _uiState.update { it.copy(libraryViewMode = mode) }
     }
 
-    fun setAutoPageTurnEnabled(enabled: Boolean) {
-        appPreferences.setAutoPageTurnEnabled(enabled)
-        _uiState.update { it.copy(autoPageTurnEnabled = enabled) }
-    }
+    fun setAutoPageTurnEnabled(enabled: Boolean) = settingsViewModel.setAutoPageTurnEnabled(enabled)
 
-    fun setImageEnhancementEnabled(enabled: Boolean) {
-        appPreferences.setImageEnhancementEnabled(enabled)
-        _uiState.update { it.copy(imageEnhancementEnabled = enabled) }
-    }
+    fun setImageEnhancementEnabled(enabled: Boolean) = settingsViewModel.setImageEnhancementEnabled(enabled)
 
     fun setSelectedFolder(folderId: String?) {
         _uiState.update {
@@ -385,20 +373,11 @@ class ClearScanViewModel(application: Application) : AndroidViewModel(applicatio
         }
     }
 
-    fun setDefaultOcrLanguage(language: OcrLanguage) {
-        appPreferences.setDefaultOcrLanguage(language)
-        _uiState.update { it.copy(defaultOcrLanguage = language) }
-    }
+    fun setDefaultOcrLanguage(language: OcrLanguage) = settingsViewModel.setDefaultOcrLanguage(language)
 
-    fun setPassphraseBackupEnabled(enabled: Boolean) {
-        appPreferences.setPassphraseBackupEnabled(enabled)
-        _uiState.update { it.copy(passphraseBackupEnabled = enabled) }
-    }
+    fun setPassphraseBackupEnabled(enabled: Boolean) = settingsViewModel.setPassphraseBackupEnabled(enabled)
 
-    fun setWifiOnlySelfHostUpload(enabled: Boolean) {
-        appPreferences.setWifiOnlySelfHostUpload(enabled)
-        _uiState.update { it.copy(wifiOnlySelfHostUpload = enabled) }
-    }
+    fun setWifiOnlySelfHostUpload(enabled: Boolean) = settingsViewModel.setWifiOnlySelfHostUpload(enabled)
 
     fun setDocumentOcrLanguage(document: ScanDocument, language: OcrLanguage) {
         if (document.ocrLanguage == language) return
@@ -416,44 +395,11 @@ class ClearScanViewModel(application: Application) : AndroidViewModel(applicatio
         runOcr(document.copy(ocrStatus = OcrStatus.Queued))
     }
 
-    fun setVaultEnabled(enabled: Boolean) {
-        viewModelScope.launch {
-            runCatching {
-                vaultCrypto.ensureVaultKey()
-                vaultCrypto.healthCheck()
-            }.onSuccess { healthy ->
-                vaultSettings.setEnabled(enabled)
-                _uiState.update { current ->
-                    current.copy(
-                        vaultEnabled = enabled,
-                        vaultUnlocked = !enabled,
-                        message = when {
-                            enabled && healthy -> "Vault enabled. Biometric unlock will be required."
-                            enabled -> "Vault enabled."
-                            else -> "Vault disabled."
-                        }
-                    )
-                }
-            }.onFailure { error ->
-                _uiState.update { current ->
-                    current.copy(message = error.localizedMessage ?: "Vault setup failed.")
-                }
-            }
-        }
-    }
+    fun setVaultEnabled(enabled: Boolean) = settingsViewModel.setVaultEnabled(enabled)
 
-    fun unlockVault() {
-        _uiState.update { it.copy(vaultUnlocked = true, message = "Vault unlocked.") }
-    }
+    fun unlockVault() = settingsViewModel.unlockVault()
 
-    fun lockVault() {
-        _uiState.update { current ->
-            if (!current.vaultEnabled) current else current.copy(vaultUnlocked = false, message = "Vault locked.")
-        }
-        viewModelScope.launch {
-            repository.clearReadableCache()
-        }
-    }
+    fun lockVault() = settingsViewModel.lockVault()
 
     fun mergeAllDocuments() {
         val documents = _uiState.value.documents
@@ -526,27 +472,14 @@ class ClearScanViewModel(application: Application) : AndroidViewModel(applicatio
         )
     }
 
-    fun updateSelfHostConfig(config: SelfHostConfig) {
-        _uiState.update { it.copy(selfHostConfig = config) }
-    }
+    fun updateSelfHostConfig(config: com.ardeno.clearscan.data.SelfHostConfig) =
+        settingsViewModel.updateSelfHostConfig(config)
 
-    fun saveSelfHostConfig() {
-        val config = _uiState.value.selfHostConfig
-        selfHostSettings.save(config)
-        _uiState.update {
-            it.copy(
-                selfHostConfig = selfHostSettings.load(),
-                message = if (config.enabled) {
-                    "Self-host export enabled. Uploads require your explicit action."
-                } else {
-                    "Self-host export settings saved."
-                }
-            )
-        }
-    }
+    fun saveSelfHostConfig() = settingsViewModel.saveSelfHostConfig()
 
     fun uploadToSelfHost(document: ScanDocument) {
-        val config = _uiState.value.selfHostConfig
+        val settings = _uiState.value.settings
+        val config = settings.selfHostConfig
         if (!config.enabled) {
             reportMessage("Enable self-host export in Settings first.")
             return
@@ -563,7 +496,12 @@ class ClearScanViewModel(application: Application) : AndroidViewModel(applicatio
                     ?: error("No export file is available for this scan.")
                 val exportFile = File(exportPath)
                 require(exportFile.exists()) { "The export file is missing." }
-                selfHostExporter.export(document, exportFile, config, wifiOnly = _uiState.value.wifiOnlySelfHostUpload)
+                selfHostExporter.export(
+                    document,
+                    exportFile,
+                    config,
+                    wifiOnly = settings.wifiOnlySelfHostUpload
+                )
             }.onSuccess {
                 logDocumentExport(document, exportKind = "self-host")
                 _uiState.update { current ->
@@ -682,144 +620,22 @@ class ClearScanViewModel(application: Application) : AndroidViewModel(applicatio
         }
     }
 
-    fun runSinhalaTamilBenchmarkSelfCheck() {
-        viewModelScope.launch {
-            _uiState.update { it.copy(message = "Running on-device Sinhala/Tamil OCR benchmark…") }
-            runCatching {
-                OcrBenchmarkRunner.runSyntheticEngineBenchmark(getApplication())
-            }.onSuccess { metrics ->
-                val summary = buildString {
-                    append(OcrBenchmark.summary(metrics))
-                    append("\nEngine: Tesseract 5 (LSTM) · synthetic print samples")
-                }
-                _uiState.update { current ->
-                    current.copy(
-                        benchmarkSummary = summary,
-                        message = "Sinhala/Tamil OCR benchmark finished."
-                    )
-                }
-            }.onFailure { error ->
-                _uiState.update { current ->
-                    current.copy(
-                        message = error.localizedMessage ?: "OCR benchmark failed."
-                    )
-                }
-            }
-        }
-    }
+    fun runSinhalaTamilBenchmarkSelfCheck() = settingsViewModel.runSinhalaTamilBenchmarkSelfCheck()
 
-    fun refreshPrivacyStatus() {
-        _uiState.update { it.copy(privacyStatus = privacyStatusProvider.load()) }
-    }
+    fun refreshPrivacyStatus() = settingsViewModel.refreshPrivacyStatus()
 
     fun logDocumentExport(document: ScanDocument, exportKind: String = "share") {
-        exportAuditLog.record(
-            documentId = document.id,
-            documentTitle = document.title,
-            exportKind = exportKind
-        )
-        refreshPrivacyStatus()
+        settingsViewModel.logDocumentExport(document.id, document.title, exportKind)
     }
 
-    fun onBackupExportUriSelected(targetUri: Uri) {
-        if (appPreferences.passphraseBackupEnabled) {
-            _uiState.update {
-                it.copy(
-                    backupPassphraseRequest = BackupPassphraseRequest(
-                        action = BackupPassphraseAction.Export,
-                        uri = targetUri,
-                        confirmPassphrase = true
-                    )
-                )
-            }
-        } else {
-            exportBackupWithPassphrase(targetUri, null)
-        }
-    }
+    fun onBackupExportUriSelected(targetUri: Uri) = settingsViewModel.onBackupExportUriSelected(targetUri)
 
-    fun onBackupImportUriSelected(sourceUri: Uri) {
-        val version = backupRestoreManager.backupVersion(sourceUri)
-        if (version == BackupRestoreManager.BACKUP_VERSION_PASSPHRASE) {
-            _uiState.update {
-                it.copy(
-                    backupPassphraseRequest = BackupPassphraseRequest(
-                        action = BackupPassphraseAction.Import,
-                        uri = sourceUri
-                    )
-                )
-            }
-        } else {
-            importBackupWithPassphrase(sourceUri, null)
-        }
-    }
+    fun onBackupImportUriSelected(sourceUri: Uri) = settingsViewModel.onBackupImportUriSelected(sourceUri)
 
-    fun submitBackupPassphrase(passphrase: CharArray, confirmation: CharArray?) {
-        val request = _uiState.value.backupPassphraseRequest ?: return
-        if (request.confirmPassphrase && confirmation != null && !passphrase.contentEquals(confirmation)) {
-            reportMessage("Passphrases do not match.")
-            return
-        }
-        _uiState.update { it.copy(backupPassphraseRequest = null) }
-        when (request.action) {
-            BackupPassphraseAction.Export -> exportBackupWithPassphrase(request.uri, passphrase)
-            BackupPassphraseAction.Import -> importBackupWithPassphrase(request.uri, passphrase)
-        }
-    }
+    fun submitBackupPassphrase(passphrase: CharArray, confirmation: CharArray?) =
+        settingsViewModel.submitBackupPassphrase(passphrase, confirmation)
 
-    fun dismissBackupPassphrase() {
-        _uiState.update { it.copy(backupPassphraseRequest = null) }
-    }
-
-    private fun exportBackupWithPassphrase(targetUri: Uri, passphrase: CharArray?) {
-        viewModelScope.launch {
-            _uiState.update { it.copy(isBackupRunning = true, message = null) }
-            val result = backupRestoreManager.exportBackup(targetUri, passphrase)
-            _uiState.update { current ->
-                current.copy(
-                    isBackupRunning = false,
-                    message = result.message,
-                    privacyStatus = privacyStatusProvider.load()
-                )
-            }
-        }
-    }
-
-    private fun importBackupWithPassphrase(sourceUri: Uri, passphrase: CharArray?) {
-        viewModelScope.launch {
-            _uiState.update { it.copy(isBackupRunning = true, message = null) }
-            val result = backupRestoreManager.importBackup(sourceUri, passphrase)
-            if (result.requiresPassphrase) {
-                _uiState.update {
-                    it.copy(
-                        isBackupRunning = false,
-                        backupPassphraseRequest = BackupPassphraseRequest(
-                            action = BackupPassphraseAction.Import,
-                            uri = sourceUri
-                        )
-                    )
-                }
-                return@launch
-            }
-            val documents = if (result.success) repository.loadDocuments() else _uiState.value.documents
-            val folders = if (result.success) repository.loadFolders() else _uiState.value.folders
-            val duplicateIds = if (result.success) {
-                duplicateDetector.duplicateDocumentIds(documents)
-            } else {
-                _uiState.value.duplicateDocumentIds
-            }
-            _uiState.update { current ->
-                current.copy(
-                    documents = documents,
-                    folders = folders,
-                    duplicateDocumentIds = duplicateIds,
-                    expandedDocumentId = null,
-                    isBackupRunning = false,
-                    message = result.message,
-                    privacyStatus = privacyStatusProvider.load()
-                )
-            }
-        }
-    }
+    fun dismissBackupPassphrase() = settingsViewModel.dismissBackupPassphrase()
 
     fun exportPathFor(document: ScanDocument): String? =
         document.searchablePdfPath ?: document.pdfPath ?: document.pageImagePaths.firstOrNull()
@@ -983,48 +799,21 @@ class ClearScanViewModel(application: Application) : AndroidViewModel(applicatio
         _uiState.update { it.copy(message = null) }
     }
 
-    fun checkForAppUpdate() {
-        if (_uiState.value.isUpdateChecking) return
+    fun checkForAppUpdate() = settingsViewModel.checkForAppUpdate()
 
-        viewModelScope.launch {
-            _uiState.update { it.copy(isUpdateChecking = true) }
-            val result = apkUpdateManager.checkForUpdate()
-            _uiState.update { it.copy(isUpdateChecking = false) }
+    fun dismissAppUpdate() = settingsViewModel.dismissAppUpdate()
 
-            result.onSuccess { checkResult ->
-                when (checkResult) {
-                    is AppUpdateCheckResult.Available -> {
-                        _uiState.update { current ->
-                            current.copy(pendingAppUpdate = checkResult.info)
-                        }
-                    }
-                    is AppUpdateCheckResult.UpToDate -> {
-                        reportMessage("ClearScan is up to date (${checkResult.latestVersionName}).")
-                    }
-                    is AppUpdateCheckResult.Unsupported -> {
-                        val requiredUpdate = checkResult.info
-                        reportMessage(
-                            "This build is too old for ${requiredUpdate.versionName}. Install the latest APK manually from GitHub Releases."
-                        )
-                    }
-                }
-            }.onFailure { error ->
-                reportMessage(error.localizedMessage ?: "Could not check for updates.")
-            }
+    fun downloadPendingAppUpdate() = settingsViewModel.downloadPendingAppUpdate()
+
+    private fun applyBackupImport(reload: BackupImportReload) {
+        _uiState.update { current ->
+            current.copy(
+                documents = reload.documents,
+                folders = reload.folders,
+                duplicateDocumentIds = reload.duplicateDocumentIds,
+                expandedDocumentId = null
+            )
         }
-    }
-
-    fun dismissAppUpdate() {
-        _uiState.update { it.copy(pendingAppUpdate = null, isUpdateDownloading = false) }
-    }
-
-    fun downloadPendingAppUpdate() {
-        val update = _uiState.value.pendingAppUpdate ?: return
-        if (_uiState.value.isUpdateDownloading) return
-
-        _uiState.update { it.copy(isUpdateDownloading = true) }
-        apkUpdateManager.enqueueDownload(update)
-        reportMessage("Downloading ClearScan ${update.versionName}…")
     }
 
     private fun runSingleDocumentTool(
