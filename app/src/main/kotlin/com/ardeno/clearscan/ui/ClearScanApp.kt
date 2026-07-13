@@ -27,8 +27,10 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.ardeno.clearscan.ClearScanUiState
+import com.ardeno.clearscan.R
 import com.ardeno.clearscan.model.LibraryViewMode
 import com.ardeno.clearscan.model.PageAnnotation
 import com.ardeno.clearscan.model.ScanDocument
@@ -199,10 +201,10 @@ fun ClearScanApp(
                     icon = {
                         Icon(
                             imageVector = Icons.Outlined.Folder,
-                            contentDescription = "Library"
+                            contentDescription = stringResource(R.string.library_title)
                         )
                     },
-                    label = { Text("Library") }
+                    label = { Text(stringResource(R.string.library_title)) }
                 )
                 NavigationBarItem(
                     selected = selectedTab == ClearScanTab.Settings,
@@ -210,10 +212,10 @@ fun ClearScanApp(
                     icon = {
                         Icon(
                             imageVector = Icons.Outlined.Settings,
-                            contentDescription = "Settings"
+                            contentDescription = stringResource(R.string.settings_title)
                         )
                     },
-                    label = { Text("Settings") }
+                    label = { Text(stringResource(R.string.settings_title)) }
                 )
             }
         }

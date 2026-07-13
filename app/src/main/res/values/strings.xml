@@ -12,13 +12,38 @@
 
     <!-- Library screen -->
     <string name="library_title">Library</string>
+    <string name="library_select_documents">Select documents</string>
     <string name="library_empty">No documents yet</string>
     <string name="library_empty_hint">Tap the scan button to create your first document</string>
+    <string name="library_empty_title">Your document library is empty</string>
+    <string name="library_empty_body">Scan a receipt, contract, or note. OCR runs locally so you can search text later.</string>
+    <string name="library_scan_first">Scan your first document</string>
+    <string name="library_empty_search_title">No matching documents</string>
+    <string name="library_empty_search_message">Try searching by title, tag, or text recognized from a scan.</string>
+    <string name="library_empty_filter_title">No documents in this filter</string>
+    <string name="library_empty_filter_message">Try selecting a different folder or clearing the filter to see all documents.</string>
+    <string name="library_search_placeholder">Search titles, tags, or OCR text</string>
+    <string name="library_hide_search">Hide search</string>
+    <string name="library_show_search">Show search</string>
+    <string name="library_switch_grid">Switch to grid view</string>
+    <string name="library_switch_list">Switch to list view</string>
+    <string name="library_new_folder">New folder</string>
+    <string name="library_folder_name">Folder name</string>
+    <string name="library_close_detail">Close document detail</string>
+    <plurals name="library_document_count">
+        <item quantity="one">%d document</item>
+        <item quantity="other">%d documents</item>
+    </plurals>
+    <plurals name="library_selected_count">
+        <item quantity="one">%d selected</item>
+        <item quantity="other">%d selected</item>
+    </plurals>
 
     <!-- Scan -->
     <string name="scan_title">Scan</string>
     <string name="scan_document">Scan document</string>
     <string name="scan_id_card">Scan ID card</string>
+    <string name="scan_id_passport">Scan ID or passport</string>
     <string name="scan_auto_capture">Auto-capture</string>
 
     <!-- Import -->
@@ -31,6 +56,11 @@
     <string name="settings_general">General</string>
     <string name="settings_ocr">OCR settings</string>
     <string name="settings_self_host">Self-host export</string>
+    <string name="settings_section_capture">Capture</string>
+    <string name="settings_section_security">Security</string>
+    <string name="settings_section_app_updates">App updates</string>
+    <string name="settings_section_about">About ClearScan</string>
+    <string name="settings_section_developer">Developer</string>
 
     <!-- Search -->
     <string name="search_title">Search</string>
@@ -70,6 +100,14 @@
     <string name="onboarding_slide_5_title">Privacy vault and secure backup</string>
     <string name="onboarding_slide_5_body">Lock sensitive documents behind biometrics and safeguard your data with encrypted backups.</string>
 
+    <!-- Vault lock -->
+    <string name="vault_locked_title">Your scans are locked</string>
+    <string name="vault_locked_body">Authenticate to access your private document library. Everything stays on this device.</string>
+    <string name="vault_unlock">Unlock vault</string>
+    <string name="vault_fingerprint">Fingerprint</string>
+    <string name="vault_no_biometric">No biometric hardware detected. Use your device PIN or pattern to unlock.</string>
+    <string name="vault_auth_failed">Authentication failed. Try again or use your device PIN.</string>
+
     <!-- Self-host -->
     <string name="self_host_title">Self-host export</string>
     <string name="self_host_wifi_only">Wi-Fi only uploads</string>
@@ -82,6 +120,10 @@
     <string name="action_cancel">Cancel</string>
     <string name="action_delete">Delete</string>
     <string name="action_rename">Rename</string>
+    <string name="action_share">Share</string>
+    <string name="action_merge">Merge</string>
+    <string name="action_create">Create</string>
+    <string name="action_go_back">Go back</string>
     <string name="snackbar_deleted">Deleted 1 document.</string>
     <string name="snackbar_deleted_plural">Deleted %d documents.</string>
 </resources>

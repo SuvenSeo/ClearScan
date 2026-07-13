@@ -38,9 +38,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.ardeno.clearscan.BuildConfig
+import com.ardeno.clearscan.R
 import com.ardeno.clearscan.data.SelfHostConfig
 import com.ardeno.clearscan.ocr.OcrLanguage
 import com.ardeno.clearscan.ui.components.GroupedRowDivider
@@ -88,7 +90,7 @@ fun SettingsScreen(
             LargeTopAppBar(
                 title = {
                     Text(
-                        text = "Settings",
+                        text = stringResource(R.string.settings_title),
                         style = MaterialTheme.typography.displaySmall,
                         fontWeight = FontWeight.Bold
                     )
@@ -103,7 +105,7 @@ fun SettingsScreen(
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Go back"
+                            contentDescription = stringResource(R.string.action_go_back)
                         )
                     }
                 },
@@ -124,7 +126,7 @@ fun SettingsScreen(
             verticalArrangement = Arrangement.spacedBy(ClearScanSpacing.xxl)
         ) {
             GroupedSection(
-                title = "Capture",
+                title = stringResource(R.string.settings_section_capture),
                 footer = "All intelligence runs on-device. No cloud AI is used."
             ) {
                 CaptureSettingsSection(
@@ -140,7 +142,7 @@ fun SettingsScreen(
                 )
             }
 
-            GroupedSection(title = "Security") {
+            GroupedSection(title = stringResource(R.string.settings_section_security)) {
                 VaultSettingsRow(
                     vaultEnabled = vaultEnabled,
                     onToggleVault = onToggleVault,
@@ -149,7 +151,7 @@ fun SettingsScreen(
             }
 
             GroupedSection(
-                title = "Backup",
+                title = stringResource(R.string.backup_title),
                 footer = "Exports an encrypted backup via the system file picker. Restore replaces local scans on this device."
             ) {
                 BackupGroupedRow(
@@ -161,12 +163,12 @@ fun SettingsScreen(
                 )
             }
 
-            GroupedSection(title = "Privacy") {
+            GroupedSection(title = stringResource(R.string.privacy_title)) {
                 PrivacyDashboardEntryRow(onOpenPrivacyDashboard = onOpenPrivacyDashboard)
             }
 
             GroupedSection(
-                title = "Self-host export",
+                title = stringResource(R.string.self_host_title),
                 footer = "Credentials are stored with EncryptedSharedPreferences on this device only."
             ) {
                 SelfHostSettingsSection(
@@ -179,7 +181,7 @@ fun SettingsScreen(
             }
 
             GroupedSection(
-                title = "App updates",
+                title = stringResource(R.string.settings_section_app_updates),
                 footer = "Checks GitHub Releases only when you tap the button. No background tracking."
             ) {
                 AppUpdateSettingsRow(
@@ -189,7 +191,7 @@ fun SettingsScreen(
                 )
             }
 
-            GroupedSection(title = "About ClearScan") {
+            GroupedSection(title = stringResource(R.string.settings_section_about)) {
                 AboutGroupedContent()
                 GroupedRowDivider(startIndent = 16.dp)
                 PrivacyBadgeRow(
@@ -198,7 +200,7 @@ fun SettingsScreen(
             }
 
             GroupedSection(
-                title = "Developer",
+                title = stringResource(R.string.settings_section_developer),
                 footer = "Run the harness self-check, then add labeled scans for measured OCR accuracy."
             ) {
                 BenchmarkGroupedRow(

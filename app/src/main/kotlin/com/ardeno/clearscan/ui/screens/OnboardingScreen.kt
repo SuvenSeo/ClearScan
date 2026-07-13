@@ -44,9 +44,11 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.ardeno.clearscan.R
 import com.ardeno.clearscan.ui.components.ClearScanHaptic
 import com.ardeno.clearscan.ui.components.rememberClearScanHaptics
 import com.ardeno.clearscan.ui.theme.ClearScanMotion
@@ -68,31 +70,32 @@ private val slideGradients = listOf(
     Pair(Color(0xFFE8EAF6), Color(0xFFD4D8EC)),
 )
 
-private val onboardingPages = listOf(
+@Composable
+private fun rememberOnboardingPages(): List<OnboardingPage> = listOf(
     OnboardingPage(
         icon = Icons.Outlined.DocumentScanner,
-        title = "Scan privately",
-        body = "Capture receipts, contracts, and notes with your camera. Everything stays on this device — no cloud uploads."
+        title = stringResource(R.string.onboarding_slide_1_title),
+        body = stringResource(R.string.onboarding_slide_1_body)
     ),
     OnboardingPage(
         icon = Icons.Outlined.Search,
-        title = "Search your scans",
-        body = "Local OCR makes every document searchable. Find text inside scans instantly, even offline."
+        title = stringResource(R.string.onboarding_slide_2_title),
+        body = stringResource(R.string.onboarding_slide_2_body)
     ),
     OnboardingPage(
         icon = Icons.Outlined.CloudOff,
-        title = "Free. No ads. No cloud.",
-        body = "ClearScan is built to stay free — no subscriptions, no watermarks, and no account required."
+        title = stringResource(R.string.onboarding_slide_3_title),
+        body = stringResource(R.string.onboarding_slide_3_body)
     ),
     OnboardingPage(
         icon = Icons.Outlined.Folder,
-        title = "Organize with folders and tags",
-        body = "Group scans into folders and add smart tags. Keep every document sorted and easy to find."
+        title = stringResource(R.string.onboarding_slide_4_title),
+        body = stringResource(R.string.onboarding_slide_4_body)
     ),
     OnboardingPage(
         icon = Icons.Outlined.Lock,
-        title = "Privacy vault and secure backup",
-        body = "Lock sensitive documents behind biometrics and safeguard your data with encrypted backups."
+        title = stringResource(R.string.onboarding_slide_5_title),
+        body = stringResource(R.string.onboarding_slide_5_body)
     )
 )
 
@@ -101,6 +104,7 @@ fun OnboardingScreen(
     onComplete: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val onboardingPages = rememberOnboardingPages()
     val pagerState = rememberPagerState(pageCount = { onboardingPages.size })
     val scope = rememberCoroutineScope()
     val performHaptic = rememberClearScanHaptics()
@@ -154,7 +158,7 @@ fun OnboardingScreen(
                     .defaultMinSize(minHeight = ClearScanSpacing.minTouchTarget)
                     .graphicsLayer(alpha = skipAlpha)
             ) {
-                Text("Skip")
+                Text(stringResource(R.string.onboarding_skip))
             }
         }
         if (isLastPage) {
@@ -250,7 +254,7 @@ fun OnboardingScreen(
                     .defaultMinSize(minHeight = ClearScanSpacing.minTouchTarget),
                 shape = MaterialTheme.shapes.medium
             ) {
-                Text("Get Started")
+                Text(stringResource(R.string.onboarding_get_started))
             }
         } else {
             Button(
@@ -266,7 +270,7 @@ fun OnboardingScreen(
                     .defaultMinSize(minHeight = ClearScanSpacing.minTouchTarget),
                 shape = MaterialTheme.shapes.medium
             ) {
-                Text("Continue")
+                Text(stringResource(R.string.onboarding_continue))
             }
         }
     }

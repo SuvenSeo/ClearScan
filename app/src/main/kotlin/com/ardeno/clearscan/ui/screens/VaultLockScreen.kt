@@ -35,10 +35,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import com.ardeno.clearscan.R
 import com.ardeno.clearscan.ui.theme.ClearScanMotion
 import kotlin.math.roundToInt
 
@@ -100,7 +102,7 @@ fun VaultLockScreen(
         Spacer(modifier = Modifier.height(32.dp))
 
         Text(
-            text = "Your scans are locked",
+            text = stringResource(R.string.vault_locked_title),
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center
@@ -109,7 +111,7 @@ fun VaultLockScreen(
         Spacer(modifier = Modifier.height(12.dp))
 
         Text(
-            text = "Authenticate to access your private document library. Everything stays on this device.",
+            text = stringResource(R.string.vault_locked_body),
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center
@@ -128,7 +130,7 @@ fun VaultLockScreen(
             )
             Text(
                 modifier = Modifier.padding(start = 8.dp),
-                text = "Unlock vault"
+                text = stringResource(R.string.vault_unlock)
             )
         }
 
@@ -142,7 +144,7 @@ fun VaultLockScreen(
         ) {
             Icon(
                 imageVector = Icons.Outlined.Fingerprint,
-                contentDescription = "Fingerprint",
+                contentDescription = stringResource(R.string.vault_fingerprint),
                 tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f),
                 modifier = Modifier.size(32.dp)
             )
@@ -151,7 +153,7 @@ fun VaultLockScreen(
         if (!hasBiometric) {
             Spacer(modifier = Modifier.height(16.dp))
             Text(
-                text = "No biometric hardware detected. Use your device PIN or pattern to unlock.",
+                text = stringResource(R.string.vault_no_biometric),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
                 textAlign = TextAlign.Center,
@@ -162,7 +164,7 @@ fun VaultLockScreen(
         if (authError) {
             Spacer(modifier = Modifier.height(12.dp))
             Text(
-                text = "Authentication failed. Try again or use your device PIN.",
+                text = stringResource(R.string.vault_auth_failed),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.error,
                 textAlign = TextAlign.Center,

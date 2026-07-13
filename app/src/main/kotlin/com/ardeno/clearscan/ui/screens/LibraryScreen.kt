@@ -60,8 +60,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.ardeno.clearscan.R
 import com.ardeno.clearscan.model.DocumentFolder
 import com.ardeno.clearscan.model.LibraryViewMode
 import com.ardeno.clearscan.model.ScanDocument
@@ -142,15 +145,27 @@ fun LibraryScreen(
                 title = {
                     Column {
                         Text(
-                            text = if (selectionMode) "Select documents" else "Library",
+                            text = if (selectionMode) {
+                                stringResource(R.string.library_select_documents)
+                            } else {
+                                stringResource(R.string.library_title)
+                            },
                             style = MaterialTheme.typography.headlineLarge,
                             fontWeight = FontWeight.Bold
                         )
                         Text(
                             text = when {
-                                selectionMode -> "${selectedDocumentIds.size} selected"
-                                documents.isEmpty() -> "No documents yet"
-                                else -> "${documents.size} document${if (documents.size == 1) "" else "s"}"
+                                selectionMode -> pluralStringResource(
+                                    R.plurals.library_selected_count,
+                                    selectedDocumentIds.size,
+                                    selectedDocumentIds.size
+                                )
+                                documents.isEmpty() -> stringResource(R.string.library_empty)
+                                else -> pluralStringResource(
+                                    R.plurals.library_document_count,
+                                    documents.size,
+                                    documents.size
+                                )
                             },
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -171,7 +186,7 @@ fun LibraryScreen(
                         ) {
                             Icon(
                                 imageVector = Icons.Outlined.Checklist,
-                                contentDescription = "Select documents"
+                                contentDescription = stringResource(R.string.library_select_documents)
                             )
                         }
                     }
@@ -188,7 +203,11 @@ fun LibraryScreen(
                         ) {
                             Icon(
                                 imageVector = if (showSearchField) Icons.Outlined.SearchOff else Icons.Outlined.Search,
-                                contentDescription = if (showSearchField) "Hide search" else "Show search"
+                                contentDescription = if (showSearchField) {
+                                    stringResource(R.string.library_hide_search)
+                                } else {
+                                    stringResource(R.string.library_show_search)
+                                }
                             )
                         }
                     }
@@ -204,7 +223,7 @@ fun LibraryScreen(
                     ) {
                         Icon(
                             imageVector = Icons.Outlined.FileUpload,
-                            contentDescription = "Import PDF or images"
+                            contentDescription = stringResource(R.string.import_files)
                         )
                     }
                     IconButton(
@@ -219,7 +238,7 @@ fun LibraryScreen(
                     ) {
                         Icon(
                             imageVector = Icons.Outlined.Badge,
-                            contentDescription = "Scan ID or passport"
+                            contentDescription = stringResource(R.string.scan_id_passport)
                         )
                     }
                     IconButton(
@@ -234,7 +253,7 @@ fun LibraryScreen(
                     ) {
                         Icon(
                             imageVector = Icons.Rounded.DocumentScanner,
-                            contentDescription = "Scan document"
+                            contentDescription = stringResource(R.string.scan_document)
                         )
                     }
                     IconButton(
@@ -257,8 +276,8 @@ fun LibraryScreen(
                                 LibraryViewMode.Grid -> Icons.Outlined.ViewList
                             },
                             contentDescription = when (viewMode) {
-                                LibraryViewMode.List -> "Switch to grid view"
-                                LibraryViewMode.Grid -> "Switch to list view"
+                                LibraryViewMode.List -> stringResource(R.string.library_switch_grid)
+                                LibraryViewMode.Grid -> stringResource(R.string.library_switch_list)
                             }
                         )
                     }
@@ -312,7 +331,7 @@ fun LibraryScreen(
                                     horizontal = ClearScanSpacing.lg,
                                     vertical = ClearScanSpacing.sm
                                 ),
-                                placeholder = "Search titles, tags, or OCR text"
+                                placeholder = stringResource(R.string.library_search_placeholder)
                             )
                         }
 
@@ -377,7 +396,7 @@ fun LibraryScreen(
                                 horizontal = ClearScanSpacing.lg,
                                 vertical = ClearScanSpacing.sm
                             ),
-                            placeholder = "Search titles, tags, or OCR text"
+                            placeholder = stringResource(R.string.library_search_placeholder)
                         )
                     }
 
@@ -523,13 +542,13 @@ private fun CreateFolderDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("New folder") },
+        title = { Text(stringResource(R.string.library_new_folder)) },
         text = {
             OutlinedTextField(
                 value = folderName,
                 onValueChange = { folderName = it },
                 singleLine = true,
-                label = { Text("Folder name") }
+                label = { Text(stringResource(R.string.library_folder_name)) }
             )
         },
         confirmButton = {
@@ -537,12 +556,12 @@ private fun CreateFolderDialog(
                 onClick = { onCreate(folderName) },
                 enabled = folderName.isNotBlank()
             ) {
-                Text("Create")
+                Text(stringResource(R.string.action_create))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancel")
+                Text(stringResource(R.string.action_cancel))
             }
         }
     )
@@ -625,8 +644,8 @@ private fun LibraryGridContent(
 private fun EmptySearchState() {
     EmptyState(
         icon = Icons.Outlined.SearchOff,
-        title = "No matching documents",
-        message = "Try searching by title, tag, or text recognized from a scan."
+        title = stringResource(R.string.library_empty_search_title),
+        message = stringResource(R.string.library_empty_search_message)
     )
 }
 
@@ -644,8 +663,8 @@ private fun EmptyLibraryState(
     ) {
         EmptyState(
             icon = Icons.Outlined.Description,
-            title = "Your document library is empty",
-            message = "Scan a receipt, contract, or note. OCR runs locally so you can search text later."
+            title = stringResource(R.string.library_empty_title),
+            message = stringResource(R.string.library_empty_body)
         )
         Button(
             onClick = onScanClick,
@@ -654,11 +673,11 @@ private fun EmptyLibraryState(
         ) {
             Icon(
                 imageVector = Icons.Rounded.DocumentScanner,
-                contentDescription = "Scan document"
+                contentDescription = stringResource(R.string.scan_document)
             )
             Text(
                 modifier = Modifier.padding(start = ClearScanSpacing.sm),
-                text = "Scan your first document"
+                text = stringResource(R.string.library_scan_first)
             )
         }
         FilledTonalButton(
@@ -668,11 +687,11 @@ private fun EmptyLibraryState(
         ) {
             Icon(
                 imageVector = Icons.Outlined.FileUpload,
-                contentDescription = "Import PDF or images"
+                contentDescription = stringResource(R.string.import_files)
             )
             Text(
                 modifier = Modifier.padding(start = ClearScanSpacing.sm),
-                text = "Import PDF or images"
+                text = stringResource(R.string.import_files)
             )
         }
     }
@@ -689,8 +708,8 @@ private fun EmptyFolderFilterState() {
     ) {
         EmptyState(
             icon = Icons.Outlined.SearchOff,
-            title = "No documents in this filter",
-            message = "Try selecting a different folder or clearing the filter to see all documents."
+            title = stringResource(R.string.library_empty_filter_title),
+            message = stringResource(R.string.library_empty_filter_message)
         )
     }
 }
@@ -727,7 +746,7 @@ private fun DocumentDetailPane(
             ) {
                 Icon(
                     imageVector = Icons.Outlined.Close,
-                    contentDescription = "Close document detail"
+                    contentDescription = stringResource(R.string.library_close_detail)
                 )
             }
         }
