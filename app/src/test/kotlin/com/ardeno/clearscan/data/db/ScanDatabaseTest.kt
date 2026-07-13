@@ -118,6 +118,51 @@ class ScanDatabaseTest {
     }
 
     @Test
+    fun scanDocumentEntity_pageHashes_roundTrip() {
+        val now = Instant.now()
+        val pageHashes = listOf(
+            "a1b2c3d4e5f6789012345678abcdef01",
+            "fedcba0987654321fedcba0987654321",
+            "0000000000000000"
+        )
+        val doc = ScanDocument(
+            id = "page-hashes-test",
+            title = "Page Hashes",
+            pageCount = pageHashes.size,
+            createdAt = now,
+            pdfPath = null,
+            pageImagePaths = pageHashes.mapIndexed { index, _ -> "/pages/page$index.jpg" },
+            pageHashes = pageHashes
+        )
+
+        val entity = doc.toEntity()
+        assertTrue(entity.jsonPayload.contains("\"pageHashes\""))
+        pageHashes.forEach { hash ->
+            assertTrue(entity.jsonPayload.contains(hash))
+        }
+
+        val restored = entity.toDocument()
+        assertEquals(pageHashes, restored.pageHashes)
+        assertEquals(pageHashes.size, restored.pageCount)
+    }
+
+    @Test
+    fun scanDocumentEntity_pageHashes_emptyList_roundTrip() {
+        val now = Instant.now()
+        val doc = ScanDocument(
+            id = "page-hashes-empty",
+            title = "No Hashes",
+            pageCount = 1,
+            createdAt = now,
+            pdfPath = null,
+            pageImagePaths = listOf("/pages/page0.jpg")
+        )
+
+        val restored = doc.toEntity().toDocument()
+        assertTrue(restored.pageHashes.isEmpty())
+    }
+
+    @Test
     fun scanDocumentEntity_roundtrip_nullableFields() {
         val now = Instant.now()
         val doc = ScanDocument(
