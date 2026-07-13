@@ -37,6 +37,10 @@ jobs:
         shell: pwsh
         run: ./scripts/check-version-sync.ps1
 
+      - name: OCR corpus and tessdata check
+        shell: pwsh
+        run: ./scripts/check-ocr-corpus.ps1
+
       - name: Privacy release gate
         shell: pwsh
         run: ./scripts/privacy-release-gate.ps1
