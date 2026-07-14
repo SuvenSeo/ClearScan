@@ -1,8 +1,8 @@
 {
-  "versionCode": 6,
-  "versionName": "0.2.4",
-  "apkUrl": "https://github.com/SuvenSeo/ClearScan/releases/download/v0.2.4/ClearScan-v0.2.4-debug.apk",
-  "releaseNotes": "Complete remaining remediations: full en/si/ta localization (Compose + snackbars), folder rename/delete UI, vault auto-lock on background, 54 rendered OCR PNG fixtures with imageFile, ClearScanViewModel under 380 lines.",
+  "versionCode": 7,
+  "versionName": "0.2.5",
+  "apkUrl": "https://github.com/SuvenSeo/ClearScan/releases/download/v0.2.5/ClearScan-v0.2.5-debug.apk",
+  "releaseNotes": "Free-parity completion: soft trash, scan color filters, rename/copy OCR/share images; vault CryptoObject session hardening + disable→legacy; OCR evaluateWithRecognizer; locale parity CI.",
   "minVersionCode": 1,
-  "sha256": "e6aa523a1c9d8fb55d204d8ba7298123a317bd8ea2a8d835b877232f7b7397c5"
+  "sha256": "0f453f5b69c8fd0af2bc85ca1b1292fecbd611930c61f37b927682fe49f992ac"
 }
