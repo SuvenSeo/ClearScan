@@ -202,7 +202,9 @@ class ClearScanViewModel(application: Application) : AndroidViewModel(applicatio
         loadDocumentsWhenAccessible()
     }
 
-    fun createVaultDecryptCipher(): Cipher = vaultCrypto.createDecryptCipher()
+    fun createVaultDecryptCipher(): Cipher = vaultCrypto.createAuthCipher()
+
+    fun createVaultAuthCipher(): Cipher = vaultCrypto.createAuthCipher()
 
     fun onVaultCryptoUnlocked() {
         settingsViewModel.onVaultCryptoUnlocked()

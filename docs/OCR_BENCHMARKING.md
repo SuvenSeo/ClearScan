@@ -20,6 +20,8 @@ ClearScan includes a CER/WER scoring harness and on-device Sinhala/Tamil OCR via
 - OCR queue and searchable PDF generation use the selected language.
 - `OcrBenchmark` CER/WER harness with unit tests (`OcrBenchmarkTest`).
 - `OcrCorpusBenchmark` loads labeled entries from `app/src/test/resources/ocr-corpus/` when present.
+- `OcrCorpusBenchmark.evaluate(actualText)` scores stored OCR transcripts on the JVM.
+- `OcrCorpusBenchmark.evaluateWithRecognizer` loads each entry's PNG from the classpath (`imageFile`), runs a supplied recognizer callback, and scores against `expectedText` (for on-device or stubbed image-path benchmarks).
 - `OcrBenchmarkRunner` synthetic print benchmark (rendered text → OCR → CER/WER).
 - In-app **Run self-check** (Settings → Developer) runs the synthetic engine benchmark on-device.
 
@@ -41,8 +43,9 @@ Authoring docs and schema: [tools/ocr-corpus/README.md](../tools/ocr-corpus/READ
 1. Add a PNG scan and JSON entry under `app/src/test/resources/ocr-corpus/`.
 2. Register the JSON file in `ocr-corpus/index.json`.
 3. Set `expectedText` to manually typed ground truth.
-4. For JVM scoring, set `actualText` to a stored OCR run (or omit it for future on-device scoring via `imageFile`).
-5. Run `OcrCorpusBenchmarkTest` or call `OcrCorpusBenchmark.evaluateClasspathCorpus(classLoader)` from tooling.
+4. For JVM scoring without running OCR, set `actualText` to a stored OCR run and call `evaluate` / `evaluateClasspathCorpus`.
+5. For image-path scoring, keep `imageFile` pointing at a PNG under the corpus dir and call `evaluateWithRecognizer(entries, classLoader) { language, imageBytes -> ... }` (stub in unit tests; Tesseract/ML Kit on device).
+6. Run `OcrCorpusBenchmarkTest` or call `OcrCorpusBenchmark.evaluateClasspathCorpus(classLoader)` from tooling.
 
 Synthetic corpus checked in (Phase 4 target met for JVM harness):
 
@@ -91,7 +94,7 @@ Categories covered: printed text, handwriting, receipts, invoices, forms, and lo
 Production OCR accuracy claims still benefit from labeled **real camera** scan PNGs paired with the same JSON schema:
 
 - Replace or supplement synthetic rendered fixtures with device camera captures.
-- Score on-device via Tesseract using `imageFile` without relying on stored `actualText`.
+- Score on-device via Tesseract using `evaluateWithRecognizer` + `imageFile` without relying on stored `actualText`.
 
 Add entries via [tools/ocr-corpus/README.md](../tools/ocr-corpus/README.md).
 

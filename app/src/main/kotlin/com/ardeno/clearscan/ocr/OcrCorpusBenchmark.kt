@@ -48,6 +48,31 @@ object OcrCorpusBenchmark {
             )
         }
 
+    /**
+     * Scores corpus entries by loading each PNG from the classpath and running [recognize].
+     * Entries without [OcrCorpusEntry.imageFile], or whose PNG is missing, are skipped.
+     */
+    fun evaluateWithRecognizer(
+        entries: List<OcrCorpusEntry>,
+        classLoader: ClassLoader,
+        recognize: (language: BenchmarkLanguage, imageBytes: ByteArray) -> String
+    ): List<OcrBenchmarkMetrics> =
+        entries.mapNotNull { entry ->
+            val imageFile = entry.imageFile ?: return@mapNotNull null
+            val imageStream = classLoader.getResourceAsStream("$CORPUS_RESOURCE_DIR/$imageFile")
+                ?: return@mapNotNull null
+            val imageBytes = imageStream.use(InputStream::readBytes)
+            val actualText = recognize(entry.language, imageBytes)
+            OcrBenchmark.evaluate(
+                OcrBenchmarkCase(
+                    language = entry.language,
+                    sampleName = entry.id,
+                    expectedText = entry.expectedText,
+                    actualText = actualText
+                )
+            )
+        }
+
     fun evaluateClasspathCorpus(
         classLoader: ClassLoader,
         resourceDir: String = CORPUS_RESOURCE_DIR

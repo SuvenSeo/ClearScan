@@ -41,6 +41,39 @@ class OcrCorpusBenchmarkTest : RobolectricUnitTest() {
     }
 
     @Test
+    fun evaluateWithRecognizer_loadsPngAndScoresStubOutput() {
+        val classLoader = javaClass.classLoader!!
+        val entries = OcrCorpusBenchmark.loadFromClasspath(classLoader)
+        val images = entries.mapNotNull { entry ->
+            val imageFile = entry.imageFile ?: return@mapNotNull null
+            val bytes = classLoader.getResourceAsStream("ocr-corpus/$imageFile")?.use { it.readBytes() }
+                ?: return@mapNotNull null
+            Triple(entry.id, entry.expectedText, bytes)
+        }
+
+        val metrics = OcrCorpusBenchmark.evaluateWithRecognizer(entries, classLoader) { _, imageBytes ->
+            assertTrue("Recognizer should receive PNG bytes", imageBytes.isNotEmpty())
+            val match = images.first { it.third.contentEquals(imageBytes) }
+            // Stub: perfect transcript for smoke IDs; empty OCR elsewhere.
+            when (match.first) {
+                "sinhala-synthetic-01", "tamil-synthetic-01" -> match.second
+                else -> ""
+            }
+        }
+
+        assertEquals(entries.count { !it.imageFile.isNullOrBlank() }, metrics.size)
+
+        val sinhala = metrics.first { it.sampleName == "sinhala-synthetic-01" }
+        assertEquals(0.0, sinhala.characterErrorRate, 0.0)
+
+        val tamil = metrics.first { it.sampleName == "tamil-synthetic-01" }
+        assertEquals(0.0, tamil.characterErrorRate, 0.0)
+
+        val emptyStub = metrics.first { it.sampleName == "sinhala-doc-01" }
+        assertTrue(emptyStub.characterErrorRate > 0.0)
+    }
+
+    @Test
     fun summaryIncludesBothLanguages() {
         val summary = OcrCorpusBenchmark.summary(
             OcrCorpusBenchmark.evaluateClasspathCorpus(javaClass.classLoader!!)

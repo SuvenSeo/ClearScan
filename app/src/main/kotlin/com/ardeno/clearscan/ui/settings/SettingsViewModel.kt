@@ -21,6 +21,7 @@ import com.ardeno.clearscan.update.AppUpdateCheckResult
 import com.ardeno.clearscan.update.ApkUpdateManager
 import com.ardeno.clearscan.vault.ExportAuditLog
 import com.ardeno.clearscan.vault.PrivacyStatusProvider
+import com.ardeno.clearscan.vault.VaultAuthenticationRequiredException
 import com.ardeno.clearscan.vault.VaultCrypto
 import com.ardeno.clearscan.vault.VaultKeyMigration
 import com.ardeno.clearscan.vault.VaultSettings
@@ -115,10 +116,16 @@ class SettingsViewModel(
             runCatching {
                 if (enabled) {
                     vaultCrypto.ensureBiometricVaultKey()
+                    vaultCrypto.healthCheck()
                 } else {
+                    // Downgrade blobs off the biometric key before disabling lock UI.
+                    if (vaultCrypto.hasBiometricKey() && vaultCrypto.requiresAuthentication()) {
+                        throw VaultAuthenticationRequiredException()
+                    }
+                    vaultKeyMigration.downgradeToLegacyIfNeeded()
                     vaultCrypto.ensureVaultKey()
+                    vaultCrypto.healthCheck()
                 }
-                vaultCrypto.healthCheck()
             }.onSuccess { healthy ->
                 vaultSettings.setEnabled(enabled)
                 if (enabled) {

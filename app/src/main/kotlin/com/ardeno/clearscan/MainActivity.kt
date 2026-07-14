@@ -464,7 +464,7 @@ class MainActivity : FragmentActivity() {
             }
         }
 
-        val cipher: javax.crypto.Cipher = runCatching { viewModel.createVaultDecryptCipher() }
+        val cipher: javax.crypto.Cipher = runCatching { viewModel.createVaultAuthCipher() }
             .getOrElse { error ->
                 viewModel.reportVaultAuthError()
                 viewModel.reportMessage(error.localizedMessage ?: uiStrings.vaultCryptoUnavailable())
@@ -480,6 +480,11 @@ class MainActivity : FragmentActivity() {
                 override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
                     super.onAuthenticationSucceeded(result)
                     isBiometricPromptActive = false
+                    if (result.cryptoObject?.cipher == null) {
+                        viewModel.reportVaultAuthError()
+                        viewModel.reportMessage(uiStrings.vaultCryptoUnavailable())
+                        return
+                    }
                     viewModel.onVaultCryptoUnlocked()
                     onSuccess()
                 }
