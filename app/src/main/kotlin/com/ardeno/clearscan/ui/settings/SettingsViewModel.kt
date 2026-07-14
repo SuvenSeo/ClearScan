@@ -2,6 +2,7 @@ package com.ardeno.clearscan.ui.settings
 
 import android.app.Application
 import android.net.Uri
+import com.ardeno.clearscan.R
 import com.ardeno.clearscan.backup.BackupPassphraseAction
 import com.ardeno.clearscan.backup.BackupPassphraseRequest
 import com.ardeno.clearscan.backup.BackupRestoreManager
@@ -214,7 +215,8 @@ class SettingsViewModel(
             }.onSuccess { metrics ->
                 val summary = buildString {
                     append(OcrBenchmark.summary(metrics))
-                    append("\nEngine: Tesseract 5 (LSTM) · synthetic print samples")
+                    append('\n')
+                    append(application.getString(R.string.settings_benchmark_engine_footer))
                 }
                 _uiState.update { current ->
                     current.copy(benchmarkSummary = summary)

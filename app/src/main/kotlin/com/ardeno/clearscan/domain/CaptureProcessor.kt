@@ -2,6 +2,7 @@ package com.ardeno.clearscan.domain
 
 import android.app.Application
 import android.net.Uri
+import com.ardeno.clearscan.R
 import com.ardeno.clearscan.data.AppPreferences
 import com.ardeno.clearscan.data.LocalDocumentRepository
 import com.ardeno.clearscan.model.ScanDocument
@@ -34,7 +35,7 @@ class CaptureProcessor(
                 repository.createDocument(
                     import = FileImportResolver.resolve(application, uris),
                     ocrLanguage = appPreferences.defaultOcrLanguage,
-                    titlePrefix = "Import"
+                    titlePrefix = application.getString(R.string.document_title_import)
                 )
             }.onSuccess { document ->
                 onDocumentCaptured(document, uiStrings.importedPages(document.pageCount))
