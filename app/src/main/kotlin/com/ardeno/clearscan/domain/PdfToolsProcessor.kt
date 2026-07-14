@@ -1,5 +1,6 @@
 package com.ardeno.clearscan.domain
 
+import android.content.Context
 import com.ardeno.clearscan.data.LocalDocumentRepository
 import com.ardeno.clearscan.model.PageAnnotation
 import com.ardeno.clearscan.model.ScanDocument
@@ -24,6 +25,7 @@ data class PdfToolsUiState(
 )
 
 class PdfToolsProcessor(
+    private val context: Context,
     private val scope: CoroutineScope,
     private val repository: LocalDocumentRepository,
     private val pdfToolEngine: PdfToolEngine,
@@ -93,7 +95,8 @@ class PdfToolsProcessor(
     }
 
     fun redactIdSensitiveFields(document: ScanDocument) {
-        val suggestion = getIdRedactionSuggestions()[document.id] ?: IdRedactionSuggester.suggestFromText(document.ocrText)
+        val suggestion = getIdRedactionSuggestions()[document.id]
+            ?: IdRedactionSuggester.suggestFromText(context, document.ocrText)
         if (suggestion == null) {
             onMessage(uiStrings.noIdFieldsToRedact())
             return

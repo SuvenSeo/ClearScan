@@ -9,6 +9,7 @@ import android.os.Environment
 import android.provider.Settings
 import androidx.core.content.FileProvider
 import com.ardeno.clearscan.BuildConfig
+import com.ardeno.clearscan.R
 import java.io.File
 
 class ApkUpdateManager(
@@ -60,8 +61,8 @@ class ApkUpdateManager(
         }
 
         val request = DownloadManager.Request(Uri.parse(update.apkUrl))
-            .setTitle("ClearScan ${update.versionName}")
-            .setDescription("Downloading update")
+            .setTitle(context.getString(R.string.update_download_title, update.versionName))
+            .setDescription(context.getString(R.string.update_download_description))
             .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
             .setAllowedOverMetered(true)
             .setAllowedOverRoaming(false)

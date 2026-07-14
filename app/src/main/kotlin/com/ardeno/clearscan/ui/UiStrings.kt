@@ -98,6 +98,9 @@ class UiStrings(private val context: Context) {
     fun pdfToolFailed() = context.getString(R.string.msg_pdf_tool_failed)
 
     // Document actions
+    fun documentRenamed(title: String) = context.getString(R.string.msg_document_renamed, title)
+    fun documentRenameFailed() = context.getString(R.string.msg_document_rename_failed)
+    fun ocrTextCopied() = context.getString(R.string.msg_ocr_text_copied)
     fun tagsUpdated() = context.getString(R.string.msg_tags_updated)
     fun addedToFavorites() = context.getString(R.string.msg_added_favorites)
     fun removedFromFavorites() = context.getString(R.string.msg_removed_favorites)
@@ -108,6 +111,7 @@ class UiStrings(private val context: Context) {
     fun selfHostConfigure() = context.getString(R.string.msg_self_host_configure)
     fun noExportFile() = context.getString(R.string.msg_no_export_file)
     fun exportFileMissing() = context.getString(R.string.msg_export_file_missing)
+    fun noPageImages() = context.getString(R.string.msg_no_page_images)
     fun selfHostUploaded(title: String) = context.getString(R.string.msg_self_host_uploaded, title)
     fun selfHostUploadFailed() = context.getString(R.string.msg_self_host_upload_failed)
 
@@ -142,6 +146,7 @@ class UiStrings(private val context: Context) {
     fun vaultCryptoUnavailable() = context.getString(R.string.msg_vault_crypto_unavailable)
     fun allowInstallUpdates() = context.getString(R.string.msg_allow_install_updates)
     fun chooserShareScan() = context.getString(R.string.chooser_share_scan)
+    fun chooserShareImages() = context.getString(R.string.chooser_share_images)
     fun chooserExportOcrText() = context.getString(R.string.chooser_export_ocr_text)
     fun chooserShareSelected() = context.getString(R.string.chooser_share_selected)
     fun biometricEnableVaultTitle() = context.getString(R.string.biometric_enable_vault_title)

@@ -26,7 +26,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Camera
@@ -52,10 +51,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import com.ardeno.clearscan.R
 import com.ardeno.clearscan.ui.theme.ClearScanTheme
 import java.io.File
 import java.util.concurrent.Executors
@@ -67,7 +69,11 @@ class PageTurnCaptureActivity : ComponentActivity() {
         ActivityResultContracts.RequestPermission()
     ) { granted ->
         if (!granted) {
-            Toast.makeText(this, "Camera permission is required for page-turn capture.", Toast.LENGTH_LONG).show()
+            Toast.makeText(
+                this,
+                getString(R.string.page_turn_camera_permission),
+                Toast.LENGTH_LONG
+            ).show()
             finish()
         }
     }
@@ -121,7 +127,9 @@ private fun PageTurnCaptureScreen(
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     var pageCount by remember { mutableIntStateOf(capturedPageCount) }
-    var statusText by remember { mutableStateOf("Flip a page — capture happens when motion settles.") }
+    var statusText by remember {
+        mutableStateOf(context.getString(R.string.page_turn_hint))
+    }
     var imageCapture by remember { mutableStateOf<ImageCapture?>(null) }
     var isCapturing by remember { mutableStateOf(false) }
     val pageTurnDetector = remember { PageTurnDetector() }
@@ -133,7 +141,7 @@ private fun PageTurnCaptureScreen(
         }
     }
 
-    fun capturePage(trigger: String) {
+    fun capturePage(triggerResId: Int) {
         val capture = imageCapture ?: return
         if (isCapturing) return
 
@@ -149,13 +157,23 @@ private fun PageTurnCaptureScreen(
                     BitmapFactory.decodeFile(outputFile.absolutePath)?.recycle()
                     pageCount += 1
                     onPageCaptured(outputFile.absolutePath)
-                    statusText = "$trigger · $pageCount page${if (pageCount == 1) "" else "s"} captured"
+                    val pagesLabel = context.resources.getQuantityString(
+                        R.plurals.document_page_count,
+                        pageCount,
+                        pageCount
+                    )
+                    statusText = context.getString(
+                        R.string.page_turn_capture_status,
+                        context.getString(triggerResId),
+                        pagesLabel
+                    )
                     pageTurnDetector.reset()
                     isCapturing = false
                 }
 
                 override fun onError(exception: ImageCaptureException) {
-                    statusText = exception.localizedMessage ?: "Capture failed."
+                    statusText = exception.localizedMessage
+                        ?: context.getString(R.string.page_turn_capture_failed)
                     isCapturing = false
                 }
             }
@@ -165,10 +183,13 @@ private fun PageTurnCaptureScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Auto page-turn") },
+                title = { Text(stringResource(R.string.page_turn_title)) },
                 navigationIcon = {
                     IconButton(onClick = onCancel) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(R.string.action_go_back)
+                        )
                     }
                 },
                 actions = {
@@ -178,7 +199,10 @@ private fun PageTurnCaptureScreen(
                         modifier = Modifier.padding(end = 8.dp)
                     ) {
                         Icon(Icons.Filled.Check, contentDescription = null)
-                        Text(modifier = Modifier.padding(start = 6.dp), text = "Done")
+                        Text(
+                            modifier = Modifier.padding(start = 6.dp),
+                            text = stringResource(R.string.action_done)
+                        )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -226,15 +250,17 @@ private fun PageTurnCaptureScreen(
                                         onPageSettled = {
                                             runOnUiThreadSafe(context) {
                                                 if (!isCapturing) {
-                                                    capturePage("Auto-captured")
+                                                    capturePage(R.string.page_turn_trigger_auto)
                                                 }
                                             }
                                         },
                                         onStatus = { event ->
                                             runOnUiThreadSafe(context) {
                                                 statusText = when (event) {
-                                                    PageTurnEvent.Motion -> "Page turning… hold steady after the flip."
-                                                    PageTurnEvent.Settling -> "Settling… auto-capture soon."
+                                                    PageTurnEvent.Motion ->
+                                                        context.getString(R.string.page_turn_motion)
+                                                    PageTurnEvent.Settling ->
+                                                        context.getString(R.string.page_turn_settling)
                                                     PageTurnEvent.PageSettled -> statusText
                                                     PageTurnEvent.None -> statusText
                                                 }
@@ -275,16 +301,23 @@ private fun PageTurnCaptureScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "$pageCount page${if (pageCount == 1) "" else "s"}",
+                        text = pluralStringResource(
+                            R.plurals.document_page_count,
+                            pageCount,
+                            pageCount
+                        ),
                         style = MaterialTheme.typography.titleMedium,
                         color = Color.White
                     )
                     Button(
-                        onClick = { capturePage("Manual capture") },
+                        onClick = { capturePage(R.string.page_turn_trigger_manual) },
                         enabled = !isCapturing
                     ) {
                         Icon(Icons.Filled.Camera, contentDescription = null)
-                        Text(modifier = Modifier.padding(start = 8.dp), text = "Capture now")
+                        Text(
+                            modifier = Modifier.padding(start = 8.dp),
+                            text = stringResource(R.string.page_turn_capture_now)
+                        )
                     }
                 }
             }

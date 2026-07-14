@@ -2,7 +2,13 @@
 <resources>
     <string name="app_name">ClearScan</string>
     <string name="shortcut_scan">ස්කෑන් කරන්න</string>
+    <string name="shortcut_scan_long">ලේඛනයක් ස්කෑන් කරන්න</string>
+    <string name="shortcut_id_scan">හැඳුනුම්පත් ස්කෑන්</string>
+    <string name="shortcut_id_scan_long">හැඳුනුම්පතක් ස්කෑන් කරන්න</string>
     <string name="shortcut_import">ආයාත කරන්න</string>
+    <string name="shortcut_import_long">PDF හෝ රූප ආයාත කරන්න</string>
+    <string name="widget_scan_label">ලේඛනය ස්කෑන් කරන්න</string>
+    <string name="widget_scan_description">ClearScan සඳහා ඉක්මන් ස්කෑන් කෙටිමග</string>
     <string name="library_title">පුස්තකාලය</string>
     <string name="library_select_documents">ලේඛන තෝරන්න</string>
     <string name="library_empty">තවත් ලේඛන නැත</string>
@@ -34,10 +40,14 @@
     <string name="scan_document">ලේඛනය ස්කෑන් කරන්න</string>
     <string name="scan_id_card">හැඳුනුම්පත ස්කෑන් කරන්න</string>
     <string name="scan_id_passport">හැඳුනුම්පත හෝ ගමන් බලපත්‍රය ස්කෑන් කරන්න</string>
+    <string name="scan_auto_capture">ස්වයංක්‍රීය අල්ලා ගැනීම</string>
     <string name="import_title">ආයාත කරන්න</string>
     <string name="import_files">PDF හෝ රූප ආයාත කරන්න</string>
+    <string name="import_from_device">උපාංගයෙන්</string>
     <string name="settings_title">සැකසීම්</string>
+    <string name="settings_general">සාමාන්‍ය</string>
     <string name="settings_ocr">OCR සැකසීම්</string>
+    <string name="settings_self_host">ස්වයං-සත්කාරක නිර්යාතය</string>
     <string name="settings_section_capture">අල්ලා ගැනීම</string>
     <string name="settings_section_security">ආරක්ෂාව</string>
     <string name="settings_section_app_updates">යෙදුම් යාවත්කාල</string>
@@ -53,8 +63,11 @@
     <string name="backup_title">උපස්ථය</string>
     <string name="backup_export">උපස්ථය නිර්යාත කරන්න</string>
     <string name="backup_import">උපස්ථය ආයාත කරන්න</string>
+    <string name="backup_passphrase">මුරපද උපස්ථය</string>
     <string name="privacy_title">රහස්‍යතාව</string>
     <string name="privacy_vault">රහස්‍යතා ගබඩාව</string>
+    <string name="privacy_vault_description">ජෛවමිතික පිටුපස පුස්තකාලය අගුළු දමන්න; ඔබ පිටව යන විට ස්වයංක්‍රීයව අගුළු වේ</string>
+    <string name="privacy_audit_log">විගණන ලොගය නිර්යාත කරන්න</string>
     <string name="onboarding_slide_1_title">පුද්ගලිකව ස්කෑන් කරන්න</string>
     <string name="onboarding_slide_1_body">රිසිට්පත්, ගිවිසුම් සහ සටහන් ඔබගේ කැමරාවෙන් අල්ලා ගන්න. සියල්ල මෙම උපාංගයේම රැඳී සිටී — වලාකුළු උඩුගත කිරීම් නැත.</string>
     <string name="onboarding_slide_2_title">ඔබගේ ස්කෑන් සොයන්න</string>
@@ -176,6 +189,8 @@
     <string name="action_merge">ඒකාබද්ධ කරන්න</string>
     <string name="action_create">සාදන්න</string>
     <string name="action_go_back">ආපසු යන්න</string>
+    <string name="snackbar_deleted">ලේඛන 1 ක් මකන ලදී.</string>
+    <string name="snackbar_deleted_plural">ලේඛන %d ක් මකන ලදී.</string>
 
     <!-- Filters -->
     <string name="filter_all">සියල්ල</string>
@@ -185,8 +200,12 @@
     <!-- Document detail -->
     <string name="document_delete_title">ලේඛනය මකන්නද?</string>
     <string name="document_delete_message">\"%1$s\" මෙම උපාංගයෙන් ස්ථිරවම ඉවත් කෙරේ.</string>
+    <string name="document_rename_title">ලේඛනය නැවත නම් කරන්න</string>
+    <string name="document_title_label">මාතෘකාව</string>
     <string name="document_possible_duplicate">සම්භාව්‍ය අනුපාතික පිටපත</string>
     <string name="document_organize">සංවිධානය කරන්න</string>
+    <string name="document_copy_ocr">පෙළ පිටපත් කරන්න</string>
+    <string name="document_share_images">රූප බෙදාගන්න</string>
     <string name="document_favorited">ප්‍රියතමයි</string>
     <string name="document_add_favorites">ප්‍රියතම වලට එක් කරන්න</string>
     <string name="document_remove_favorites">ප්‍රියතම වලින් ඉවත් කරන්න</string>
@@ -238,6 +257,9 @@
 
     <!-- Accessibility -->
     <string name="a11y_share_document">ලේඛනය බෙදාගන්න</string>
+    <string name="a11y_share_images">පිටු රූප බෙදාගන්න</string>
+    <string name="a11y_rename_document">ලේඛනය නැවත නම් කරන්න</string>
+    <string name="a11y_copy_ocr_text">OCR පෙළ පිටපත් කරන්න</string>
     <string name="a11y_delete_document">ලේඛනය මකන්න</string>
     <string name="a11y_delete_document_title">%1$s මකන්න</string>
     <string name="a11y_export_ocr_text">OCR පෙළ නිර්යාත කරන්න</string>
@@ -395,6 +417,9 @@
     <string name="msg_created_pages_removed">තෝරාගත් පිටු ඉවත් කළ පිටපතක් සාදන ලදී.</string>
     <string name="msg_created_compressed_copy">සම්පීඩිත පිටපතක් සාදන ලදී (%1$s).</string>
     <string name="msg_pdf_tool_failed">PDF මෙවලම අසාර්ථක විය.</string>
+    <string name="msg_document_renamed">\"%1$s\" ලෙස නැවත නම් කරන ලදී.</string>
+    <string name="msg_document_rename_failed">ලේඛනය නැවත නම් කළ නොහැක.</string>
+    <string name="msg_ocr_text_copied">OCR පෙළ පසුරු පුවරුවට පිටපත් කරන ලදී.</string>
     <string name="msg_tags_updated">ටැග් යාවත්කාලීන කරන ලදී.</string>
     <string name="msg_added_favorites">ප්‍රියතම වලට එක් කරන ලදී.</string>
     <string name="msg_removed_favorites">ප්‍රියතම වලින් ඉවත් කරන ලදී.</string>
@@ -405,6 +430,7 @@
     <string name="msg_self_host_configure">සැකසුම් වලින් ඔබගේ ස්වයං-සත්කාරක අන්ත ලක්ෂ්‍යය සහ අක්තපත්‍ර එක් කරන්න.</string>
     <string name="msg_no_export_file">මෙම ස්කෑන් සඳහා නිර්යාත ගොනුවක් නොමැත.</string>
     <string name="msg_export_file_missing">නිර්යාත ගොනුව නැත.</string>
+    <string name="msg_no_page_images">බෙදාගැනීමට පිටු රූප නොමැත.</string>
     <string name="msg_self_host_uploaded">%1$s ඔබගේ ස්වයං-සත්කාරක අන්ත ලක්ෂ්‍යයට උඩුගත කරන ලදී.</string>
     <string name="msg_self_host_upload_failed">ස්වයං-සත්කාරක උඩුගත කිරීම අසාර්ථක විය.</string>
     <string name="msg_backup_nothing">තවම backup කිරීමට කිසිවක් නැත.</string>
@@ -434,10 +460,51 @@
     <string name="msg_vault_crypto_unavailable">Vault crypto නොමැත.</string>
     <string name="msg_allow_install_updates">ClearScan වෙත යාවත්කාලීන ස්ථාපනය කිරීමට අවසර දෙන්න, පසුව Download නැවත ඔබන්න.</string>
     <string name="chooser_share_scan">ස්කෑන් බෙදාගන්න</string>
+    <string name="chooser_share_images">පිටු රූප බෙදාගන්න</string>
     <string name="chooser_export_ocr_text">OCR පෙළ නිර්යාත කරන්න</string>
     <string name="chooser_share_selected">තෝරාගත් ස්කෑන් බෙදාගන්න</string>
     <string name="biometric_enable_vault_title">ClearScan vault සක්‍රිය කරන්න</string>
     <string name="biometric_enable_vault_subtitle">vault lock සක්‍රිය කිරීමට පෙර ඔබගේ අනන්‍යතාව තහවුරු කරන්න.</string>
     <string name="biometric_unlock_title">ClearScan අගුළු හරින්න</string>
     <string name="biometric_unlock_subtitle">ඔබගේ ස්කෑන් අගුළු හැරීමට ජෛවමිතික හෝ උපාංග අක්තපත්‍ර භාවිතා කරන්න.</string>
+
+    <!-- Page-turn capture -->
+    <string name="page_turn_camera_permission">පිටු හැරවීම් අල්ලා ගැනීමට කැමරා අවසරය අවශ්‍යයි.</string>
+    <string name="page_turn_title">ස්වයංක්‍රීය පිටු හැරවීම</string>
+    <string name="page_turn_hint">පිටුවක් හරවන්න — චලනය ස්ථිර වූ විට අල්ලා ගනී.</string>
+    <string name="page_turn_motion">පිටුව හැරෙමින්… හැරවීමෙන් පසු ස්ථිරව තබා ගන්න.</string>
+    <string name="page_turn_settling">ස්ථිර වෙමින්… ස්වයංක්‍රීය අල්ලා ගැනීම ඉක්මනින්.</string>
+    <string name="page_turn_capture_failed">අල්ලා ගැනීම අසාර්ථකයි.</string>
+    <string name="page_turn_trigger_auto">ස්වයංක්‍රීයව අල්ලා ගත්තා</string>
+    <string name="page_turn_trigger_manual">අතින් අල්ලා ගැනීම</string>
+    <string name="page_turn_capture_status">%1$s · %2$s අල්ලා ගත්තා</string>
+    <string name="page_turn_capture_now">දැන් අල්ලා ගන්න</string>
+    <string name="action_done">අවසන්</string>
+
+    <!-- APK update download -->
+    <string name="update_download_not_found">යාවත්කාල බාගැනීම හමු නොවීය.</string>
+    <string name="update_download_failed">යාවත්කාල බාගැනීම අසාර්ථකයි.</string>
+    <string name="update_apk_missing">බාගත කළ APK නැත.</string>
+    <string name="update_apk_integrity_failed">බාගත කළ APK අඛණ්ඩතා සත්‍යාපනය අසාර්ථකයි.</string>
+    <string name="update_allow_install_retry">ClearScan වෙත යාවත්කාල ස්ථාපනය කිරීමට අවසර දෙන්න, පසුව නැවත උත්සාහ කරන්න.</string>
+    <string name="update_download_title">ClearScan %1$s</string>
+    <string name="update_download_description">යාවත්කාලය බාගත වෙමින්</string>
+
+    <!-- ID redaction labels -->
+    <string name="id_label_mrz">යන්ත්‍ර-කියවිය හැකි කලාපය</string>
+    <string name="id_label_identity_field">ලේබල් කළ අනන්‍යතා ක්ෂේත්‍රය</string>
+    <string name="id_label_id_number">හැඳුනුම් අංකය</string>
+    <string name="id_label_date_field">දින ක්ෂේත්‍රය</string>
+    <string name="id_label_mrz_band">MRZ පටිය</string>
+    <string name="id_label_id_number_band">හැඳුනුම් අංක පටිය</string>
+    <string name="id_label_detected_text">හඳුනාගත් පෙළ</string>
+
+    <!-- Default document titles -->
+    <string name="document_title_scan">ස්කෑන්</string>
+    <string name="document_title_id_scan">හැඳුනුම්පත් ස්කෑන්</string>
+    <string name="document_title_import">ආයාත</string>
+    <string name="document_title_dated">%1$s %2$s</string>
+
+    <!-- Benchmark footer -->
+    <string name="settings_benchmark_engine_footer">එන්ජිම: Tesseract 5 (LSTM) · කෘතිම මුද්‍රණ නියැදි</string>
 </resources>

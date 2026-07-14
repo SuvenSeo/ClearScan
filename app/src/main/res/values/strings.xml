@@ -244,8 +244,12 @@
     <!-- Document detail -->
     <string name="document_delete_title">Delete document?</string>
     <string name="document_delete_message">\"%1$s\" will be permanently removed from this device.</string>
+    <string name="document_rename_title">Rename document</string>
+    <string name="document_title_label">Title</string>
     <string name="document_possible_duplicate">Possible duplicate</string>
     <string name="document_organize">Organize</string>
+    <string name="document_copy_ocr">Copy text</string>
+    <string name="document_share_images">Share images</string>
     <string name="document_favorited">Favorited</string>
     <string name="document_add_favorites">Add to favorites</string>
     <string name="document_remove_favorites">Remove from favorites</string>
@@ -297,6 +301,9 @@
 
     <!-- Accessibility -->
     <string name="a11y_share_document">Share document</string>
+    <string name="a11y_share_images">Share page images</string>
+    <string name="a11y_rename_document">Rename document</string>
+    <string name="a11y_copy_ocr_text">Copy OCR text</string>
     <string name="a11y_delete_document">Delete document</string>
     <string name="a11y_delete_document_title">Delete %1$s</string>
     <string name="a11y_export_ocr_text">Export OCR text</string>
@@ -454,6 +461,9 @@
     <string name="msg_created_pages_removed">Created copy with selected pages removed.</string>
     <string name="msg_created_compressed_copy">Created compressed copy (%1$s).</string>
     <string name="msg_pdf_tool_failed">PDF tool failed.</string>
+    <string name="msg_document_renamed">Renamed to \"%1$s\".</string>
+    <string name="msg_document_rename_failed">Could not rename document.</string>
+    <string name="msg_ocr_text_copied">OCR text copied to clipboard.</string>
     <string name="msg_tags_updated">Tags updated.</string>
     <string name="msg_added_favorites">Added to favorites.</string>
     <string name="msg_removed_favorites">Removed from favorites.</string>
@@ -464,6 +474,7 @@
     <string name="msg_self_host_configure">Add your self-host endpoint and credentials in Settings.</string>
     <string name="msg_no_export_file">No export file is available for this scan.</string>
     <string name="msg_export_file_missing">The export file is missing.</string>
+    <string name="msg_no_page_images">No page images are available to share.</string>
     <string name="msg_self_host_uploaded">Uploaded %1$s to your self-host target.</string>
     <string name="msg_self_host_upload_failed">Self-host upload failed.</string>
     <string name="msg_backup_nothing">Nothing to back up yet.</string>
@@ -493,10 +504,51 @@
     <string name="msg_vault_crypto_unavailable">Vault crypto is unavailable.</string>
     <string name="msg_allow_install_updates">Allow ClearScan to install updates, then tap Download again.</string>
     <string name="chooser_share_scan">Share scan</string>
+    <string name="chooser_share_images">Share page images</string>
     <string name="chooser_export_ocr_text">Export OCR text</string>
     <string name="chooser_share_selected">Share selected scans</string>
     <string name="biometric_enable_vault_title">Enable ClearScan vault</string>
     <string name="biometric_enable_vault_subtitle">Confirm your identity before enabling vault lock.</string>
     <string name="biometric_unlock_title">Unlock ClearScan</string>
     <string name="biometric_unlock_subtitle">Use biometrics or device credentials to unlock your scans.</string>
+
+    <!-- Page-turn capture -->
+    <string name="page_turn_camera_permission">Camera permission is required for page-turn capture.</string>
+    <string name="page_turn_title">Auto page-turn</string>
+    <string name="page_turn_hint">Flip a page — capture happens when motion settles.</string>
+    <string name="page_turn_motion">Page turning… hold steady after the flip.</string>
+    <string name="page_turn_settling">Settling… auto-capture soon.</string>
+    <string name="page_turn_capture_failed">Capture failed.</string>
+    <string name="page_turn_trigger_auto">Auto-captured</string>
+    <string name="page_turn_trigger_manual">Manual capture</string>
+    <string name="page_turn_capture_status">%1$s · %2$s captured</string>
+    <string name="page_turn_capture_now">Capture now</string>
+    <string name="action_done">Done</string>
+
+    <!-- APK update download -->
+    <string name="update_download_not_found">Update download not found.</string>
+    <string name="update_download_failed">Update download failed.</string>
+    <string name="update_apk_missing">Downloaded APK is missing.</string>
+    <string name="update_apk_integrity_failed">Downloaded APK failed integrity verification.</string>
+    <string name="update_allow_install_retry">Allow ClearScan to install updates, then try again.</string>
+    <string name="update_download_title">ClearScan %1$s</string>
+    <string name="update_download_description">Downloading update</string>
+
+    <!-- ID redaction labels -->
+    <string name="id_label_mrz">Machine-readable zone</string>
+    <string name="id_label_identity_field">Labeled identity field</string>
+    <string name="id_label_id_number">ID number</string>
+    <string name="id_label_date_field">Date field</string>
+    <string name="id_label_mrz_band">MRZ band</string>
+    <string name="id_label_id_number_band">ID number band</string>
+    <string name="id_label_detected_text">Detected text</string>
+
+    <!-- Default document titles -->
+    <string name="document_title_scan">Scan</string>
+    <string name="document_title_id_scan">ID scan</string>
+    <string name="document_title_import">Import</string>
+    <string name="document_title_dated">%1$s %2$s</string>
+
+    <!-- Benchmark footer -->
+    <string name="settings_benchmark_engine_footer">Engine: Tesseract 5 (LSTM) · synthetic print samples</string>
 </resources>

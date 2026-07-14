@@ -2,6 +2,7 @@ package com.ardeno.clearscan.data
 
 import android.content.Context
 import android.net.Uri
+import com.ardeno.clearscan.R
 import com.ardeno.clearscan.data.db.*
 import com.ardeno.clearscan.image.ImageEnhancer
 import com.ardeno.clearscan.model.DocumentFolder
@@ -75,7 +76,7 @@ class LocalDocumentRepository(
     suspend fun createDocument(
         import: ScannerImport,
         ocrLanguage: OcrLanguage = OcrLanguage.Latin,
-        titlePrefix: String = "Scan"
+        titlePrefix: String = appContext.getString(R.string.document_title_scan)
     ): ScanDocument = withContext(Dispatchers.IO) {
         vaultCrypto.ensureVaultKey()
         val createdAt = Instant.now()
@@ -100,10 +101,14 @@ class LocalDocumentRepository(
         }
         val pageCount = pageFiles.size.coerceAtLeast(1)
         val resolvedPrefix = when (import.scanMode) {
-            ScanMode.IdCard -> "ID scan"
+            ScanMode.IdCard -> appContext.getString(R.string.document_title_id_scan)
             ScanMode.Document -> titlePrefix
         }
-        val title = "$resolvedPrefix ${titleFormatter.format(createdAt.atZone(ZoneId.systemDefault()))}"
+        val title = appContext.getString(
+            R.string.document_title_dated,
+            resolvedPrefix,
+            titleFormatter.format(createdAt.atZone(ZoneId.systemDefault()))
+        )
         val tags = buildList {
             addAll(import.tags)
             if (import.scanMode == ScanMode.IdCard) add("id-card")
@@ -149,7 +154,11 @@ class LocalDocumentRepository(
             encryptedFileStore.encryptPlaintextFile(file).absolutePath
         }
         val pageCount = pageFiles.size.coerceAtLeast(1)
-        val title = "Scan ${titleFormatter.format(createdAt.atZone(ZoneId.systemDefault()))}"
+        val title = appContext.getString(
+            R.string.document_title_dated,
+            appContext.getString(R.string.document_title_scan),
+            titleFormatter.format(createdAt.atZone(ZoneId.systemDefault()))
+        )
         val storedDocument = ScanDocument(
             id = id,
             title = title,
@@ -336,6 +345,14 @@ class LocalDocumentRepository(
         }
         writeIndex(documents)
         true
+    }
+
+    suspend fun updateDocumentTitle(id: String, title: String): ScanDocument? = withContext(Dispatchers.IO) {
+        val cleanTitle = title.trim()
+        if (cleanTitle.isBlank()) return@withContext null
+        updateDocument(id) { document ->
+            document.copy(updatedAt = Instant.now(), title = cleanTitle)
+        }?.let(::toReadableDocument)
     }
 
     suspend fun updateDocumentTags(id: String, tags: List<String>): ScanDocument? = withContext(Dispatchers.IO) {

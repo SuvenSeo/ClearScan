@@ -70,6 +70,7 @@ class ClearScanViewModel(application: Application) : AndroidViewModel(applicatio
     )
 
     private val ocrProcessor = OcrProcessor(
+        context = application,
         scope = viewModelScope,
         repository = repository,
         ocrEngine = ocrEngine,
@@ -84,6 +85,7 @@ class ClearScanViewModel(application: Application) : AndroidViewModel(applicatio
     )
 
     private val pdfToolsProcessor = PdfToolsProcessor(
+        context = application,
         scope = viewModelScope,
         repository = repository,
         pdfToolEngine = pdfToolEngine,
@@ -253,9 +255,13 @@ class ClearScanViewModel(application: Application) : AndroidViewModel(applicatio
 
     fun deleteFolder(folderId: String) = libraryViewModel.deleteFolder(folderId)
 
+    fun renameDocument(document: ScanDocument, title: String) = documentActionsHandler.renameDocument(document, title)
+
     fun updateDocumentTags(document: ScanDocument, tags: List<String>) = documentActionsHandler.updateDocumentTags(document, tags)
 
     fun toggleDocumentFavorite(document: ScanDocument) = documentActionsHandler.toggleDocumentFavorite(document)
+
+    fun pageImagePathsFor(document: ScanDocument) = documentActionsHandler.pageImagePathsFor(document)
 
     fun moveDocumentToFolder(document: ScanDocument, folderId: String?) = documentActionsHandler.moveDocumentToFolder(document, folderId)
 

@@ -2,7 +2,13 @@
 <resources>
     <string name="app_name">ClearScan</string>
     <string name="shortcut_scan">ஸ்கேன் செய்</string>
+    <string name="shortcut_scan_long">ஆவணத்தை ஸ்கேன் செய்</string>
+    <string name="shortcut_id_scan">அடையாள அட்டை ஸ்கேன்</string>
+    <string name="shortcut_id_scan_long">அடையாள அட்டையை ஸ்கேன் செய்</string>
     <string name="shortcut_import">இறக்குமதி</string>
+    <string name="shortcut_import_long">PDF அல்லது படங்களை இறக்குமதி செய்</string>
+    <string name="widget_scan_label">ஆவணத்தை ஸ்கேன் செய்</string>
+    <string name="widget_scan_description">ClearScan-க்கான விரைவு ஸ்கேன் குறுக்குவழி</string>
     <string name="library_title">நூலகம்</string>
     <string name="library_select_documents">ஆவணங்களைத் தேர்ந்தெடு</string>
     <string name="library_empty">இன்னும் ஆவணங்கள் இல்லை</string>
@@ -34,10 +40,14 @@
     <string name="scan_document">ஆவணத்தை ஸ்கேன் செய்</string>
     <string name="scan_id_card">அடையாள அட்டையை ஸ்கேன் செய்</string>
     <string name="scan_id_passport">அடையாள அட்டை அல்லது பாஸ்போர்ட்டை ஸ்கேன் செய்</string>
+    <string name="scan_auto_capture">தானியங்கி பிடிப்பு</string>
     <string name="import_title">இறக்குமதி</string>
     <string name="import_files">PDF அல்லது படங்களை இறக்குமதி செய்</string>
+    <string name="import_from_device">சாதனத்திலிருந்து</string>
     <string name="settings_title">அமைப்புகள்</string>
+    <string name="settings_general">பொது</string>
     <string name="settings_ocr">OCR அமைப்புகள்</string>
+    <string name="settings_self_host">சுய-ஹோஸ்ட் ஏற்றுமதி</string>
     <string name="settings_section_capture">பிடிப்பு</string>
     <string name="settings_section_security">பாதுகாப்பு</string>
     <string name="settings_section_app_updates">பயன்பாட்டு புதுப்பிப்புகள்</string>
@@ -53,8 +63,11 @@
     <string name="backup_title">காப்புப்பதிவு</string>
     <string name="backup_export">காப்புப்பதிவை ஏற்றுமதி செய்</string>
     <string name="backup_import">காப்புப்பதிவை இறக்குமதி செய்</string>
+    <string name="backup_passphrase">கடவுச்சொல் காப்புப்பதிவு</string>
     <string name="privacy_title">தனியுரிமை</string>
     <string name="privacy_vault">தனியுரிமை பாதுகாப்பறை</string>
+    <string name="privacy_vault_description">பயோமெட்ரிக்கிற்குப் பின்னால் நூலகத்தைப் பூட்டு; நீங்கள் வெளியேறும்போது தானாகப் பூட்டும்</string>
+    <string name="privacy_audit_log">தணிக்கை பதிவை ஏற்றுமதி செய்</string>
     <string name="onboarding_slide_1_title">தனிப்பட்ட முறையில் ஸ்கேன் செய்யவும்</string>
     <string name="onboarding_slide_1_body">ரசீதுகள், ஒப்பந்தங்கள் மற்றும் குறிப்புகளை உங்கள் கேமராவால் பிடிக்கவும். அனைத்தும் இந்த சாதனத்திலேயே இருக்கும் — கிளவுட் பதிவேற்றங்கள் இல்லை.</string>
     <string name="onboarding_slide_2_title">உங்கள் ஸ்கேன்களைத் தேடுங்கள்</string>
@@ -176,6 +189,8 @@
     <string name="action_merge">இணை</string>
     <string name="action_create">உருவாக்கு</string>
     <string name="action_go_back">பின்செல்</string>
+    <string name="snackbar_deleted">1 ஆவணம் நீக்கப்பட்டது.</string>
+    <string name="snackbar_deleted_plural">%d ஆவணங்கள் நீக்கப்பட்டன.</string>
 
     <!-- Filters -->
     <string name="filter_all">அனைத்தும்</string>
@@ -185,8 +200,12 @@
     <!-- Document detail -->
     <string name="document_delete_title">ஆவணத்தை நீக்கவா?</string>
     <string name="document_delete_message">\"%1$s\" இந்த சாதனத்திலிருந்து நிரந்தரமாக அகற்றப்படும்.</string>
+    <string name="document_rename_title">ஆவணத்தை மறுபெயரிடு</string>
+    <string name="document_title_label">தலைப்பு</string>
     <string name="document_possible_duplicate">சாத்தியமான நகல்</string>
     <string name="document_organize">ஒழுங்கமை</string>
+    <string name="document_copy_ocr">உரையை நகலெடு</string>
+    <string name="document_share_images">படங்களைப் பகிர்</string>
     <string name="document_favorited">பிடித்தது</string>
     <string name="document_add_favorites">பிடித்தவையில் சேர்</string>
     <string name="document_remove_favorites">பிடித்தவையிலிருந்து அகற்று</string>
@@ -238,6 +257,9 @@
 
     <!-- Accessibility -->
     <string name="a11y_share_document">ஆவணத்தைப் பகிர்</string>
+    <string name="a11y_share_images">பக்கப் படங்களைப் பகிர்</string>
+    <string name="a11y_rename_document">ஆவணத்தை மறுபெயரிடு</string>
+    <string name="a11y_copy_ocr_text">OCR உரையை நகலெடு</string>
     <string name="a11y_delete_document">ஆவணத்தை நீக்கு</string>
     <string name="a11y_delete_document_title">%1$s ஐ நீக்கு</string>
     <string name="a11y_export_ocr_text">OCR உரையை ஏற்றுமதி செய்</string>
@@ -395,6 +417,9 @@
     <string name="msg_created_pages_removed">தேர்ந்தெடுத்த பக்கங்கள் நீக்கப்பட்ட நகல் உருவாக்கப்பட்டது.</string>
     <string name="msg_created_compressed_copy">சுருக்கப்பட்ட நகல் உருவாக்கப்பட்டது (%1$s).</string>
     <string name="msg_pdf_tool_failed">PDF கருவி தோல்வியடைந்தது.</string>
+    <string name="msg_document_renamed">\"%1$s\" என மறுபெயரிடப்பட்டது.</string>
+    <string name="msg_document_rename_failed">ஆவணத்தை மறுபெயரிட முடியவில்லை.</string>
+    <string name="msg_ocr_text_copied">OCR உரை நகலகத்திற்கு நகலெடுக்கப்பட்டது.</string>
     <string name="msg_tags_updated">குறிச்சொற்கள் புதுப்பிக்கப்பட்டன.</string>
     <string name="msg_added_favorites">பிடித்தவையில் சேர்க்கப்பட்டது.</string>
     <string name="msg_removed_favorites">பிடித்தவையிலிருந்து அகற்றப்பட்டது.</string>
@@ -405,6 +430,7 @@
     <string name="msg_self_host_configure">அமைப்புகளில் உங்கள் சுய-ஹோஸ்ட் முடிவுப்புள்ளி மற்றும் சான்றுகளைச் சேர்க்கவும்.</string>
     <string name="msg_no_export_file">இந்த ஸ்கேனுக்கு ஏற்றுமதி கோப்பு இல்லை.</string>
     <string name="msg_export_file_missing">ஏற்றுமதி கோப்பு காணவில்லை.</string>
+    <string name="msg_no_page_images">பகிர பக்கப் படங்கள் இல்லை.</string>
     <string name="msg_self_host_uploaded">%1$s உங்கள் சுய-ஹோஸ்ட் இலக்குக்கு பதிவேற்றப்பட்டது.</string>
     <string name="msg_self_host_upload_failed">சுய-ஹோஸ்ட் பதிவேற்றம் தோல்வியடைந்தது.</string>
     <string name="msg_backup_nothing">இன்னும் காப்புப்பிரதி எடுக்க எதுவும் இல்லை.</string>
@@ -434,10 +460,51 @@
     <string name="msg_vault_crypto_unavailable">Vault crypto கிடைக்கவில்லை.</string>
     <string name="msg_allow_install_updates">ClearScan க்கு புதுப்பிப்புகளை நல்த்தல் அனுமதிக்கவும், பின்னர் Download ஐ மீண்டும் தட்டவும்.</string>
     <string name="chooser_share_scan">ஸ்கேனைப் பகிர்</string>
+    <string name="chooser_share_images">பக்கப் படங்களைப் பகிர்</string>
     <string name="chooser_export_ocr_text">OCR உரையை ஏற்றுமதி செய்</string>
     <string name="chooser_share_selected">தேர்ந்தெடுத்த ஸ்கேன்களைப் பகிர்</string>
     <string name="biometric_enable_vault_title">ClearScan vault ஐ இயக்கு</string>
     <string name="biometric_enable_vault_subtitle">vault பூட்டை இயக்குவதற்கு முன் உங்கள் அடையாளத்தை உறுதிப்படுத்தவும்.</string>
     <string name="biometric_unlock_title">ClearScan ஐ திற</string>
     <string name="biometric_unlock_subtitle">உங்கள் ஸ்கேன்களைத் திறக்க பயோமெட்ரிக் அல்லது சாதன சான்றுகளைப் பயன்படுத்தவும்.</string>
+
+    <!-- Page-turn capture -->
+    <string name="page_turn_camera_permission">பக்க திருப்பு பிடிப்புக்கு கேமரா அனுமதி தேவை.</string>
+    <string name="page_turn_title">தானியங்கி பக்க திருப்பு</string>
+    <string name="page_turn_hint">ஒரு பக்கத்தைத் திருப்புங்கள் — அசைவு நின்றதும் பிடிப்பு நடக்கும்.</string>
+    <string name="page_turn_motion">பக்கம் திரும்புகிறது… திருப்பிய பிறகு நிலையாக வைத்திருங்கள்.</string>
+    <string name="page_turn_settling">நிலைபெறுகிறது… விரைவில் தானியங்கி பிடிப்பு.</string>
+    <string name="page_turn_capture_failed">பிடிப்பு தோல்வி.</string>
+    <string name="page_turn_trigger_auto">தானாகப் பிடிக்கப்பட்டது</string>
+    <string name="page_turn_trigger_manual">கைமுறை பிடிப்பு</string>
+    <string name="page_turn_capture_status">%1$s · %2$s பிடிக்கப்பட்டன</string>
+    <string name="page_turn_capture_now">இப்போது பிடி</string>
+    <string name="action_done">முடிந்தது</string>
+
+    <!-- APK update download -->
+    <string name="update_download_not_found">புதுப்பிப்பு பதிவிறக்கம் கிடைக்கவில்லை.</string>
+    <string name="update_download_failed">புதுப்பிப்பு பதிவிறக்கம் தோல்வி.</string>
+    <string name="update_apk_missing">பதிவிறக்கப்பட்ட APK காணவில்லை.</string>
+    <string name="update_apk_integrity_failed">பதிவிறக்கப்பட்ட APK ஒருமைப்பாட்டு சரிபார்ப்பு தோல்வி.</string>
+    <string name="update_allow_install_retry">ClearScan புதுப்பிப்புகளை நிறுவ அனுமதிக்கவும், பின்னர் மீண்டும் முயலவும்.</string>
+    <string name="update_download_title">ClearScan %1$s</string>
+    <string name="update_download_description">புதுப்பிப்பு பதிவிறக்கப்படுகிறது</string>
+
+    <!-- ID redaction labels -->
+    <string name="id_label_mrz">இயந்திரம் படிக்கக்கூடிய மண்டலம்</string>
+    <string name="id_label_identity_field">பெயரிடப்பட்ட அடையாள புலம்</string>
+    <string name="id_label_id_number">அடையாள எண்</string>
+    <string name="id_label_date_field">தேதி புலம்</string>
+    <string name="id_label_mrz_band">MRZ பட்டை</string>
+    <string name="id_label_id_number_band">அடையாள எண் பட்டை</string>
+    <string name="id_label_detected_text">கண்டறியப்பட்ட உரை</string>
+
+    <!-- Default document titles -->
+    <string name="document_title_scan">ஸ்கேன்</string>
+    <string name="document_title_id_scan">அடையாள அட்டை ஸ்கேன்</string>
+    <string name="document_title_import">இறக்குமதி</string>
+    <string name="document_title_dated">%1$s %2$s</string>
+
+    <!-- Benchmark footer -->
+    <string name="settings_benchmark_engine_footer">இயங்கி: Tesseract 5 (LSTM) · செயற்கை அச்சு மாதிரிகள்</string>
 </resources>

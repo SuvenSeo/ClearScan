@@ -129,6 +129,7 @@ class MainActivity : FragmentActivity() {
                     onPdfPasswordChange = viewModel::updatePdfPassword,
                     onToggleDocumentExpanded = viewModel::toggleDocumentExpanded,
                     onShareDocument = ::shareDocument,
+                    onShareDocumentImages = ::shareDocumentImages,
                     onExportText = ::exportText,
                     onPrintDocument = ::printDocument,
                     onDeleteDocument = viewModel::deleteDocument,
@@ -157,9 +158,11 @@ class MainActivity : FragmentActivity() {
                     onMergeSelected = viewModel::mergeSelectedDocuments,
                     onExportSelected = ::shareSelectedDocuments,
                     onDeleteSelected = viewModel::deleteSelectedDocuments,
+                    onRenameDocument = viewModel::renameDocument,
                     onToggleFavorite = viewModel::toggleDocumentFavorite,
                     onUpdateTags = viewModel::updateDocumentTags,
                     onMoveToFolder = viewModel::moveDocumentToFolder,
+                    onReportMessage = viewModel::reportMessage,
                     onToggleVault = ::toggleVault,
                     onUnlockVault = ::unlockVault,
                     onLockVault = viewModel::lockVault,
@@ -264,6 +267,36 @@ class MainActivity : FragmentActivity() {
 
         startActivity(Intent.createChooser(shareIntent, uiStrings.chooserShareScan()))
         viewModel.logDocumentExport(document)
+    }
+
+    private fun shareDocumentImages(document: ScanDocument) {
+        val paths = viewModel.pageImagePathsFor(document)
+        if (paths.isEmpty()) {
+            viewModel.reportMessage(uiStrings.noPageImages())
+            return
+        }
+
+        val uris = ArrayList<android.net.Uri>(paths.size)
+        paths.forEach { path ->
+            uris.add(FileProvider.getUriForFile(this, "$packageName.fileprovider", File(path)))
+        }
+
+        val shareIntent = if (uris.size == 1) {
+            Intent(Intent.ACTION_SEND).apply {
+                type = "image/jpeg"
+                putExtra(Intent.EXTRA_STREAM, uris.first())
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }
+        } else {
+            Intent(Intent.ACTION_SEND_MULTIPLE).apply {
+                type = "image/jpeg"
+                putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris)
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }
+        }
+
+        startActivity(Intent.createChooser(shareIntent, uiStrings.chooserShareImages()))
+        viewModel.logDocumentExport(document, exportKind = "share-images")
     }
 
     override fun onNewIntent(intent: Intent) {

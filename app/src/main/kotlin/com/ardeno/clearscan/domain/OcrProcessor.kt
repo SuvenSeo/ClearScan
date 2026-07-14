@@ -1,5 +1,6 @@
 package com.ardeno.clearscan.domain
 
+import android.content.Context
 import com.ardeno.clearscan.data.LocalDocumentRepository
 import com.ardeno.clearscan.intelligence.DocumentTagger
 import com.ardeno.clearscan.intelligence.ReceiptFieldExtractor
@@ -18,6 +19,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 class OcrProcessor(
+    private val context: Context,
     private val scope: CoroutineScope,
     private val repository: LocalDocumentRepository,
     private val ocrEngine: OcrEngine,
@@ -70,8 +72,8 @@ class OcrProcessor(
             }.onSuccess { ocrSuccess ->
                 ocrSuccess.updatedDocument?.let { onReplaceDocument(it) }
                 val idSuggestion = if (document.scanMode == ScanMode.IdCard || document.tags.contains("id-card")) {
-                    IdRedactionSuggester.suggest(ocrSuccess.result.pages)
-                        ?: IdRedactionSuggester.suggestFromText(ocrSuccess.result.text)
+                    IdRedactionSuggester.suggest(context, ocrSuccess.result.pages)
+                        ?: IdRedactionSuggester.suggestFromText(context, ocrSuccess.result.text)
                 } else {
                     null
                 }

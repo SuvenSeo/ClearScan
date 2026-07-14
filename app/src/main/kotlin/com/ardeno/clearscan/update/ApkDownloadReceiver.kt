@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.widget.Toast
+import com.ardeno.clearscan.R
 
 class ApkDownloadReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
@@ -22,14 +23,22 @@ class ApkDownloadReceiver : BroadcastReceiver() {
         val cursor = downloadManager.query(query)
         cursor.use {
             if (!it.moveToFirst()) {
-                Toast.makeText(context, "Update download not found.", Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    context,
+                    context.getString(R.string.update_download_not_found),
+                    Toast.LENGTH_LONG
+                ).show()
                 ApkUpdateSession.clear()
                 return
             }
 
             val status = it.getInt(it.getColumnIndexOrThrow(DownloadManager.COLUMN_STATUS))
             if (status != DownloadManager.STATUS_SUCCESSFUL) {
-                Toast.makeText(context, "Update download failed.", Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    context,
+                    context.getString(R.string.update_download_failed),
+                    Toast.LENGTH_LONG
+                ).show()
                 ApkUpdateSession.clear()
                 return
             }
@@ -40,7 +49,11 @@ class ApkDownloadReceiver : BroadcastReceiver() {
         ApkUpdateSession.clear()
 
         if (apkFile == null || !apkFile.exists()) {
-            Toast.makeText(context, "Downloaded APK is missing.", Toast.LENGTH_LONG).show()
+            Toast.makeText(
+                context,
+                context.getString(R.string.update_apk_missing),
+                Toast.LENGTH_LONG
+            ).show()
             return
         }
 
@@ -48,7 +61,7 @@ class ApkDownloadReceiver : BroadcastReceiver() {
             apkFile.delete()
             Toast.makeText(
                 context,
-                "Downloaded APK failed integrity verification.",
+                context.getString(R.string.update_apk_integrity_failed),
                 Toast.LENGTH_LONG
             ).show()
             return
@@ -58,7 +71,7 @@ class ApkDownloadReceiver : BroadcastReceiver() {
         if (!manager.canInstallPackages()) {
             Toast.makeText(
                 context,
-                "Allow ClearScan to install updates, then try again.",
+                context.getString(R.string.update_allow_install_retry),
                 Toast.LENGTH_LONG
             ).show()
             context.startActivity(manager.createInstallPermissionIntent().addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))

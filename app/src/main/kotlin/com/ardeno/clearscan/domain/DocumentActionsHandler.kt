@@ -33,6 +33,21 @@ class DocumentActionsHandler(
             else -> "image/jpeg"
         }
 
+    fun renameDocument(document: ScanDocument, title: String) {
+        scope.launch {
+            val updated = repository.updateDocumentTitle(document.id, title)
+            if (updated != null) {
+                onReplaceDocument(updated)
+                onMessage(uiStrings.documentRenamed(updated.title))
+            } else {
+                onMessage(uiStrings.documentRenameFailed())
+            }
+        }
+    }
+
+    fun pageImagePathsFor(document: ScanDocument): List<String> =
+        document.pageImagePaths.filter { path -> File(path).exists() }
+
     fun updateDocumentTags(document: ScanDocument, tags: List<String>) {
         scope.launch {
             repository.updateDocumentTags(document.id, tags)?.let {

@@ -17,8 +17,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.CloudUpload
 import androidx.compose.material.icons.outlined.Close
+import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Folder
+import androidx.compose.material.icons.outlined.Image
 import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.icons.outlined.Print
 import androidx.compose.material.icons.outlined.Share
@@ -53,7 +56,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
@@ -95,6 +100,7 @@ fun DocumentDetailSheet(
     idRedactionSuggestion: IdRedactionSuggestion? = null,
     onDismiss: () -> Unit,
     onShare: () -> Unit,
+    onShareImages: () -> Unit = {},
     onExportText: () -> Unit = {},
     onPrint: () -> Unit = {},
     onUploadToSelfHost: () -> Unit = {},
@@ -102,9 +108,11 @@ fun DocumentDetailSheet(
     onDelete: () -> Unit,
     onRetryOcr: () -> Unit,
     onOcrLanguageChange: (OcrLanguage) -> Unit = {},
+    onRename: (String) -> Unit = {},
     onToggleFavorite: () -> Unit = {},
     onUpdateTags: (List<String>) -> Unit = {},
     onMoveToFolder: (String?) -> Unit = {},
+    onMessage: (String) -> Unit = {},
     onSignatureTextChange: (String) -> Unit,
     onPdfPasswordChange: (String) -> Unit,
     onCompressQualityChange: (PdfCompressQuality) -> Unit,
@@ -120,10 +128,25 @@ fun DocumentDetailSheet(
     sheetState: SheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 ) {
     var showDeleteDialog by remember { mutableStateOf(false) }
+    var showRenameDialog by remember { mutableStateOf(false) }
     var tagsInput by remember(document.id, document.tags) {
         mutableStateOf(document.tags.joinToString(", "))
     }
+    val clipboardManager = LocalClipboardManager.current
+    val ocrCopiedMessage = stringResource(R.string.msg_ocr_text_copied)
     val performHaptic = rememberClearScanHaptics()
+
+    if (showRenameDialog) {
+        RenameDocumentDialog(
+            initialTitle = document.title,
+            onDismiss = { showRenameDialog = false },
+            onRename = { newTitle ->
+                performHaptic(ClearScanHaptic.Confirm)
+                showRenameDialog = false
+                onRename(newTitle)
+            }
+        )
+    }
 
     if (showDeleteDialog) {
         AlertDialog(
@@ -203,11 +226,30 @@ fun DocumentDetailSheet(
             DocumentThumbnailHero(document = document)
 
             Column(verticalArrangement = Arrangement.spacedBy(ClearScanSpacing.xs)) {
-                Text(
-                    text = document.title,
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(ClearScanSpacing.xs)
+                ) {
+                    Text(
+                        text = document.title,
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.weight(1f)
+                    )
+                    IconButton(
+                        onClick = { showRenameDialog = true },
+                        modifier = Modifier.defaultMinSize(
+                            minWidth = ClearScanSpacing.minTouchTarget,
+                            minHeight = ClearScanSpacing.minTouchTarget
+                        )
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.Edit,
+                            contentDescription = stringResource(R.string.a11y_rename_document)
+                        )
+                    }
+                }
                 Text(
                     text = detailDateFormatter.format(document.createdAt.atZone(ZoneId.systemDefault())),
                     style = MaterialTheme.typography.bodySmall,
@@ -332,6 +374,24 @@ fun DocumentDetailSheet(
                     Icon(Icons.Outlined.Delete, contentDescription = stringResource(R.string.a11y_delete_document))
                     Text(modifier = Modifier.padding(start = ClearScanSpacing.sm), text = stringResource(R.string.action_delete))
                 }
+            }
+
+            FilledTonalButton(
+                onClick = {
+                    performHaptic(ClearScanHaptic.Confirm)
+                    onShareImages()
+                },
+                enabled = document.pageImagePaths.isNotEmpty(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .defaultMinSize(minHeight = ClearScanSpacing.minTouchTarget),
+                shape = MaterialTheme.shapes.medium
+            ) {
+                Icon(Icons.Outlined.Image, contentDescription = stringResource(R.string.a11y_share_images))
+                Text(
+                    modifier = Modifier.padding(start = ClearScanSpacing.sm),
+                    text = stringResource(R.string.document_share_images)
+                )
             }
 
             Row(
@@ -500,6 +560,28 @@ fun DocumentDetailSheet(
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
+                    if (document.ocrText.isNotBlank()) {
+                        FilledTonalButton(
+                            onClick = {
+                                performHaptic(ClearScanHaptic.Confirm)
+                                clipboardManager.setText(AnnotatedString(document.ocrText))
+                                onMessage(ocrCopiedMessage)
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .defaultMinSize(minHeight = ClearScanSpacing.minTouchTarget),
+                            shape = MaterialTheme.shapes.medium
+                        ) {
+                            Icon(
+                                Icons.Outlined.ContentCopy,
+                                contentDescription = stringResource(R.string.a11y_copy_ocr_text)
+                            )
+                            Text(
+                                modifier = Modifier.padding(start = ClearScanSpacing.sm),
+                                text = stringResource(R.string.document_copy_ocr)
+                            )
+                        }
+                    }
                 }
             }
 
@@ -620,6 +702,46 @@ fun DocumentDetailSheet(
             }
         }
     }
+}
+
+@Composable
+private fun RenameDocumentDialog(
+    initialTitle: String,
+    onDismiss: () -> Unit,
+    onRename: (String) -> Unit
+) {
+    var titleInput by remember(initialTitle) { mutableStateOf(initialTitle) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.document_rename_title)) },
+        text = {
+            OutlinedTextField(
+                value = titleInput,
+                onValueChange = { titleInput = it },
+                singleLine = true,
+                label = { Text(stringResource(R.string.document_title_label)) },
+                shape = MaterialTheme.shapes.medium,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant
+                )
+            )
+        },
+        confirmButton = {
+            TextButton(
+                onClick = { onRename(titleInput) },
+                enabled = titleInput.isNotBlank()
+            ) {
+                Text(stringResource(R.string.action_rename))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(R.string.action_cancel))
+            }
+        }
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
