@@ -40,11 +40,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
+import com.ardeno.clearscan.R
 import com.ardeno.clearscan.model.ScanDocument
 import java.io.File
 
@@ -70,7 +72,7 @@ fun PageEditorSheet(
     val keptPages = remember(document.id, mode) {
         mutableStateListOf<Int>().apply { addAll(pagePaths.indices) }
     }
-    var errorMessage by remember { mutableStateOf<String?>(null) }
+    var errorMessage by remember { mutableStateOf<Int?>(null) }
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -85,16 +87,16 @@ fun PageEditorSheet(
         ) {
             Text(
                 text = when (mode) {
-                    PageEditorMode.Reorder -> "Reorder pages"
-                    PageEditorMode.Delete -> "Delete pages"
+                    PageEditorMode.Reorder -> stringResource(R.string.page_editor_reorder)
+                    PageEditorMode.Delete -> stringResource(R.string.page_editor_delete)
                 },
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold
             )
             Text(
                 text = when (mode) {
-                    PageEditorMode.Reorder -> "Move pages up or down, then save a new copy."
-                    PageEditorMode.Delete -> "Uncheck pages to remove. At least one page must remain."
+                    PageEditorMode.Reorder -> stringResource(R.string.page_editor_reorder_hint)
+                    PageEditorMode.Delete -> stringResource(R.string.page_editor_delete_hint)
                 },
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -114,7 +116,7 @@ fun PageEditorSheet(
                         ) { displayIndex, pageIndex ->
                             PageRow(
                                 pagePath = pagePaths[pageIndex],
-                                pageLabel = "Page ${pageIndex + 1}",
+                                pageLabel = stringResource(R.string.page_editor_page, pageIndex + 1),
                                 trailing = {
                                     Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                                         IconButton(
@@ -127,7 +129,7 @@ fun PageEditorSheet(
                                             },
                                             enabled = displayIndex > 0
                                         ) {
-                                            Icon(Icons.Outlined.ArrowUpward, contentDescription = "Move up")
+                                            Icon(Icons.Outlined.ArrowUpward, contentDescription = stringResource(R.string.page_editor_move_up))
                                         }
                                         IconButton(
                                             onClick = {
@@ -139,7 +141,7 @@ fun PageEditorSheet(
                                             },
                                             enabled = displayIndex < orderedIndices.lastIndex
                                         ) {
-                                            Icon(Icons.Outlined.ArrowDownward, contentDescription = "Move down")
+                                            Icon(Icons.Outlined.ArrowDownward, contentDescription = stringResource(R.string.page_editor_move_down))
                                         }
                                     }
                                 }
@@ -154,11 +156,11 @@ fun PageEditorSheet(
                             val isKept = pageIndex in keptPages
                             PageRow(
                                 pagePath = pagePath,
-                                pageLabel = "Page ${pageIndex + 1}",
+                                pageLabel = stringResource(R.string.page_editor_page, pageIndex + 1),
                                 onClick = {
                                     if (isKept) {
                                         if (keptPages.size <= 1) {
-                                            errorMessage = "Keep at least one page."
+                                            errorMessage = R.string.page_editor_keep_one_page
                                             return@PageRow
                                         }
                                         keptPages.remove(pageIndex)
@@ -175,7 +177,11 @@ fun PageEditorSheet(
                                         } else {
                                             Icons.Outlined.CheckBoxOutlineBlank
                                         },
-                                        contentDescription = if (isKept) "Keep page" else "Remove page",
+                                        contentDescription = if (isKept) {
+                                            stringResource(R.string.page_editor_keep_page)
+                                        } else {
+                                            stringResource(R.string.page_editor_remove_page)
+                                        },
                                         tint = if (isKept) {
                                             MaterialTheme.colorScheme.primary
                                         } else {
@@ -189,9 +195,9 @@ fun PageEditorSheet(
                 }
             }
 
-            errorMessage?.let { message ->
+            errorMessage?.let { messageRes ->
                 Text(
-                    text = message,
+                    text = stringResource(messageRes),
                     color = MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.bodySmall
                 )
@@ -205,7 +211,7 @@ fun PageEditorSheet(
                     onClick = onDismiss,
                     modifier = Modifier.weight(1f)
                 ) {
-                    Text("Cancel")
+                    Text(stringResource(R.string.action_cancel))
                 }
                 Button(
                     onClick = {
@@ -213,7 +219,7 @@ fun PageEditorSheet(
                             PageEditorMode.Reorder -> onConfirmReorder(orderedIndices.toList())
                             PageEditorMode.Delete -> {
                                 if (keptPages.isEmpty()) {
-                                    errorMessage = "Keep at least one page."
+                                    errorMessage = R.string.page_editor_keep_one_page
                                 } else {
                                     onConfirmDelete(keptPages.sorted())
                                 }
@@ -223,7 +229,7 @@ fun PageEditorSheet(
                     modifier = Modifier.weight(1f),
                     enabled = pagePaths.isNotEmpty()
                 ) {
-                    Text("Save copy")
+                    Text(stringResource(R.string.page_editor_save_copy))
                 }
             }
         }

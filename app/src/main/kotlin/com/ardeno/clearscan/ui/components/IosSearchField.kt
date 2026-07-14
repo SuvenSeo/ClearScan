@@ -22,8 +22,10 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import com.ardeno.clearscan.R
 import com.ardeno.clearscan.ui.theme.ClearScanMotion
 import com.ardeno.clearscan.ui.theme.ClearScanSpacing
 import com.ardeno.clearscan.ui.theme.SearchFieldShape
@@ -33,7 +35,7 @@ fun IosSearchField(
     value: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
-    placeholder: String = "Search",
+    placeholder: String = stringResource(R.string.search_title),
     enabled: Boolean = true,
     onSearch: (() -> Unit)? = null
 ) {
@@ -78,7 +80,7 @@ fun IosSearchField(
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.Close,
-                        contentDescription = "Clear search",
+                        contentDescription = stringResource(R.string.search_clear),
                         modifier = Modifier.size(18.dp),
                         tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )

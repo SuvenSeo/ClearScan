@@ -20,8 +20,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.ardeno.clearscan.R
 import com.ardeno.clearscan.model.ScanDocument
 import com.ardeno.clearscan.ui.theme.CardShape
 import com.ardeno.clearscan.ui.theme.ClearScanElevation
@@ -38,6 +41,11 @@ fun DocumentGridItem(
     isDuplicate: Boolean = false,
     onSelectionToggle: (() -> Unit)? = null
 ) {
+    val pageCountLabel = pluralStringResource(
+        R.plurals.document_page_count,
+        document.pageCount,
+        document.pageCount
+    )
     val isDark = isSystemInDarkTheme()
     val cardElevation = if (isDark) ClearScanElevation.none else ClearScanElevation.card
 
@@ -86,7 +94,7 @@ fun DocumentGridItem(
                 if (document.isFavorite) {
                     Icon(
                         imageVector = Icons.Filled.Star,
-                        contentDescription = "Favorite",
+                        contentDescription = stringResource(R.string.document_favorite),
                         tint = MaterialTheme.colorScheme.tertiary,
                         modifier = Modifier
                             .align(Alignment.TopEnd)
@@ -97,7 +105,7 @@ fun DocumentGridItem(
                 if (isDuplicate) {
                     Icon(
                         imageVector = Icons.Outlined.ContentCopy,
-                        contentDescription = "Possible duplicate",
+                        contentDescription = stringResource(R.string.document_possible_duplicate),
                         tint = MaterialTheme.colorScheme.error,
                         modifier = Modifier
                             .align(Alignment.BottomEnd)
@@ -117,7 +125,7 @@ fun DocumentGridItem(
         )
 
         Text(
-            text = "${document.pageCount} page${if (document.pageCount == 1) "" else "s"}",
+            text = pageCountLabel,
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             maxLines = 1,

@@ -53,9 +53,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import com.ardeno.clearscan.R
 import com.ardeno.clearscan.model.DocumentFolder
 import com.ardeno.clearscan.model.OcrStatus
 import com.ardeno.clearscan.model.ScanDocument
@@ -69,6 +71,7 @@ import com.ardeno.clearscan.ui.components.GroupedSection
 import com.ardeno.clearscan.ui.components.OcrLanguagePicker
 import com.ardeno.clearscan.ui.components.OcrStatusChip
 import com.ardeno.clearscan.ui.components.TagChipRow
+import com.ardeno.clearscan.ui.components.displayLabel
 import com.ardeno.clearscan.ui.components.rememberClearScanHaptics
 import com.ardeno.clearscan.ui.theme.ClearScanSpacing
 import com.ardeno.clearscan.ui.theme.SheetShape
@@ -125,8 +128,10 @@ fun DocumentDetailSheet(
     if (showDeleteDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
-            title = { Text("Delete document?") },
-            text = { Text("\"${document.title}\" will be permanently removed from this device.") },
+            title = { Text(stringResource(R.string.document_delete_title)) },
+            text = {
+                Text(stringResource(R.string.document_delete_message, document.title))
+            },
             confirmButton = {
                 TextButton(
                     onClick = {
@@ -135,12 +140,15 @@ fun DocumentDetailSheet(
                         onDelete()
                     }
                 ) {
-                    Text("Delete", color = MaterialTheme.colorScheme.error)
+                    Text(
+                        stringResource(R.string.action_delete),
+                        color = MaterialTheme.colorScheme.error
+                    )
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showDeleteDialog = false }) {
-                    Text("Cancel")
+                    Text(stringResource(R.string.action_cancel))
                 }
             }
         )
@@ -188,7 +196,7 @@ fun DocumentDetailSheet(
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.Close,
-                        contentDescription = "Close document detail"
+                        contentDescription = stringResource(R.string.library_close_detail)
                     )
                 }
             }
@@ -215,7 +223,7 @@ fun DocumentDetailSheet(
                     )
                     if (isDuplicate) {
                         Text(
-                            text = "Possible duplicate",
+                            text = stringResource(R.string.document_possible_duplicate),
                             style = MaterialTheme.typography.labelMedium,
                             color = MaterialTheme.colorScheme.error,
                             modifier = Modifier.padding(top = 4.dp)
@@ -224,7 +232,7 @@ fun DocumentDetailSheet(
                 }
             }
 
-            GroupedSection(title = "Organize", horizontalPadding = 0.dp) {
+            GroupedSection(title = stringResource(R.string.document_organize), horizontalPadding = 0.dp) {
                 Column(
                     modifier = Modifier.padding(ClearScanSpacing.lg),
                     verticalArrangement = Arrangement.spacedBy(ClearScanSpacing.md)
@@ -235,11 +243,23 @@ fun DocumentDetailSheet(
                             performHaptic(ClearScanHaptic.Selection)
                             onToggleFavorite()
                         },
-                        label = { Text(if (document.isFavorite) "Favorited" else "Add to favorites") },
+                        label = {
+                            Text(
+                                if (document.isFavorite) {
+                                    stringResource(R.string.document_favorited)
+                                } else {
+                                    stringResource(R.string.document_add_favorites)
+                                }
+                            )
+                        },
                         leadingIcon = {
                             Icon(
                                 imageVector = if (document.isFavorite) Icons.Filled.Star else Icons.Outlined.Star,
-                                contentDescription = if (document.isFavorite) "Remove from favorites" else "Add to favorites"
+                                contentDescription = if (document.isFavorite) {
+                                    stringResource(R.string.document_remove_favorites)
+                                } else {
+                                    stringResource(R.string.document_add_favorites)
+                                }
                             )
                         }
                     )
@@ -256,7 +276,7 @@ fun DocumentDetailSheet(
                         onValueChange = { tagsInput = it },
                         singleLine = true,
                         shape = MaterialTheme.shapes.medium,
-                        label = { Text("Tags (comma separated)") },
+                        label = { Text(stringResource(R.string.document_tags_label)) },
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = MaterialTheme.colorScheme.primary,
                             unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant
@@ -273,7 +293,7 @@ fun DocumentDetailSheet(
                         modifier = Modifier.fillMaxWidth(),
                         shape = MaterialTheme.shapes.medium
                     ) {
-                        Text("Save tags")
+                        Text(stringResource(R.string.document_save_tags))
                     }
                     if (document.tags.isNotEmpty()) {
                         TagChipRow(tags = document.tags)
@@ -295,8 +315,8 @@ fun DocumentDetailSheet(
                         .defaultMinSize(minHeight = ClearScanSpacing.minTouchTarget),
                     shape = MaterialTheme.shapes.medium
                 ) {
-                    Icon(Icons.Outlined.Share, contentDescription = "Share document")
-                    Text(modifier = Modifier.padding(start = ClearScanSpacing.sm), text = "Share")
+                    Icon(Icons.Outlined.Share, contentDescription = stringResource(R.string.a11y_share_document))
+                    Text(modifier = Modifier.padding(start = ClearScanSpacing.sm), text = stringResource(R.string.action_share))
                 }
                 FilledTonalButton(
                     onClick = { showDeleteDialog = true },
@@ -309,8 +329,8 @@ fun DocumentDetailSheet(
                         contentColor = MaterialTheme.colorScheme.onErrorContainer
                     )
                 ) {
-                    Icon(Icons.Outlined.Delete, contentDescription = "Delete document")
-                    Text(modifier = Modifier.padding(start = ClearScanSpacing.sm), text = "Delete")
+                    Icon(Icons.Outlined.Delete, contentDescription = stringResource(R.string.a11y_delete_document))
+                    Text(modifier = Modifier.padding(start = ClearScanSpacing.sm), text = stringResource(R.string.action_delete))
                 }
             }
 
@@ -329,8 +349,8 @@ fun DocumentDetailSheet(
                         .defaultMinSize(minHeight = ClearScanSpacing.minTouchTarget),
                     shape = MaterialTheme.shapes.medium
                 ) {
-                    Icon(Icons.Outlined.TextSnippet, contentDescription = "Export OCR text")
-                    Text(modifier = Modifier.padding(start = ClearScanSpacing.sm), text = "Export text")
+                    Icon(Icons.Outlined.TextSnippet, contentDescription = stringResource(R.string.a11y_export_ocr_text))
+                    Text(modifier = Modifier.padding(start = ClearScanSpacing.sm), text = stringResource(R.string.document_export_text))
                 }
                 FilledTonalButton(
                     onClick = {
@@ -343,8 +363,8 @@ fun DocumentDetailSheet(
                         .defaultMinSize(minHeight = ClearScanSpacing.minTouchTarget),
                     shape = MaterialTheme.shapes.medium
                 ) {
-                    Icon(Icons.Outlined.Print, contentDescription = "Print document")
-                    Text(modifier = Modifier.padding(start = ClearScanSpacing.sm), text = "Print")
+                    Icon(Icons.Outlined.Print, contentDescription = stringResource(R.string.a11y_print_document))
+                    Text(modifier = Modifier.padding(start = ClearScanSpacing.sm), text = stringResource(R.string.document_print))
                 }
             }
 
@@ -360,28 +380,35 @@ fun DocumentDetailSheet(
                         .defaultMinSize(minHeight = ClearScanSpacing.minTouchTarget),
                     shape = MaterialTheme.shapes.medium
                 ) {
-                    Icon(Icons.Outlined.CloudUpload, contentDescription = "Upload to self-host")
+                    Icon(Icons.Outlined.CloudUpload, contentDescription = stringResource(R.string.a11y_upload_self_host))
                     Text(
                         modifier = Modifier.padding(start = ClearScanSpacing.sm),
-                        text = if (isSelfHostUploading) "Uploading…" else "Upload to self-host"
+                        text = if (isSelfHostUploading) {
+                            stringResource(R.string.document_uploading)
+                        } else {
+                            stringResource(R.string.document_upload_self_host)
+                        }
                     )
                 }
             }
 
             if (document.scanMode == ScanMode.IdCard || document.tags.contains("id-card")) {
-                GroupedSection(title = "ID privacy", horizontalPadding = 0.dp) {
+                GroupedSection(title = stringResource(R.string.document_id_privacy), horizontalPadding = 0.dp) {
                     Column(
                         modifier = Modifier.padding(ClearScanSpacing.lg),
                         verticalArrangement = Arrangement.spacedBy(ClearScanSpacing.sm)
                     ) {
                         Text(
-                            text = "No watermark on exports. Review sensitive fields before sharing.",
+                            text = stringResource(R.string.document_id_privacy_body),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         if (idRedactionSuggestion != null) {
                             Text(
-                                text = "Suggested redaction: ${idRedactionSuggestion.labels.joinToString()}",
+                                text = stringResource(
+                                    R.string.document_suggested_redaction,
+                                    idRedactionSuggestion.labels.joinToString()
+                                ),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.secondary
                             )
@@ -393,11 +420,11 @@ fun DocumentDetailSheet(
                                 modifier = Modifier.fillMaxWidth(),
                                 shape = MaterialTheme.shapes.medium
                             ) {
-                                Text("Redact sensitive fields")
+                                Text(stringResource(R.string.document_redact_sensitive))
                             }
                         } else if (document.ocrStatus == OcrStatus.Ready) {
                             Text(
-                                text = "OCR did not flag obvious ID numbers. You can still use header redaction below.",
+                                text = stringResource(R.string.document_id_ocr_no_flag),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -417,38 +444,38 @@ fun DocumentDetailSheet(
                         .defaultMinSize(minHeight = ClearScanSpacing.minTouchTarget),
                     shape = MaterialTheme.shapes.medium
                 ) {
-                    Icon(Icons.Outlined.Refresh, contentDescription = "Retry OCR")
-                    Text(modifier = Modifier.padding(start = ClearScanSpacing.sm), text = "Retry OCR")
+                    Icon(Icons.Outlined.Refresh, contentDescription = stringResource(R.string.document_retry_ocr))
+                    Text(modifier = Modifier.padding(start = ClearScanSpacing.sm), text = stringResource(R.string.document_retry_ocr))
                 }
             }
 
             document.receiptFields?.takeIf { it.hasAnyField }?.let { receipt ->
-                GroupedSection(title = "Receipt details", horizontalPadding = 0.dp) {
+                GroupedSection(title = stringResource(R.string.document_receipt_details), horizontalPadding = 0.dp) {
                     Column(
                         modifier = Modifier.padding(ClearScanSpacing.lg),
                         verticalArrangement = Arrangement.spacedBy(ClearScanSpacing.xs)
                     ) {
                         receipt.merchant?.let { merchant ->
                             Text(
-                                text = "Merchant: $merchant",
+                                text = stringResource(R.string.document_receipt_merchant, merchant),
                                 style = MaterialTheme.typography.bodyMedium
                             )
                         }
                         receipt.date?.let { date ->
                             Text(
-                                text = "Date: $date",
+                                text = stringResource(R.string.document_receipt_date, date),
                                 style = MaterialTheme.typography.bodyMedium
                             )
                         }
                         receipt.amount?.let { amount ->
                             Text(
-                                text = "Amount: $amount",
+                                text = stringResource(R.string.document_receipt_amount, amount),
                                 style = MaterialTheme.typography.bodyMedium,
                                 fontWeight = FontWeight.SemiBold
                             )
                         }
                         Text(
-                            text = "Extracted locally from OCR text.",
+                            text = stringResource(R.string.document_receipt_extracted_local),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -456,7 +483,7 @@ fun DocumentDetailSheet(
                 }
             }
 
-            GroupedSection(title = "Recognized text", horizontalPadding = 0.dp) {
+            GroupedSection(title = stringResource(R.string.document_recognized_text), horizontalPadding = 0.dp) {
                 Column(
                     modifier = Modifier.padding(ClearScanSpacing.lg),
                     verticalArrangement = Arrangement.spacedBy(ClearScanSpacing.md)
@@ -464,11 +491,11 @@ fun DocumentDetailSheet(
                     OcrLanguagePicker(
                         selectedLanguage = document.ocrLanguage,
                         onLanguageSelected = onOcrLanguageChange,
-                        title = "OCR language for this document"
+                        titleRes = R.string.document_ocr_language
                     )
                     Text(
                         text = document.ocrText.ifBlank {
-                            "OCR text will appear here after the local recognizer finishes processing this document."
+                            stringResource(R.string.document_ocr_placeholder)
                         },
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -476,7 +503,7 @@ fun DocumentDetailSheet(
                 }
             }
 
-            GroupedSection(title = "PDF tools", horizontalPadding = 0.dp) {
+            GroupedSection(title = stringResource(R.string.document_pdf_tools), horizontalPadding = 0.dp) {
                 Column(
                     modifier = Modifier.padding(ClearScanSpacing.lg),
                     verticalArrangement = Arrangement.spacedBy(ClearScanSpacing.md)
@@ -485,11 +512,11 @@ fun DocumentDetailSheet(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(ClearScanSpacing.sm)
                     ) {
-                        PdfToolButton(modifier = Modifier.weight(1f), label = "Reorder", onClick = {
+                        PdfToolButton(modifier = Modifier.weight(1f), label = stringResource(R.string.document_reorder), onClick = {
                             performHaptic(ClearScanHaptic.Selection)
                             onReorderPages()
                         })
-                        PdfToolButton(modifier = Modifier.weight(1f), label = "Delete pages", onClick = {
+                        PdfToolButton(modifier = Modifier.weight(1f), label = stringResource(R.string.document_delete_pages), onClick = {
                             performHaptic(ClearScanHaptic.Selection)
                             onDeletePages()
                         })
@@ -506,14 +533,14 @@ fun DocumentDetailSheet(
                                     performHaptic(ClearScanHaptic.Selection)
                                     onCompressQualityChange(quality)
                                 },
-                                label = { Text(quality.label) },
+                                label = { Text(quality.displayLabel()) },
                                 modifier = Modifier.weight(1f)
                             )
                         }
                     }
                     PdfToolButton(
                         modifier = Modifier.fillMaxWidth(),
-                        label = "Compress PDF",
+                        label = stringResource(R.string.document_compress_pdf),
                         onClick = {
                             performHaptic(ClearScanHaptic.Confirm)
                             onCompress()
@@ -524,15 +551,15 @@ fun DocumentDetailSheet(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(ClearScanSpacing.sm)
                     ) {
-                        PdfToolButton(modifier = Modifier.weight(1f), label = "Split", onClick = {
+                        PdfToolButton(modifier = Modifier.weight(1f), label = stringResource(R.string.document_split), onClick = {
                             performHaptic(ClearScanHaptic.Selection)
                             onSplit()
                         })
-                        PdfToolButton(modifier = Modifier.weight(1f), label = "Rotate", onClick = {
+                        PdfToolButton(modifier = Modifier.weight(1f), label = stringResource(R.string.document_rotate), onClick = {
                             performHaptic(ClearScanHaptic.Selection)
                             onRotate()
                         })
-                        PdfToolButton(modifier = Modifier.weight(1f), label = "Redact", onClick = {
+                        PdfToolButton(modifier = Modifier.weight(1f), label = stringResource(R.string.document_redact), onClick = {
                             performHaptic(ClearScanHaptic.Selection)
                             onRedact()
                         })
@@ -540,7 +567,7 @@ fun DocumentDetailSheet(
 
                     PdfToolButton(
                         modifier = Modifier.fillMaxWidth(),
-                        label = "Annotate pages",
+                        label = stringResource(R.string.document_annotate_pages),
                         onClick = {
                             performHaptic(ClearScanHaptic.Selection)
                             onAnnotate()
@@ -553,7 +580,7 @@ fun DocumentDetailSheet(
                         onValueChange = onSignatureTextChange,
                         singleLine = true,
                         shape = MaterialTheme.shapes.medium,
-                        label = { Text("Signature text") },
+                        label = { Text(stringResource(R.string.document_signature_text)) },
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = MaterialTheme.colorScheme.primary,
                             unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant
@@ -561,7 +588,7 @@ fun DocumentDetailSheet(
                     )
                     PdfToolButton(
                         modifier = Modifier.fillMaxWidth(),
-                        label = "Add signature",
+                        label = stringResource(R.string.document_add_signature),
                         onClick = {
                             performHaptic(ClearScanHaptic.Confirm)
                             onSign()
@@ -575,7 +602,7 @@ fun DocumentDetailSheet(
                         singleLine = true,
                         shape = MaterialTheme.shapes.medium,
                         visualTransformation = PasswordVisualTransformation(),
-                        label = { Text("PDF password") },
+                        label = { Text(stringResource(R.string.document_pdf_password)) },
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = MaterialTheme.colorScheme.primary,
                             unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant
@@ -583,7 +610,7 @@ fun DocumentDetailSheet(
                     )
                     PdfToolButton(
                         modifier = Modifier.fillMaxWidth(),
-                        label = "Password protect",
+                        label = stringResource(R.string.document_password_protect),
                         onClick = {
                             performHaptic(ClearScanHaptic.Confirm)
                             onPasswordProtect()
@@ -603,7 +630,8 @@ private fun FolderPicker(
     onMoveToFolder: (String?) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
-    val selectedFolderName = folders.find { it.id == selectedFolderId }?.name ?: "No folder"
+    val noFolderLabel = stringResource(R.string.document_no_folder)
+    val selectedFolderName = folders.find { it.id == selectedFolderId }?.name ?: noFolderLabel
 
     ExposedDropdownMenuBox(
         expanded = expanded,
@@ -617,9 +645,9 @@ private fun FolderPicker(
             value = selectedFolderName,
             onValueChange = {},
             readOnly = true,
-            label = { Text("Folder") },
+            label = { Text(stringResource(R.string.document_folder)) },
             leadingIcon = {
-                Icon(Icons.Outlined.Folder, contentDescription = "Folder")
+                Icon(Icons.Outlined.Folder, contentDescription = stringResource(R.string.document_folder))
             },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
             shape = MaterialTheme.shapes.medium,
@@ -633,7 +661,7 @@ private fun FolderPicker(
             onDismissRequest = { expanded = false }
         ) {
             DropdownMenuItem(
-                text = { Text("No folder") },
+                text = { Text(noFolderLabel) },
                 onClick = {
                     onMoveToFolder(null)
                     expanded = false
@@ -668,9 +696,12 @@ private fun PdfToolButton(
     }
 }
 
-private fun ScanDocument.exportLabel(): String = when {
-    searchablePdfReady -> "Searchable PDF ready"
-    pdfPath != null -> "Original PDF ready"
-    pageImagePaths.isNotEmpty() -> "Image export ready"
-    else -> "No export available"
-}
+@Composable
+private fun ScanDocument.exportLabel(): String = stringResource(
+    when {
+        searchablePdfReady -> R.string.document_export_searchable_pdf
+        pdfPath != null -> R.string.document_export_original_pdf
+        pageImagePaths.isNotEmpty() -> R.string.document_export_image
+        else -> R.string.document_export_none
+    }
+)

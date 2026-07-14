@@ -15,9 +15,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import com.ardeno.clearscan.R
 import com.ardeno.clearscan.backup.BackupPassphraseAction
 import com.ardeno.clearscan.backup.BackupPassphraseRequest
 
@@ -31,8 +33,8 @@ fun PassphraseBackupDialog(
     var confirmation by remember(request) { mutableStateOf("") }
 
     val title = when (request.action) {
-        BackupPassphraseAction.Export -> "Set backup passphrase"
-        BackupPassphraseAction.Import -> "Enter backup passphrase"
+        BackupPassphraseAction.Export -> stringResource(R.string.backup_set_passphrase)
+        BackupPassphraseAction.Import -> stringResource(R.string.backup_enter_passphrase)
     }
     val confirmEnabled = if (request.confirmPassphrase) {
         passphrase.isNotBlank() && passphrase == confirmation
@@ -51,16 +53,16 @@ fun PassphraseBackupDialog(
                 Text(
                     text = when (request.action) {
                         BackupPassphraseAction.Export ->
-                            "This passphrase unlocks the backup on any device. ClearScan cannot recover it if you forget it."
+                            stringResource(R.string.backup_export_passphrase_body)
                         BackupPassphraseAction.Import ->
-                            "Enter the passphrase used when this backup was exported."
+                            stringResource(R.string.backup_import_passphrase_body)
                     }
                 )
                 OutlinedTextField(
                     value = passphrase,
                     onValueChange = { passphrase = it },
                     modifier = Modifier.fillMaxWidth(),
-                    label = { Text("Passphrase") },
+                    label = { Text(stringResource(R.string.backup_passphrase_label)) },
                     visualTransformation = PasswordVisualTransformation(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                     singleLine = true
@@ -70,7 +72,7 @@ fun PassphraseBackupDialog(
                         value = confirmation,
                         onValueChange = { confirmation = it },
                         modifier = Modifier.fillMaxWidth(),
-                        label = { Text("Confirm passphrase") },
+                        label = { Text(stringResource(R.string.backup_confirm_passphrase)) },
                         visualTransformation = PasswordVisualTransformation(),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                         singleLine = true
@@ -90,15 +92,15 @@ fun PassphraseBackupDialog(
             ) {
                 Text(
                     when (request.action) {
-                        BackupPassphraseAction.Export -> "Save backup"
-                        BackupPassphraseAction.Import -> "Restore"
+                        BackupPassphraseAction.Export -> stringResource(R.string.backup_save)
+                        BackupPassphraseAction.Import -> stringResource(R.string.backup_restore)
                     }
                 )
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancel")
+                Text(stringResource(R.string.action_cancel))
             }
         }
     )

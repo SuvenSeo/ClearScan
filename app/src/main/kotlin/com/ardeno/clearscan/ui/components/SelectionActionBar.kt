@@ -21,7 +21,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.ardeno.clearscan.R
 import com.ardeno.clearscan.ui.theme.ClearScanMotion
 
 @Composable
@@ -61,10 +64,17 @@ fun SelectionActionBar(
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     IconButton(onClick = onClose) {
-                        Icon(Icons.Outlined.Close, contentDescription = "Exit selection")
+                        Icon(
+                            Icons.Outlined.Close,
+                            contentDescription = stringResource(R.string.selection_exit)
+                        )
                     }
                     Text(
-                        text = "$selectedCount selected",
+                        text = pluralStringResource(
+                            R.plurals.library_selected_count,
+                            selectedCount,
+                            selectedCount
+                        ),
                         style = MaterialTheme.typography.titleSmall
                     )
                 }
@@ -74,25 +84,34 @@ fun SelectionActionBar(
                         onClick = onSelectAll,
                         enabled = selectedCount > 0
                     ) {
-                        Text("All")
+                        Text(stringResource(R.string.filter_all))
                     }
                     FilledTonalButton(
                         onClick = onMerge,
                         enabled = selectedCount >= 2
                     ) {
-                        Icon(Icons.Outlined.MergeType, contentDescription = "Merge selected documents")
+                        Icon(
+                            Icons.Outlined.MergeType,
+                            contentDescription = stringResource(R.string.a11y_merge_selected)
+                        )
                     }
                     FilledTonalButton(
                         onClick = onExport,
                         enabled = selectedCount > 0
                     ) {
-                        Icon(Icons.Outlined.Share, contentDescription = "Share selected documents")
+                        Icon(
+                            Icons.Outlined.Share,
+                            contentDescription = stringResource(R.string.a11y_share_selected)
+                        )
                     }
                     FilledTonalButton(
                         onClick = onDelete,
                         enabled = selectedCount > 0
                     ) {
-                        Icon(Icons.Outlined.Delete, contentDescription = "Delete selected documents")
+                        Icon(
+                            Icons.Outlined.Delete,
+                            contentDescription = stringResource(R.string.a11y_delete_selected)
+                        )
                     }
                 }
             }

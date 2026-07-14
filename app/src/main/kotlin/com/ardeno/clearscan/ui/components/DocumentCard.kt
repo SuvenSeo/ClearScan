@@ -27,12 +27,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
+import com.ardeno.clearscan.R
 import com.ardeno.clearscan.model.ScanDocument
 import com.ardeno.clearscan.ui.theme.ClearScanElevation
 import com.ardeno.clearscan.ui.theme.ClearScanMotion
@@ -55,6 +58,13 @@ fun DocumentCard(
     isDuplicate: Boolean = false,
     onSelectionToggle: (() -> Unit)? = null
 ) {
+    val pageCountLabel = pluralStringResource(
+        R.plurals.document_page_count,
+        document.pageCount,
+        document.pageCount
+    )
+    val dateLabel = dateFormatter.format(document.createdAt.atZone(ZoneId.systemDefault()))
+
     Column(modifier = modifier.fillMaxWidth()) {
         Row(
             modifier = Modifier
@@ -108,14 +118,14 @@ fun DocumentCard(
                     if (document.isFavorite) {
                         Icon(
                             imageVector = Icons.Filled.Star,
-                            contentDescription = "Favorite",
+                            contentDescription = stringResource(R.string.document_favorite),
                             tint = MaterialTheme.colorScheme.tertiary,
                             modifier = Modifier.size(16.dp)
                         )
                     }
                 }
                 Text(
-                    text = "${document.pageCount} page${if (document.pageCount == 1) "" else "s"} · ${dateFormatter.format(document.createdAt.atZone(ZoneId.systemDefault()))}",
+                    text = stringResource(R.string.document_list_metadata, pageCountLabel, dateLabel),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1,
@@ -164,7 +174,7 @@ private fun DuplicateBadge() {
             tint = MaterialTheme.colorScheme.error
         )
         Text(
-            text = "Possible duplicate",
+            text = stringResource(R.string.document_possible_duplicate),
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.error
         )
@@ -190,7 +200,7 @@ internal fun DocumentThumbnail(
                     .data(File(thumbnailPath))
                     .crossfade(true)
                     .build(),
-                contentDescription = "Preview of ${document.title}",
+                contentDescription = stringResource(R.string.document_preview_of, document.title),
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop
             )

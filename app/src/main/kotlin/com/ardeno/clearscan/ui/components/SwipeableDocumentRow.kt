@@ -21,7 +21,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.ardeno.clearscan.R
 import com.ardeno.clearscan.model.ScanDocument
 import com.ardeno.clearscan.ui.theme.ClearScanMotion
 import com.ardeno.clearscan.ui.theme.ClearScanSpacing
@@ -97,7 +99,7 @@ fun SwipeableDocumentRow(
             ) {
                 Icon(
                     imageVector = Icons.Outlined.Delete,
-                    contentDescription = "Delete ${document.title}",
+                    contentDescription = stringResource(R.string.a11y_delete_document_title, document.title),
                     tint = if (isDeleting) {
                         MaterialTheme.colorScheme.onError
                     } else {

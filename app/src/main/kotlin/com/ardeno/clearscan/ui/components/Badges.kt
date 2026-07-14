@@ -16,19 +16,30 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.ardeno.clearscan.R
 import com.ardeno.clearscan.model.OcrStatus
 import com.ardeno.clearscan.ui.theme.ClearScanSpacing
 import com.ardeno.clearscan.ui.theme.PillShape
 
 @Composable
 fun OcrStatusChip(status: OcrStatus) {
-    val (label, tint) = when (status) {
-        OcrStatus.NotStarted -> "Pending" to MaterialTheme.colorScheme.onSurfaceVariant
-        OcrStatus.Queued -> "Queued" to MaterialTheme.colorScheme.tertiary
-        OcrStatus.Processing -> "Scanning" to MaterialTheme.colorScheme.primary
-        OcrStatus.Ready -> "Searchable" to MaterialTheme.colorScheme.secondary
-        OcrStatus.Failed -> "Failed" to MaterialTheme.colorScheme.error
+    val label = stringResource(
+        when (status) {
+            OcrStatus.NotStarted -> R.string.ocr_status_pending
+            OcrStatus.Queued -> R.string.ocr_status_queued
+            OcrStatus.Processing -> R.string.ocr_status_scanning
+            OcrStatus.Ready -> R.string.ocr_status_searchable
+            OcrStatus.Failed -> R.string.ocr_status_failed
+        }
+    )
+    val tint = when (status) {
+        OcrStatus.NotStarted -> MaterialTheme.colorScheme.onSurfaceVariant
+        OcrStatus.Queued -> MaterialTheme.colorScheme.tertiary
+        OcrStatus.Processing -> MaterialTheme.colorScheme.primary
+        OcrStatus.Ready -> MaterialTheme.colorScheme.secondary
+        OcrStatus.Failed -> MaterialTheme.colorScheme.error
     }
 
     Text(
@@ -47,9 +58,9 @@ fun PrivacyBadgeRow(modifier: Modifier = Modifier) {
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(ClearScanSpacing.sm)
     ) {
-        PrivacyBadge(icon = Icons.Outlined.CloudOff, label = "Offline")
-        PrivacyBadge(icon = Icons.Outlined.Shield, label = "No ads")
-        PrivacyBadge(icon = Icons.Outlined.Lock, label = "Private")
+        PrivacyBadge(icon = Icons.Outlined.CloudOff, label = stringResource(R.string.badge_offline))
+        PrivacyBadge(icon = Icons.Outlined.Shield, label = stringResource(R.string.badge_no_ads))
+        PrivacyBadge(icon = Icons.Outlined.Lock, label = stringResource(R.string.badge_private))
     }
 }
 

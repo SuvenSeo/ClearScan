@@ -57,11 +57,13 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
+import com.ardeno.clearscan.R
 import com.ardeno.clearscan.model.NormalizedPoint
 import com.ardeno.clearscan.model.NormalizedRect
 import com.ardeno.clearscan.model.PageAnnotation
@@ -90,11 +92,11 @@ fun DocumentAnnotatorScreen(
     if (pagePaths.isEmpty()) {
         AlertDialog(
             onDismissRequest = onDismiss,
-            title = { Text("Cannot annotate") },
-            text = { Text("This document has no page images to annotate.") },
+            title = { Text(stringResource(R.string.annotator_cannot_annotate)) },
+            text = { Text(stringResource(R.string.annotator_no_page_images)) },
             confirmButton = {
                 TextButton(onClick = onDismiss) {
-                    Text("Close")
+                    Text(stringResource(R.string.action_close))
                 }
             }
         )
@@ -131,14 +133,14 @@ fun DocumentAnnotatorScreen(
                 pendingNoteAnchor = null
                 noteDraft = ""
             },
-            title = { Text("Add note") },
+            title = { Text(stringResource(R.string.annotator_add_note)) },
             text = {
                 OutlinedTextField(
                     value = noteDraft,
                     onValueChange = { noteDraft = it },
                     modifier = Modifier.fillMaxWidth(),
                     minLines = 3,
-                    label = { Text("Note text") }
+                    label = { Text(stringResource(R.string.annotator_note_text)) }
                 )
             },
             confirmButton = {
@@ -155,7 +157,7 @@ fun DocumentAnnotatorScreen(
                     },
                     enabled = noteDraft.isNotBlank()
                 ) {
-                    Text("Add")
+                    Text(stringResource(R.string.action_add))
                 }
             },
             dismissButton = {
@@ -165,7 +167,7 @@ fun DocumentAnnotatorScreen(
                         noteDraft = ""
                     }
                 ) {
-                    Text("Cancel")
+                    Text(stringResource(R.string.action_cancel))
                 }
             }
         )
@@ -177,12 +179,16 @@ fun DocumentAnnotatorScreen(
                 title = {
                     Column {
                         Text(
-                            text = "Annotate",
+                            text = stringResource(R.string.annotator_title),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.SemiBold
                         )
                         Text(
-                            text = "Page ${pagerState.currentPage + 1} of ${pagePaths.size}",
+                            text = stringResource(
+                                R.string.annotator_page_of,
+                                pagerState.currentPage + 1,
+                                pagePaths.size
+                            ),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -190,7 +196,7 @@ fun DocumentAnnotatorScreen(
                 },
                 navigationIcon = {
                     IconButton(onClick = onDismiss, enabled = !isApplying) {
-                        Icon(Icons.AutoMirrored.Outlined.ArrowBack, contentDescription = "Close")
+                        Icon(Icons.AutoMirrored.Outlined.ArrowBack, contentDescription = stringResource(R.string.action_close))
                     }
                 },
                 actions = {
@@ -198,7 +204,7 @@ fun DocumentAnnotatorScreen(
                         onClick = { undoLast(pagerState.currentPage) },
                         enabled = !isApplying && pageAnnotations(pagerState.currentPage).isNotEmpty()
                     ) {
-                        Icon(Icons.Outlined.Undo, contentDescription = "Undo")
+                        Icon(Icons.Outlined.Undo, contentDescription = stringResource(R.string.annotator_undo))
                     }
                     Button(
                         onClick = { onApply(annotationsByPage.mapValues { it.value.toList() }) },
@@ -213,7 +219,7 @@ fun DocumentAnnotatorScreen(
                                 strokeWidth = 2.dp
                             )
                         }
-                        Text("Apply")
+                        Text(stringResource(R.string.annotator_apply))
                     }
                 }
             )
@@ -228,25 +234,25 @@ fun DocumentAnnotatorScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 AnnotatorToolButton(
-                    label = "Sign",
+                    label = stringResource(R.string.annotator_tool_sign),
                     icon = Icons.Outlined.Draw,
                     selected = selectedTool == AnnotatorTool.Signature,
                     onClick = { selectedTool = AnnotatorTool.Signature }
                 )
                 AnnotatorToolButton(
-                    label = "Highlight",
+                    label = stringResource(R.string.annotator_tool_highlight),
                     icon = Icons.Outlined.Highlight,
                     selected = selectedTool == AnnotatorTool.Highlight,
                     onClick = { selectedTool = AnnotatorTool.Highlight }
                 )
                 AnnotatorToolButton(
-                    label = "Redact",
+                    label = stringResource(R.string.annotator_tool_redact),
                     icon = Icons.Outlined.Block,
                     selected = selectedTool == AnnotatorTool.Redact,
                     onClick = { selectedTool = AnnotatorTool.Redact }
                 )
                 AnnotatorToolButton(
-                    label = "Note",
+                    label = stringResource(R.string.annotator_tool_note),
                     icon = Icons.Outlined.StickyNote2,
                     selected = selectedTool == AnnotatorTool.Note,
                     onClick = { selectedTool = AnnotatorTool.Note }
@@ -363,7 +369,7 @@ private fun AnnotatedPageCanvas(
                     .data(File(pagePath))
                     .crossfade(true)
                     .build(),
-                contentDescription = "Page",
+                contentDescription = stringResource(R.string.annotator_page),
                 contentScale = ContentScale.FillBounds,
                 modifier = Modifier.fillMaxSize()
             )

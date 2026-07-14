@@ -75,8 +75,99 @@
     <string name="vault_no_biometric">பயோமெட்ரிக் அல்லது திரை பூட்டு இல்லை. கணினி அமைப்புகளில் PIN, வடிவம் அல்லது கடவுச்சொல்லை அமைத்து மீண்டும் இங்கே வரவும்.</string>
     <string name="vault_auth_failed">அங்கீகாரம் தோல்வியடைந்தது. மீண்டும் முயற்சிக்கவும் அல்லது உங்கள் சாதன PIN ஐப் பயன்படுத்தவும்.</string>
     <string name="self_host_title">சுய-ஹோஸ்ட் ஏற்றுமதி</string>
+    <string name="self_host_description">உங்கள் Nextcloud, WebDAV கோப்புறை அல்லது paperless-ngx க்கு விருப்ப பதிவேற்றம். Upload ஐத் தட்டாவிட்டால் எதுவும் இந்த சாதனத்திலிருந்து வெளியேறாது.</string>
+    <string name="self_host_enable">சுய-ஹோஸ்ட் ஏற்றுமதியை இயக்கு</string>
     <string name="self_host_wifi_only">Wi-Fi மட்டும் பதிவேற்றங்கள்</string>
+    <string name="self_host_wifi_only_description">மொபைல் தரவில் சுய-ஹோஸ்ட் பதிவேற்றங்களைத் தடு</string>
     <string name="self_host_not_on_wifi">Wi-Fi மட்டும் பதிவேற்றம் இயக்கப்பட்டுள்ளது. முதலில் Wi-Fi நெட்வொர்க்குடன் இணைக.</string>
+    <string name="self_host_save">சுய-ஹோஸ்ட் அமைப்புகளைச் சேமி</string>
+    <string name="self_host_save_content_desc">சுய-ஹோஸ்ட் அமைப்புகளைச் சேமி</string>
+    <string name="self_host_section_footer">சான்றுகள் இந்த சாதனத்தில் மட்டும் EncryptedSharedPreferences உடன் சேமிக்கப்படுகின்றன.</string>
+    <string name="self_host_webdav_url_label">WebDAV அடிப்படை URL</string>
+    <string name="self_host_paperless_url_label">Paperless சேவையக URL</string>
+    <string name="self_host_webdav_url_placeholder">https://cloud.example.com/remote.php/dav/files/you/</string>
+    <string name="self_host_paperless_url_placeholder">https://paperless.example.com</string>
+    <string name="self_host_remote_folder_label">தொலை கோப்புறை (விருப்பம்)</string>
+    <string name="self_host_remote_folder_placeholder">ClearScan</string>
+    <string name="self_host_username">பயனர்பெயர்</string>
+    <string name="self_host_password">கடவுச்சொல்</string>
+    <string name="self_host_api_token">API டோக்கன்</string>
+    <string name="self_host_api_token_placeholder">paperless API டோக்கன்</string>
+    <string name="self_host_target_webdav">WebDAV</string>
+    <string name="self_host_target_paperless">paperless-ngx</string>
+    <string name="settings_capture_footer">அனைத்து நுண்ணறிவும் சாதனத்திலேயே இயங்குகிறது. கிளவுட் AI பயன்படுத்தப்படாது.</string>
+    <string name="settings_auto_page_turn">தானியங்கி பக்க திருப்பல் பிடிப்பு</string>
+    <string name="settings_auto_page_turn_description">பக்கம் திரும்பிய பிறகு CameraX சட்டக பகுப்பாய்வு மூலம் தானாகப் பிடிக்கிறது.</string>
+    <string name="settings_image_enhancement">நிழல் மற்றும் பிரகாசம் குறைப்பு</string>
+    <string name="settings_image_enhancement_description">பக்கங்கள் சேமிக்கப்படுவதற்கு முன் லேசான சாதன-நிலை டோன் சரிசெய்தல்.</string>
+    <string name="settings_default_ocr_language">இயல்புநிலை OCR மொழி</string>
+    <string name="settings_vault_title">பயோமெட்ரிக் பாதுகாப்பறை</string>
+    <string name="settings_vault_enabled_description">நீங்கள் வெளியேறும்போது உங்கள் நூலகம் பூட்டப்படும். கைரேகை அல்லது சாதன PIN மூலம் திறக்கவும்.</string>
+    <string name="settings_vault_disabled_description">பயோமெட்ரிக் அல்லது சாதன சான்றுகள் மூலம் உங்கள் ஸ்கேன்களைப் பாதுகாக்கவும்.</string>
+    <string name="settings_vault_enable">பாதுகாப்பறையை இயக்கு</string>
+    <string name="settings_vault_disable">பாதுகாப்பறையை முடக்கு</string>
+    <string name="settings_vault_lock_now">இப்போது பாதுகாப்பறையைப் பூட்டு</string>
+    <string name="backup_section_footer">கணினி கோப்பு தேர்வாளர் வழியாக குறியாக்கப்பட்ட காப்புப்பதிவை ஏற்றுமதி செய்கிறது. மீட்டமைப்பு இந்த சாதனத்தில் உள்ளூர் ஸ்கேன்களை மாற்றுகிறது.</string>
+    <string name="backup_encrypted_title">குறியாக்கப்பட்ட உள்ளூர் காப்புப்பதிவு</string>
+    <string name="backup_description">Android தானியங்கி காப்புப்பதிவை இயக்காமல் ஸ்கேன்களைச் சேமிக்கவும் அல்லது மீட்டமைக்கவும்.</string>
+    <string name="backup_passphrase_protected">கடவுச்சொற்றொடர் பாதுகாக்கப்பட்ட காப்புப்பதிவு</string>
+    <string name="backup_passphrase_description">உங்கள் கடவுச்சொற்றொடருடன் மற்றொரு சாதனத்தில் அதே காப்புப்பதிவை மீட்டமைக்கவும்.</string>
+    <string name="backup_export_action">ஏற்றுமதி</string>
+    <string name="backup_restore_action">மீட்டமை</string>
+    <string name="backup_restore_content_desc">காப்புப்பதிவை மீட்டமை</string>
+    <string name="privacy_dashboard_title">தனியுரிமை டாஷ்போர்டு</string>
+    <string name="privacy_dashboard_description">ஆஃப்லைன் கொள்கை, சேமிப்பு இடம், ஏற்றுமதி தணிக்கை பதிவு மற்றும் விளம்பர SDK நிலையை மதிப்பாய்வு செய்யுங்கள்.</string>
+    <string name="privacy_dashboard_open">டாஷ்போர்டைத் திற</string>
+    <string name="privacy_dashboard_open_content_desc">தனியுரிமை டாஷ்போர்டைத் திற</string>
+    <string name="settings_app_updates_footer">நீங்கள் பொத்தானைத் தட்டும்போது மட்டும் GitHub Releases சரிபார்க்கிறது. பின்னணி கண்காணிப்பு இல்லை.</string>
+    <string name="settings_installed_version">நிறுவப்பட்ட பதிப்பு %1$s</string>
+    <string name="settings_app_update_description">version.json உள்ளீடு வெளியிடப்பட்டால் GitHub Releases இலிருந்து புதிய APK களைப் பதிவிறக்கவும்.</string>
+    <string name="settings_check_for_updates">புதுப்பிப்புகளைச் சரிபார்</string>
+    <string name="settings_checking_updates">சரிபார்க்கிறது…</string>
+    <string name="settings_check_updates_content_desc">புதுப்பிப்புகளைச் சரிபார்</string>
+    <string name="settings_about_built_free">இலவசமாக இருக்க வடிவமைக்கப்பட்டது</string>
+    <string name="settings_about_body">விளம்பரங்கள் இல்லை. சந்தாக்கள் இல்லை. வாட்டர்மார்க்குகள் இல்லை. கட்டாய கணக்குகள் அல்லது கிளவுட் பதிவேற்றங்கள் இல்லை.</string>
+    <string name="settings_about_local_first">உள்ளூர்-முதல்</string>
+    <string name="settings_about_private">தனிப்பட்ட</string>
+    <string name="settings_version_footer">ClearScan v%1$s · உள்ளூர்-முதல் · விளம்பரங்கள் இல்லை · சந்தாக்கள் இல்லை</string>
+    <string name="settings_developer_footer">harness சுய-சரிபார்ப்பை இயக்கி, அளவிடப்பட்ட OCR துல்லியத்திற்கு லேபிள் ஸ்கேன்களைச் சேர்க்கவும்.</string>
+    <string name="settings_benchmark_title">சிங்களம் / தமிழ் OCR அளவீடு</string>
+    <string name="settings_benchmark_run">சுய-சரிபார்ப்பை இயக்கு</string>
+    <string name="settings_benchmark_run_content_desc">OCR அளவீட்டை இயக்கு</string>
+    <string name="privacy_section_network">நெட்வொர்க்</string>
+    <string name="privacy_no_background_network">பின்னணி நெட்வொர்க் இல்லை</string>
+    <string name="privacy_section_storage">சேமிப்பு</string>
+    <string name="privacy_app_private_storage">பயன்பாட்டு-தனிப்பட்ட சேமிப்பு</string>
+    <string name="privacy_encryption_at_rest">ஓய்வில் குறியாக்கம்</string>
+    <string name="privacy_system_backup">கணினி காப்புப்பதிவு</string>
+    <string name="privacy_system_backup_disabled">Android தானியங்கி காப்புப்பதிவு முடக்கப்பட்டுள்ளது. அமைப்புகளில் வெளிப்படையான காப்புப்பதிவைப் பயன்படுத்தவும்.</string>
+    <string name="privacy_system_backup_review">வெளியீட்டிற்கு முன் காப்புப்பதிவு விதிகளை மதிப்பாய்வு செய்யுங்கள்.</string>
+    <string name="privacy_section_encryption_health">குறியாக்க சுகாதாரம்</string>
+    <string name="privacy_section_sdk_posture">SDK நிலை</string>
+    <string name="privacy_ad_sdk_free">விளம்பர SDK இல்லை</string>
+    <string name="privacy_ad_sdk_check_failed">விளம்பர SDK சரிபார்ப்பு தோல்வி</string>
+    <string name="privacy_audit_log_footer">வெளிப்படையான பகிர்/ஏற்றுமதி செயல்கள் மட்டுமே பதிவு செய்யப்படுகின்றன. நீங்கள் தேர்வு செய்யாவிட்டால் சாதனத்திலிருந்து எதுவும் வெளியேறாது.</string>
+    <string name="privacy_no_exports">இன்னும் ஏற்றுமதிகள் பதிவு செய்யப்படவில்லை.</string>
+    <string name="privacy_document_storage">ஆவண சேமிப்பு</string>
+    <string name="privacy_encryption_status">குறியாக்க நிலை</string>
+    <string name="privacy_status_active">செயலில்</string>
+    <string name="privacy_status_inactive">செயலற்ற</string>
+    <string name="privacy_audit_document_id">ஆவண ID: %1$s</string>
+    <string name="privacy_audit_export_type">ஏற்றுமதி வகை: %1$s</string>
+    <string name="privacy_audit_timestamp">நேர முத்திரை: %1$s</string>
+    <string name="privacy_healthy">ஆரோக்கியமான</string>
+    <string name="privacy_warning">எச்சரிக்கை</string>
+    <string name="action_expand">விரிவாக்கு</string>
+    <string name="action_collapse">சுருக்கு</string>
+    <string name="privacy_network_policy">முக்கிய ஓட்டங்களில் நெட்வொர்க் அழைப்புகள் இல்லை. ஏற்றுமதி மற்றும் காப்புப்பதிவு வெளிப்படையான பயனர் செயல்கள் மட்டுமே.</string>
+    <string name="privacy_encryption_healthy">Android Keystore வழியாக AES-GCM 256-bit · குறியாக்கம் + குறிவிலக்கம் சரிபார்க்கப்பட்டது</string>
+    <string name="privacy_encryption_unavailable">இந்த சாதனத்தில் பாதுகாப்பறை குறியாக்கம் கிடைக்கவில்லை.</string>
+    <string name="privacy_ad_sdk_clean">பயன்பாட்டு classpath இல் பொதுவான விளம்பர SDK வகுப்புகள் கண்டறியப்படவில்லை.</string>
+    <string name="privacy_ad_sdk_detected">கண்டறியப்பட்ட SDK குறிமானங்கள்: %1$s</string>
+    <string name="storage_bytes_gb">%1$.1f GB</string>
+    <string name="storage_bytes_mb">%1$.1f MB</string>
+    <string name="storage_bytes_kb">%1$.1f KB</string>
+    <string name="storage_bytes_b">%1$d B</string>
     <string name="action_save">சேமி</string>
     <string name="action_cancel">ரத்துசெய்</string>
     <string name="action_delete">நீக்கு</string>
@@ -85,4 +176,152 @@
     <string name="action_merge">இணை</string>
     <string name="action_create">உருவாக்கு</string>
     <string name="action_go_back">பின்செல்</string>
+
+    <!-- Filters -->
+    <string name="filter_all">அனைத்தும்</string>
+    <string name="filter_favorites">பிடித்தவை</string>
+    <string name="folders_delete_message">\"%1$s\" அகற்றப்படும். இந்த கோப்புறையில் உள்ள ஆவணங்கள் உங்கள் நூலகத்தில் இருக்கும்.</string>
+
+    <!-- Document detail -->
+    <string name="document_delete_title">ஆவணத்தை நீக்கவா?</string>
+    <string name="document_delete_message">\"%1$s\" இந்த சாதனத்திலிருந்து நிரந்தரமாக அகற்றப்படும்.</string>
+    <string name="document_possible_duplicate">சாத்தியமான நகல்</string>
+    <string name="document_organize">ஒழுங்கமை</string>
+    <string name="document_favorited">பிடித்தது</string>
+    <string name="document_add_favorites">பிடித்தவையில் சேர்</string>
+    <string name="document_remove_favorites">பிடித்தவையிலிருந்து அகற்று</string>
+    <string name="document_tags_label">குறிச்சொற்கள் (காற்புள்ளியால் பிரிக்க)</string>
+    <string name="document_save_tags">குறிச்சொற்களைச் சேமி</string>
+    <string name="document_export_text">உரையை ஏற்றுமதி செய்</string>
+    <string name="document_print">அச்சிடு</string>
+    <string name="document_upload_self_host">சுய-ஹோஸ்ட்டுக்கு பதிவேற்று</string>
+    <string name="document_uploading">பதிவேற்றுகிறது…</string>
+    <string name="document_id_privacy">அடையாள தனியுரிமை</string>
+    <string name="document_id_privacy_body">ஏற்றுமதிகளில் வாட்டர்மார்க் இல்லை. பகிர்வதற்கு முன் உணர்திறன் தரவை மதிப்பாய்வு செய்யுங்கள்.</string>
+    <string name="document_suggested_redaction">பரிந்துரைக்கப்பட்ட மறைப்பு: %1$s</string>
+    <string name="document_redact_sensitive">உணர்திறன் தரவை மறை</string>
+    <string name="document_id_ocr_no_flag">OCR வெளிப்படையான அடையாள எண்களைக் குறிக்கவில்லை. கீழே தலைப்பு மறைப்பைப் பயன்படுத்தலாம்.</string>
+    <string name="document_retry_ocr">OCR மீண்டும் முயற்சி</string>
+    <string name="document_receipt_details">ரசீது விவரங்கள்</string>
+    <string name="document_receipt_merchant">வணிகர்: %1$s</string>
+    <string name="document_receipt_date">தேதி: %1$s</string>
+    <string name="document_receipt_amount">தொகை: %1$s</string>
+    <string name="document_receipt_extracted_local">OCR உரையிலிருந்து உள்ளூரில் பிரித்தெடுக்கப்பட்டது.</string>
+    <string name="document_recognized_text">அடையாளம் காணப்பட்ட உரை</string>
+    <string name="document_ocr_language">இந்த ஆவணத்திற்கான OCR மொழி</string>
+    <string name="document_ocr_placeholder">உள்ளூர் அடையாளம் முடிந்த பிறகு OCR உரை இங்கே தோன்றும்.</string>
+    <string name="document_pdf_tools">PDF கருவிகள்</string>
+    <string name="document_reorder">மறுவரிசைப்படுத்து</string>
+    <string name="document_delete_pages">பக்கங்களை நீக்கு</string>
+    <string name="document_compress_pdf">PDF சுருக்கு</string>
+    <string name="document_split">பிரி</string>
+    <string name="document_rotate">சுழற்று</string>
+    <string name="document_redact">மறை</string>
+    <string name="document_annotate_pages">பக்கங்களில் குறிப்பிடு</string>
+    <string name="document_signature_text">கையொப்ப உரை</string>
+    <string name="document_add_signature">கையொப்பம் சேர்</string>
+    <string name="document_pdf_password">PDF கடவுச்சொல்</string>
+    <string name="document_password_protect">கடவுச்சொல் பாதுகாப்பு</string>
+    <string name="document_no_folder">கோப்புறை இல்லை</string>
+    <string name="document_folder">கோப்புறை</string>
+    <string name="document_export_searchable_pdf">தேடக்கூடிய PDF தயார்</string>
+    <string name="document_export_original_pdf">அசல் PDF தயார்</string>
+    <string name="document_export_image">பட ஏற்றுமதி தயார்</string>
+    <string name="document_export_none">ஏற்றுமதி இல்லை</string>
+    <string name="document_favorite">பிடித்தது</string>
+    <string name="document_preview_of">%1$s முன்னோட்டம்</string>
+    <string name="document_list_metadata">%1$s · %2$s</string>
+    <plurals name="document_page_count">
+        <item quantity="one">%d பக்கம்</item>
+        <item quantity="other">%d பக்கங்கள்</item>
+    </plurals>
+
+    <!-- Accessibility -->
+    <string name="a11y_share_document">ஆவணத்தைப் பகிர்</string>
+    <string name="a11y_delete_document">ஆவணத்தை நீக்கு</string>
+    <string name="a11y_delete_document_title">%1$s ஐ நீக்கு</string>
+    <string name="a11y_export_ocr_text">OCR உரையை ஏற்றுமதி செய்</string>
+    <string name="a11y_print_document">ஆவணத்தை அச்சிடு</string>
+    <string name="a11y_upload_self_host">சுய-ஹோஸ்ட்டுக்கு பதிவேற்று</string>
+
+    <!-- Annotator -->
+    <string name="annotator_cannot_annotate">குறிப்பிட முடியாது</string>
+    <string name="annotator_no_page_images">இந்த ஆவணத்தில் குறிப்பிட பக்க படங்கள் இல்லை.</string>
+    <string name="action_close">மூடு</string>
+    <string name="action_add">சேர்</string>
+    <string name="annotator_add_note">குறிப்பு சேர்</string>
+    <string name="annotator_note_text">குறிப்பு உரை</string>
+    <string name="annotator_title">குறிப்பிடு</string>
+    <string name="annotator_page_of">பக்கம் %1$d / %2$d</string>
+    <string name="annotator_undo">செயல்தவிர்</string>
+    <string name="annotator_apply">பயன்படுத்து</string>
+    <string name="annotator_tool_sign">கையொப்பம்</string>
+    <string name="annotator_tool_highlight">ஹைலைட்</string>
+    <string name="annotator_tool_redact">மறை</string>
+    <string name="annotator_tool_note">குறிப்பு</string>
+    <string name="annotator_page">பக்கம்</string>
+
+    <!-- Page editor -->
+    <string name="page_editor_reorder">பக்கங்களை மறுவரிசைப்படுத்து</string>
+    <string name="page_editor_delete">பக்கங்களை நீக்கு</string>
+    <string name="page_editor_reorder_hint">பக்கங்களை மேலே அல்லது கீழே நகர்த்தி, புதிய நகலைச் சேமிக்கவும்.</string>
+    <string name="page_editor_delete_hint">நீக்க தேர்வு நீக்கப்பட்ட பக்கங்களை அகற்றவும். குறைந்தது ஒரு பக்கம் இருக்க வேண்டும்.</string>
+    <string name="page_editor_page">பக்கம் %1$d</string>
+    <string name="page_editor_move_up">மேலே நகர்த்து</string>
+    <string name="page_editor_move_down">கீழே நகர்த்து</string>
+    <string name="page_editor_keep_page">பக்கத்தை வை</string>
+    <string name="page_editor_remove_page">பக்கத்தை அகற்று</string>
+    <string name="page_editor_keep_one_page">குறைந்தது ஒரு பக்கத்தை வைத்திருக்கவும்.</string>
+    <string name="page_editor_save_copy">நகலைச் சேமி</string>
+
+    <!-- Backup passphrase -->
+    <string name="backup_set_passphrase">காப்புப்பதிவு கடவுச்சொல்லை அமை</string>
+    <string name="backup_enter_passphrase">காப்புப்பதிவு கடவுச்சொல்லை உள்ளிடு</string>
+    <string name="backup_export_passphrase_body">இந்த கடவுச்சொல் எந்த சாதனத்திலும் காப்புப்பதிவைத் திறக்கும். மறந்தால் ClearScan மீட்டெடுக்க முடியாது.</string>
+    <string name="backup_import_passphrase_body">இந்த காப்புப்பதிவு ஏற்றுமதி செய்யப்பட்டபோது பயன்படுத்திய கடவுச்சொல்லை உள்ளிடவும்.</string>
+    <string name="backup_passphrase_label">கடவுச்சொல்</string>
+    <string name="backup_confirm_passphrase">கடவுச்சொல்லை உறுதிப்படுத்து</string>
+    <string name="backup_save">காப்புப்பதிவைச் சேமி</string>
+    <string name="backup_restore">மீட்டெடு</string>
+
+    <!-- App update -->
+    <string name="update_available">புதுப்பிப்பு கிடைக்கிறது</string>
+    <string name="update_version_available">%1$s பதிப்பு கிடைக்கிறது.\n\n%2$s</string>
+    <string name="update_downloading">பதிவிறக்குகிறது…</string>
+    <string name="update_download_install">பதிவிறக்கி நிறுவு</string>
+    <string name="update_not_now">இப்போது வேண்டாம்</string>
+
+    <!-- Selection bar -->
+    <string name="selection_exit">தேர்விலிருந்து வெளியேறு</string>
+    <string name="a11y_merge_selected">தேர்ந்தெடுத்த ஆவணங்களை இணை</string>
+    <string name="a11y_share_selected">தேர்ந்தெடுத்த ஆவணங்களைப் பகிர்</string>
+    <string name="a11y_delete_selected">தேர்ந்தெடுத்த ஆவணங்களை நீக்கு</string>
+
+    <!-- OCR status badges -->
+    <string name="ocr_status_pending">நிலுவையில்</string>
+    <string name="ocr_status_queued">வரிசையில்</string>
+    <string name="ocr_status_scanning">ஸ்கேன் செய்கிறது</string>
+    <string name="ocr_status_searchable">தேடக்கூடியது</string>
+    <string name="ocr_status_failed">தோல்வி</string>
+    <string name="badge_offline">ஆஃப்லைன்</string>
+    <string name="badge_no_ads">விளம்பரங்கள் இல்லை</string>
+    <string name="badge_private">தனிப்பட்ட</string>
+
+    <!-- OCR language -->
+    <string name="ocr_language_title">OCR மொழி</string>
+    <string name="ocr_language_default_title">இயல்புநிலை OCR மொழி</string>
+    <string name="ocr_language_latin">லத்தின் / ஆங்கிலம்</string>
+    <string name="ocr_language_sinhala">சிங்களம்</string>
+    <string name="ocr_language_tamil">தமிழ்</string>
+    <string name="ocr_language_latin_hint">லத்தின் எழுத்துக்கு சாதனத்தில் உள்ள ML Kit பயன்படுத்தப்படுகிறது.</string>
+    <string name="ocr_language_sinhala_hint">பண்டில் Tesseract sin traineddata பயன்படுத்தப்படுகிறது. முழுமையாக ஆஃப்லைன்.</string>
+    <string name="ocr_language_tamil_hint">பண்டில் Tesseract tam traineddata பயன்படுத்தப்படுகிறது. முழுமையாக ஆஃப்லைன்.</string>
+
+    <!-- PDF compress quality -->
+    <string name="pdf_compress_high">உயர் தரம்</string>
+    <string name="pdf_compress_balanced">சமநிலை</string>
+    <string name="pdf_compress_small">சிறிய அளவு</string>
+
+    <!-- Search field -->
+    <string name="search_clear">தேடலை அழி</string>
 </resources>

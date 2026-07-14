@@ -110,10 +110,119 @@
 
     <!-- Self-host -->
     <string name="self_host_title">Self-host export</string>
+    <string name="self_host_description">Optional upload to your Nextcloud, WebDAV folder, or paperless-ngx. Nothing leaves this device unless you tap Upload.</string>
+    <string name="self_host_enable">Enable self-host export</string>
     <string name="self_host_wifi_only">Wi-Fi only uploads</string>
     <string name="self_host_wifi_only_description">Block self-host uploads on mobile data</string>
     <string name="self_host_not_on_wifi">Wi-Fi only upload is enabled. Connect to a Wi-Fi network first.</string>
     <string name="self_host_save">Save self-host settings</string>
+    <string name="self_host_save_content_desc">Save self-host settings</string>
+    <string name="self_host_section_footer">Credentials are stored with EncryptedSharedPreferences on this device only.</string>
+    <string name="self_host_webdav_url_label">WebDAV base URL</string>
+    <string name="self_host_paperless_url_label">Paperless server URL</string>
+    <string name="self_host_webdav_url_placeholder">https://cloud.example.com/remote.php/dav/files/you/</string>
+    <string name="self_host_paperless_url_placeholder">https://paperless.example.com</string>
+    <string name="self_host_remote_folder_label">Remote folder (optional)</string>
+    <string name="self_host_remote_folder_placeholder">ClearScan</string>
+    <string name="self_host_username">Username</string>
+    <string name="self_host_password">Password</string>
+    <string name="self_host_api_token">API token</string>
+    <string name="self_host_api_token_placeholder">paperless API token</string>
+    <string name="self_host_target_webdav">WebDAV</string>
+    <string name="self_host_target_paperless">paperless-ngx</string>
+
+    <!-- Settings capture -->
+    <string name="settings_capture_footer">All intelligence runs on-device. No cloud AI is used.</string>
+    <string name="settings_auto_page_turn">Auto page-turn capture</string>
+    <string name="settings_auto_page_turn_description">Uses CameraX frame analysis to auto-capture when a page flip settles.</string>
+    <string name="settings_image_enhancement">Shadow &amp; glare reduction</string>
+    <string name="settings_image_enhancement_description">Lightweight on-device tone adjustment before pages are saved.</string>
+    <string name="settings_default_ocr_language">Default OCR language</string>
+
+    <!-- Settings vault -->
+    <string name="settings_vault_title">Biometric vault</string>
+    <string name="settings_vault_enabled_description">Your library locks when you leave. Unlock with fingerprint or device PIN.</string>
+    <string name="settings_vault_disabled_description">Protect your scans behind biometric or device-credential authentication.</string>
+    <string name="settings_vault_enable">Enable vault</string>
+    <string name="settings_vault_disable">Disable vault</string>
+    <string name="settings_vault_lock_now">Lock vault now</string>
+
+    <!-- Settings backup section -->
+    <string name="backup_section_footer">Exports an encrypted backup via the system file picker. Restore replaces local scans on this device.</string>
+    <string name="backup_encrypted_title">Encrypted local backup</string>
+    <string name="backup_description">Save or restore scans without enabling Android auto-backup.</string>
+    <string name="backup_passphrase_protected">Passphrase-protected backup</string>
+    <string name="backup_passphrase_description">Restore the same backup on another device with your passphrase.</string>
+    <string name="backup_export_action">Export</string>
+    <string name="backup_restore_action">Restore</string>
+    <string name="backup_restore_content_desc">Restore backup</string>
+
+    <!-- Settings privacy dashboard entry -->
+    <string name="privacy_dashboard_title">Privacy dashboard</string>
+    <string name="privacy_dashboard_description">Review offline policy, storage location, export audit log, and ad SDK status.</string>
+    <string name="privacy_dashboard_open">Open dashboard</string>
+    <string name="privacy_dashboard_open_content_desc">Open privacy dashboard</string>
+
+    <!-- Settings app updates -->
+    <string name="settings_app_updates_footer">Checks GitHub Releases only when you tap the button. No background tracking.</string>
+    <string name="settings_installed_version">Installed version %1$s</string>
+    <string name="settings_app_update_description">Download newer APKs from GitHub Releases when a version.json entry is published.</string>
+    <string name="settings_check_for_updates">Check for updates</string>
+    <string name="settings_checking_updates">Checking…</string>
+    <string name="settings_check_updates_content_desc">Check for updates</string>
+
+    <!-- Settings about -->
+    <string name="settings_about_built_free">Built to stay free</string>
+    <string name="settings_about_body">No ads. No subscriptions. No watermarks. No forced accounts or cloud uploads.</string>
+    <string name="settings_about_local_first">Local-first</string>
+    <string name="settings_about_private">Private</string>
+    <string name="settings_version_footer">ClearScan v%1$s · Local-first · No ads · No subscriptions</string>
+
+    <!-- Settings developer -->
+    <string name="settings_developer_footer">Run the harness self-check, then add labeled scans for measured OCR accuracy.</string>
+    <string name="settings_benchmark_title">Sinhala / Tamil OCR benchmark</string>
+    <string name="settings_benchmark_run">Run self-check</string>
+    <string name="settings_benchmark_run_content_desc">Run OCR benchmark</string>
+
+    <!-- Privacy dashboard -->
+    <string name="privacy_section_network">Network</string>
+    <string name="privacy_no_background_network">No background network</string>
+    <string name="privacy_section_storage">Storage</string>
+    <string name="privacy_app_private_storage">App-private storage</string>
+    <string name="privacy_encryption_at_rest">Encryption at rest</string>
+    <string name="privacy_system_backup">System backup</string>
+    <string name="privacy_system_backup_disabled">Android auto-backup is disabled. Use explicit backup in Settings.</string>
+    <string name="privacy_system_backup_review">Review backup rules before release.</string>
+    <string name="privacy_section_encryption_health">Encryption health</string>
+    <string name="privacy_section_sdk_posture">SDK posture</string>
+    <string name="privacy_ad_sdk_free">Ad SDK free</string>
+    <string name="privacy_ad_sdk_check_failed">Ad SDK check failed</string>
+    <string name="privacy_audit_log_footer">Only explicit share/export actions are recorded. Nothing leaves the device unless you choose to.</string>
+    <string name="privacy_no_exports">No exports recorded yet.</string>
+    <string name="privacy_document_storage">Document storage</string>
+    <string name="privacy_encryption_status">Encryption status</string>
+    <string name="privacy_status_active">Active</string>
+    <string name="privacy_status_inactive">Inactive</string>
+    <string name="privacy_audit_document_id">Document ID: %1$s</string>
+    <string name="privacy_audit_export_type">Export type: %1$s</string>
+    <string name="privacy_audit_timestamp">Timestamp: %1$s</string>
+    <string name="privacy_healthy">Healthy</string>
+    <string name="privacy_warning">Warning</string>
+    <string name="action_expand">Expand</string>
+    <string name="action_collapse">Collapse</string>
+
+    <!-- Privacy status provider -->
+    <string name="privacy_network_policy">No network calls in core flows. Export and backup are explicit user actions only.</string>
+    <string name="privacy_encryption_healthy">AES-GCM 256-bit via Android Keystore · encryption + decryption verified</string>
+    <string name="privacy_encryption_unavailable">Vault encryption is unavailable on this device.</string>
+    <string name="privacy_ad_sdk_clean">No common ad SDK classes detected in the app classpath.</string>
+    <string name="privacy_ad_sdk_detected">Detected SDK markers: %1$s</string>
+
+    <!-- Storage units -->
+    <string name="storage_bytes_gb">%1$.1f GB</string>
+    <string name="storage_bytes_mb">%1$.1f MB</string>
+    <string name="storage_bytes_kb">%1$.1f KB</string>
+    <string name="storage_bytes_b">%1$d B</string>
 
     <!-- General -->
     <string name="action_save">Save</string>
@@ -126,4 +235,152 @@
     <string name="action_go_back">Go back</string>
     <string name="snackbar_deleted">Deleted 1 document.</string>
     <string name="snackbar_deleted_plural">Deleted %d documents.</string>
+
+    <!-- Filters -->
+    <string name="filter_all">All</string>
+    <string name="filter_favorites">Favorites</string>
+    <string name="folders_delete_message">\"%1$s\" will be removed. Documents in this folder stay in your library.</string>
+
+    <!-- Document detail -->
+    <string name="document_delete_title">Delete document?</string>
+    <string name="document_delete_message">\"%1$s\" will be permanently removed from this device.</string>
+    <string name="document_possible_duplicate">Possible duplicate</string>
+    <string name="document_organize">Organize</string>
+    <string name="document_favorited">Favorited</string>
+    <string name="document_add_favorites">Add to favorites</string>
+    <string name="document_remove_favorites">Remove from favorites</string>
+    <string name="document_tags_label">Tags (comma separated)</string>
+    <string name="document_save_tags">Save tags</string>
+    <string name="document_export_text">Export text</string>
+    <string name="document_print">Print</string>
+    <string name="document_upload_self_host">Upload to self-host</string>
+    <string name="document_uploading">Uploading…</string>
+    <string name="document_id_privacy">ID privacy</string>
+    <string name="document_id_privacy_body">No watermark on exports. Review sensitive fields before sharing.</string>
+    <string name="document_suggested_redaction">Suggested redaction: %1$s</string>
+    <string name="document_redact_sensitive">Redact sensitive fields</string>
+    <string name="document_id_ocr_no_flag">OCR did not flag obvious ID numbers. You can still use header redaction below.</string>
+    <string name="document_retry_ocr">Retry OCR</string>
+    <string name="document_receipt_details">Receipt details</string>
+    <string name="document_receipt_merchant">Merchant: %1$s</string>
+    <string name="document_receipt_date">Date: %1$s</string>
+    <string name="document_receipt_amount">Amount: %1$s</string>
+    <string name="document_receipt_extracted_local">Extracted locally from OCR text.</string>
+    <string name="document_recognized_text">Recognized text</string>
+    <string name="document_ocr_language">OCR language for this document</string>
+    <string name="document_ocr_placeholder">OCR text will appear here after the local recognizer finishes processing this document.</string>
+    <string name="document_pdf_tools">PDF tools</string>
+    <string name="document_reorder">Reorder</string>
+    <string name="document_delete_pages">Delete pages</string>
+    <string name="document_compress_pdf">Compress PDF</string>
+    <string name="document_split">Split</string>
+    <string name="document_rotate">Rotate</string>
+    <string name="document_redact">Redact</string>
+    <string name="document_annotate_pages">Annotate pages</string>
+    <string name="document_signature_text">Signature text</string>
+    <string name="document_add_signature">Add signature</string>
+    <string name="document_pdf_password">PDF password</string>
+    <string name="document_password_protect">Password protect</string>
+    <string name="document_no_folder">No folder</string>
+    <string name="document_folder">Folder</string>
+    <string name="document_export_searchable_pdf">Searchable PDF ready</string>
+    <string name="document_export_original_pdf">Original PDF ready</string>
+    <string name="document_export_image">Image export ready</string>
+    <string name="document_export_none">No export available</string>
+    <string name="document_favorite">Favorite</string>
+    <string name="document_preview_of">Preview of %1$s</string>
+    <string name="document_list_metadata">%1$s · %2$s</string>
+    <plurals name="document_page_count">
+        <item quantity="one">%d page</item>
+        <item quantity="other">%d pages</item>
+    </plurals>
+
+    <!-- Accessibility -->
+    <string name="a11y_share_document">Share document</string>
+    <string name="a11y_delete_document">Delete document</string>
+    <string name="a11y_delete_document_title">Delete %1$s</string>
+    <string name="a11y_export_ocr_text">Export OCR text</string>
+    <string name="a11y_print_document">Print document</string>
+    <string name="a11y_upload_self_host">Upload to self-host</string>
+
+    <!-- Annotator -->
+    <string name="annotator_cannot_annotate">Cannot annotate</string>
+    <string name="annotator_no_page_images">This document has no page images to annotate.</string>
+    <string name="action_close">Close</string>
+    <string name="action_add">Add</string>
+    <string name="annotator_add_note">Add note</string>
+    <string name="annotator_note_text">Note text</string>
+    <string name="annotator_title">Annotate</string>
+    <string name="annotator_page_of">Page %1$d of %2$d</string>
+    <string name="annotator_undo">Undo</string>
+    <string name="annotator_apply">Apply</string>
+    <string name="annotator_tool_sign">Sign</string>
+    <string name="annotator_tool_highlight">Highlight</string>
+    <string name="annotator_tool_redact">Redact</string>
+    <string name="annotator_tool_note">Note</string>
+    <string name="annotator_page">Page</string>
+
+    <!-- Page editor -->
+    <string name="page_editor_reorder">Reorder pages</string>
+    <string name="page_editor_delete">Delete pages</string>
+    <string name="page_editor_reorder_hint">Move pages up or down, then save a new copy.</string>
+    <string name="page_editor_delete_hint">Uncheck pages to remove. At least one page must remain.</string>
+    <string name="page_editor_page">Page %1$d</string>
+    <string name="page_editor_move_up">Move up</string>
+    <string name="page_editor_move_down">Move down</string>
+    <string name="page_editor_keep_page">Keep page</string>
+    <string name="page_editor_remove_page">Remove page</string>
+    <string name="page_editor_keep_one_page">Keep at least one page.</string>
+    <string name="page_editor_save_copy">Save copy</string>
+
+    <!-- Backup passphrase -->
+    <string name="backup_set_passphrase">Set backup passphrase</string>
+    <string name="backup_enter_passphrase">Enter backup passphrase</string>
+    <string name="backup_export_passphrase_body">This passphrase unlocks the backup on any device. ClearScan cannot recover it if you forget it.</string>
+    <string name="backup_import_passphrase_body">Enter the passphrase used when this backup was exported.</string>
+    <string name="backup_passphrase_label">Passphrase</string>
+    <string name="backup_confirm_passphrase">Confirm passphrase</string>
+    <string name="backup_save">Save backup</string>
+    <string name="backup_restore">Restore</string>
+
+    <!-- App update -->
+    <string name="update_available">Update available</string>
+    <string name="update_version_available">Version %1$s is available.\n\n%2$s</string>
+    <string name="update_downloading">Downloading…</string>
+    <string name="update_download_install">Download &amp; install</string>
+    <string name="update_not_now">Not now</string>
+
+    <!-- Selection bar -->
+    <string name="selection_exit">Exit selection</string>
+    <string name="a11y_merge_selected">Merge selected documents</string>
+    <string name="a11y_share_selected">Share selected documents</string>
+    <string name="a11y_delete_selected">Delete selected documents</string>
+
+    <!-- OCR status badges -->
+    <string name="ocr_status_pending">Pending</string>
+    <string name="ocr_status_queued">Queued</string>
+    <string name="ocr_status_scanning">Scanning</string>
+    <string name="ocr_status_searchable">Searchable</string>
+    <string name="ocr_status_failed">Failed</string>
+    <string name="badge_offline">Offline</string>
+    <string name="badge_no_ads">No ads</string>
+    <string name="badge_private">Private</string>
+
+    <!-- OCR language -->
+    <string name="ocr_language_title">OCR language</string>
+    <string name="ocr_language_default_title">Default OCR language</string>
+    <string name="ocr_language_latin">Latin / English</string>
+    <string name="ocr_language_sinhala">Sinhala</string>
+    <string name="ocr_language_tamil">Tamil</string>
+    <string name="ocr_language_latin_hint">Uses on-device ML Kit for Latin script.</string>
+    <string name="ocr_language_sinhala_hint">Uses bundled Tesseract sin traineddata. Fully offline.</string>
+    <string name="ocr_language_tamil_hint">Uses bundled Tesseract tam traineddata. Fully offline.</string>
+
+    <!-- PDF compress quality -->
+    <string name="pdf_compress_high">High quality</string>
+    <string name="pdf_compress_balanced">Balanced</string>
+    <string name="pdf_compress_small">Smallest size</string>
+
+    <!-- Search field -->
+    <string name="search_clear">Clear search</string>
 </resources>

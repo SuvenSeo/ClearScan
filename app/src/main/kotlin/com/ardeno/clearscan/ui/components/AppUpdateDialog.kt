@@ -5,7 +5,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import com.ardeno.clearscan.R
 import com.ardeno.clearscan.update.AppUpdateInfo
 
 @Composable
@@ -19,18 +21,17 @@ fun AppUpdateDialog(
         onDismissRequest = { if (!isDownloading) onDismiss() },
         title = {
             Text(
-                text = "Update available",
+                text = stringResource(R.string.update_available),
                 fontWeight = FontWeight.SemiBold
             )
         },
         text = {
             Text(
-                text = buildString {
-                    append("Version ")
-                    append(update.versionName)
-                    append(" is available.\n\n")
-                    append(update.releaseNotes)
-                },
+                text = stringResource(
+                    R.string.update_version_available,
+                    update.versionName,
+                    update.releaseNotes
+                ),
                 style = MaterialTheme.typography.bodyMedium
             )
         },
@@ -39,7 +40,13 @@ fun AppUpdateDialog(
                 onClick = onDownload,
                 enabled = !isDownloading
             ) {
-                Text(if (isDownloading) "Downloading…" else "Download & install")
+                Text(
+                    if (isDownloading) {
+                        stringResource(R.string.update_downloading)
+                    } else {
+                        stringResource(R.string.update_download_install)
+                    }
+                )
             }
         },
         dismissButton = {
@@ -47,7 +54,7 @@ fun AppUpdateDialog(
                 onClick = onDismiss,
                 enabled = !isDownloading
             ) {
-                Text("Not now")
+                Text(stringResource(R.string.update_not_now))
             }
         }
     )

@@ -75,8 +75,99 @@
     <string name="vault_no_biometric">ජෛවමිතික හෝ තිර අගුලක් නොමැත. පද්ධති සැකසුම් තුළ උපාංග PIN, රටාව හෝ මුරපදයක් සකසා නැවත මෙහි එන්න.</string>
     <string name="vault_auth_failed">සත්‍යාපනය අසාර්ථකයි. නැවත උත්සාහ කරන්න හෝ ඔබගේ උපාංග PIN භාවිතා කරන්න.</string>
     <string name="self_host_title">ස්වයං-සත්කාරක නිර්යාතය</string>
+    <string name="self_host_description">ඔබගේ Nextcloud, WebDAV ෆෝල්ඩරය හෝ paperless-ngx වෙත විකල්ප උඩුගත කිරීම. Upload ඔබන්න නොකළහොත් කිසිවක් මෙම උපාංගයෙන් පිට නොයයි.</string>
+    <string name="self_host_enable">ස්වයං-සත්කාරක නිර්යාතය සක්‍රීය කරන්න</string>
     <string name="self_host_wifi_only">Wi-Fi පමණක් උඩුගත කිරීම්</string>
+    <string name="self_host_wifi_only_description">ජංගම දත්ත මත ස්වයං-සත්කාරක උඩුගත කිරීම් අවහිර කරන්න</string>
     <string name="self_host_not_on_wifi">Wi-Fi පමණක් උඩුගත කිරීම සක්‍රීයයි. පළමුව Wi-Fi ජාලයකට සම්බන්ධ වන්න.</string>
+    <string name="self_host_save">ස්වයං-සත්කාරක සැකසීම් සුරකින්න</string>
+    <string name="self_host_save_content_desc">ස්වයං-සත්කාරක සැකසීම් සුරකින්න</string>
+    <string name="self_host_section_footer">අක්තපත්‍ර මෙම උපාංගයේ පමණක් EncryptedSharedPreferences සමඟ ගබඩා කර ඇත.</string>
+    <string name="self_host_webdav_url_label">WebDAV මූල URL</string>
+    <string name="self_host_paperless_url_label">Paperless සේවාදායක URL</string>
+    <string name="self_host_webdav_url_placeholder">https://cloud.example.com/remote.php/dav/files/you/</string>
+    <string name="self_host_paperless_url_placeholder">https://paperless.example.com</string>
+    <string name="self_host_remote_folder_label">දුරස්ථ ෆෝල්ඩරය (විකල්ප)</string>
+    <string name="self_host_remote_folder_placeholder">ClearScan</string>
+    <string name="self_host_username">පරිශීලක නාමය</string>
+    <string name="self_host_password">මුරපදය</string>
+    <string name="self_host_api_token">API ටෝකනය</string>
+    <string name="self_host_api_token_placeholder">paperless API ටෝකනය</string>
+    <string name="self_host_target_webdav">WebDAV</string>
+    <string name="self_host_target_paperless">paperless-ngx</string>
+    <string name="settings_capture_footer">සියලු බුද්ධිමය ක්‍රියා උපාංගයේම ක්‍රියා කරයි. වලාකුළු AI භාවිතා නොකෙරේ.</string>
+    <string name="settings_auto_page_turn">ස්වයංක්‍රීය පිටු හැරවීම් අල්ලා ගැනීම</string>
+    <string name="settings_auto_page_turn_description">පිටුවක් හැරවීම ස්ථිර වූ විට CameraX රාමු විශ්ලේෂණයෙන් ස්වයංක්‍රීයව අල්ලා ගනී.</string>
+    <string name="settings_image_enhancement">සෙවනැලි සහ දීප්ති අඩු කිරීම</string>
+    <string name="settings_image_enhancement_description">පිටු සුරකින පෙර සැහැල්ලු උපාංග-මට්ටමේ ටෝන සකස් කිරීම.</string>
+    <string name="settings_default_ocr_language">පෙරනිමි OCR භාෂාව</string>
+    <string name="settings_vault_title">ජෛවමිතික ගබඩාව</string>
+    <string name="settings_vault_enabled_description">ඔබ පිටව යන විට ඔබගේ පුස්තකාලය අගුළු වේ. ඇඟිලි සලකුණ හෝ උපාංග PIN මගින් අගුළු හරින්න.</string>
+    <string name="settings_vault_disabled_description">ජෛවමිතික හෝ උපාංග අක්තපත්‍ර සත්‍යාපනයෙන් ඔබගේ ස්කෑන් ආරක්ෂා කරන්න.</string>
+    <string name="settings_vault_enable">ගබඩාව සක්‍රීය කරන්න</string>
+    <string name="settings_vault_disable">ගබඩාව අක්‍රීය කරන්න</string>
+    <string name="settings_vault_lock_now">දැන් ගබඩාව අගුළු දමන්න</string>
+    <string name="backup_section_footer">පද්ධති ගොනු තෝරකය හරහා සංකේතිත උපස්ථයක් නිර්යාත කරයි. ප්‍රතිසාධනය මෙම උපාංගයේ දේශීය ස්කෑන් ප්‍රතිස්ථාපනය කරයි.</string>
+    <string name="backup_encrypted_title">සංකේතිත දේශීය උපස්ථය</string>
+    <string name="backup_description">Android ස්වයංක්‍රීය උපස්ථය සක්‍රීය නොකර ස්කෑන් සුරකින්න හෝ ප්‍රතිසාධනය කරන්න.</string>
+    <string name="backup_passphrase_protected">මුරපද වාක්‍ය ඛණ්ඩයෙන් ආරක්ෂිත උපස්ථය</string>
+    <string name="backup_passphrase_description">ඔබගේ මුරපද වාක්‍ය ඛණ්ඩයෙන් වෙනත් උපාංගයක එම උපස්ථය ප්‍රතිසාධනය කරන්න.</string>
+    <string name="backup_export_action">නිර්යාත</string>
+    <string name="backup_restore_action">ප්‍රතිසාධනය</string>
+    <string name="backup_restore_content_desc">උපස්ථය ප්‍රතිසාධනය කරන්න</string>
+    <string name="privacy_dashboard_title">රහස්‍යතා උපකරණ පුවරුව</string>
+    <string name="privacy_dashboard_description">නොබැඳි ප්‍රතිපත්තිය, ගබඩා ස්ථානය, නිර්යාත විගණන ලොගය සහ දැන්වීම් SDK තත්ත්වය සමාලෝචනය කරන්න.</string>
+    <string name="privacy_dashboard_open">උපකරණ පුවරුව විවෘත කරන්න</string>
+    <string name="privacy_dashboard_open_content_desc">රහස්‍යතා උපකරණ පුවරුව විවෘත කරන්න</string>
+    <string name="settings_app_updates_footer">ඔබ බොත්තම ඔබන විට පමණක් GitHub Releases පරීක්ෂා කරයි. පසුබිම් නිරීක්ෂණය නැත.</string>
+    <string name="settings_installed_version">ස්ථාපිත අනුවාදය %1$s</string>
+    <string name="settings_app_update_description">version.json ඇතුළත් කිරීමක් ප්‍රකාශිත වූ විට GitHub Releases වෙතින් නව APK බාගත කරන්න.</string>
+    <string name="settings_check_for_updates">යාවත්කාල පරීක්ෂා කරන්න</string>
+    <string name="settings_checking_updates">පරීක්ෂා කරමින්…</string>
+    <string name="settings_check_updates_content_desc">යාවත්කාල පරීක්ෂා කරන්න</string>
+    <string name="settings_about_built_free">නිදහස්ව පවතින ලෙස නිර්මාණය කර ඇත</string>
+    <string name="settings_about_body">දැන්වීම් නැත. දායකත්ව නැත. ජල සලකුණු නැත. බලකාර ගිණුම් හෝ වලාකුළු උඩුගත කිරීම් නැත.</string>
+    <string name="settings_about_local_first">දේශීය-ප්‍රථම</string>
+    <string name="settings_about_private">පෞද්ගලික</string>
+    <string name="settings_version_footer">ClearScan v%1$s · දේශීය-ප්‍රථම · දැන්වීම් නැත · දායකත්ව නැත</string>
+    <string name="settings_developer_footer">harness ස්වයං-පරීක්ෂාව ධාවනය කර, මැනිය හැකි OCR නිරවද්‍යතාව සඳහා ලේබල් ස්කෑන් එක් කරන්න.</string>
+    <string name="settings_benchmark_title">සිංහල / දෙමළ OCR පරිමාණය</string>
+    <string name="settings_benchmark_run">ස්වයං-පරීක්ෂාව ධාවනය කරන්න</string>
+    <string name="settings_benchmark_run_content_desc">OCR පරිමාණය ධාවනය කරන්න</string>
+    <string name="privacy_section_network">ජාලය</string>
+    <string name="privacy_no_background_network">පසුබිම් ජාලය නැත</string>
+    <string name="privacy_section_storage">ගබඩාව</string>
+    <string name="privacy_app_private_storage">යෙදුම්-පෞද්ගලික ගබඩාව</string>
+    <string name="privacy_encryption_at_rest">විවේකයේදී සංකේතනය</string>
+    <string name="privacy_system_backup">පද්ධති උපස්ථය</string>
+    <string name="privacy_system_backup_disabled">Android ස්වයංක්‍රීය උපස්ථය අක්‍රීයයි. සැකසීම් තුළ ස්පෂ්ට උපස්ථය භාවිතා කරන්න.</string>
+    <string name="privacy_system_backup_review">නිකුත් කිරීමට පෙර උපස්ථ නීති සමාලෝචනය කරන්න.</string>
+    <string name="privacy_section_encryption_health">සංකේතන සෞඛ්‍යය</string>
+    <string name="privacy_section_sdk_posture">SDK තත්ත්වය</string>
+    <string name="privacy_ad_sdk_free">දැන්වීම් SDK නැත</string>
+    <string name="privacy_ad_sdk_check_failed">දැන්වීම් SDK පරීක්ෂාව අසාර්ථකයි</string>
+    <string name="privacy_audit_log_footer">ස්පෂ්ට බෙදාගැනීම්/නිර්යාත ක්‍රියා පමණක් වාර්තා කරයි. ඔබ තෝරන්නේ නම් හැර උපාංගයෙන් කිසිවක් පිට නොයයි.</string>
+    <string name="privacy_no_exports">තවම නිර්යාත වාර්තා නැත.</string>
+    <string name="privacy_document_storage">ලේඛන ගබඩාව</string>
+    <string name="privacy_encryption_status">සංකේතන තත්ත්වය</string>
+    <string name="privacy_status_active">සක්‍රීය</string>
+    <string name="privacy_status_inactive">අක්‍රීය</string>
+    <string name="privacy_audit_document_id">ලේඛන ID: %1$s</string>
+    <string name="privacy_audit_export_type">නිර්යාත වර්ගය: %1$s</string>
+    <string name="privacy_audit_timestamp">කාල මුද්‍රාව: %1$s</string>
+    <string name="privacy_healthy">සෞඛ්‍ය සම්පන්න</string>
+    <string name="privacy_warning">අනතුරු ඇඟවීම</string>
+    <string name="action_expand">විහිදුවන්න</string>
+    <string name="action_collapse">හකුළන්න</string>
+    <string name="privacy_network_policy">ප්‍රධාන ප්‍රවාහවල ජාල ඇමතුම් නැත. නිර්යාත සහ උපස්ථ ස්පෂ්ට පරිශීලක ක්‍රියා පමණි.</string>
+    <string name="privacy_encryption_healthy">Android Keystore හරහා AES-GCM 256-bit · සංකේතනය + විසංකේතනය සත්‍යාපනය කළා</string>
+    <string name="privacy_encryption_unavailable">මෙම උපාංගයේ ගබඩා සංකේතනය ලබා ගත නොහැක.</string>
+    <string name="privacy_ad_sdk_clean">යෙදුම් classpath තුළ සාමාන්‍ය දැන්වීම් SDK පන්ති හඳුනාගෙන නැත.</string>
+    <string name="privacy_ad_sdk_detected">හඳුනාගත් SDK සලකුණු: %1$s</string>
+    <string name="storage_bytes_gb">%1$.1f GB</string>
+    <string name="storage_bytes_mb">%1$.1f MB</string>
+    <string name="storage_bytes_kb">%1$.1f KB</string>
+    <string name="storage_bytes_b">%1$d B</string>
     <string name="action_save">සුරකින්න</string>
     <string name="action_cancel">අවලංගු කරන්න</string>
     <string name="action_delete">මකන්න</string>
@@ -85,4 +176,152 @@
     <string name="action_merge">ඒකාබද්ධ කරන්න</string>
     <string name="action_create">සාදන්න</string>
     <string name="action_go_back">ආපසු යන්න</string>
+
+    <!-- Filters -->
+    <string name="filter_all">සියල්ල</string>
+    <string name="filter_favorites">ප්‍රියතම</string>
+    <string name="folders_delete_message">\"%1$s\" ඉවත් කෙරේ. මෙම ෆෝල්ඩරයේ ලේඛන ඔබගේ පුස්තකාලයේ රැඳී සිටී.</string>
+
+    <!-- Document detail -->
+    <string name="document_delete_title">ලේඛනය මකන්නද?</string>
+    <string name="document_delete_message">\"%1$s\" මෙම උපාංගයෙන් ස්ථිරවම ඉවත් කෙරේ.</string>
+    <string name="document_possible_duplicate">සම්භාව්‍ය අනුපාතික පිටපත</string>
+    <string name="document_organize">සංවිධානය කරන්න</string>
+    <string name="document_favorited">ප්‍රියතමයි</string>
+    <string name="document_add_favorites">ප්‍රියතම වලට එක් කරන්න</string>
+    <string name="document_remove_favorites">ප්‍රියතම වලින් ඉවත් කරන්න</string>
+    <string name="document_tags_label">ටැග් (කොමාවකින් වෙන් කර)</string>
+    <string name="document_save_tags">ටැග් සුරකින්න</string>
+    <string name="document_export_text">පෙළ නිර්යාත කරන්න</string>
+    <string name="document_print">මුද්‍රණය</string>
+    <string name="document_upload_self_host">ස්වයං-සත්කාරකයට උඩුගත කරන්න</string>
+    <string name="document_uploading">උඩුගත වෙමින්…</string>
+    <string name="document_id_privacy">හැඳුනුම්පත් රහස්‍යතාව</string>
+    <string name="document_id_privacy_body">නිර්යාතවල ජල සලකුණු නැත. බෙදාගැනීමට පෙර සංවේදී ක්ෂේත්‍ර සමාලෝචනය කරන්න.</string>
+    <string name="document_suggested_redaction">යෝජිත සංස්කරණය: %1$s</string>
+    <string name="document_redact_sensitive">සංවේදී ක්ෂේත්‍ර සංස්කරණය කරන්න</string>
+    <string name="document_id_ocr_no_flag">OCR හැඳුනුම් අංක සලකුණු නොකළේය. පහත ශීර්ෂ සංස්කරණය භාවිතා කළ හැක.</string>
+    <string name="document_retry_ocr">OCR නැවත උත්සාහ කරන්න</string>
+    <string name="document_receipt_details">රිසිට්පත් විස්තර</string>
+    <string name="document_receipt_merchant">වෙළඳා: %1$s</string>
+    <string name="document_receipt_date">දිනය: %1$s</string>
+    <string name="document_receipt_amount">මුදල: %1$s</string>
+    <string name="document_receipt_extracted_local">OCR පෙළෙන් දේශීයව උපුටා ගන්නා ලදී.</string>
+    <string name="document_recognized_text">හඳුනාගත් පෙළ</string>
+    <string name="document_ocr_language">මෙම ලේඛනය සඳහා OCR භාෂාව</string>
+    <string name="document_ocr_placeholder">දේශීය හඳුනාගැනීම අවසන් වූ පසු OCR පෙළ මෙහි දිස්වේ.</string>
+    <string name="document_pdf_tools">PDF මෙවලම්</string>
+    <string name="document_reorder">නැවත සැකසීම</string>
+    <string name="document_delete_pages">පිටු මකන්න</string>
+    <string name="document_compress_pdf">PDF සම්පීඩනය</string>
+    <string name="document_split">බෙදන්න</string>
+    <string name="document_rotate">කරකවන්න</string>
+    <string name="document_redact">සංස්කරණය</string>
+    <string name="document_annotate_pages">පිටු සටහන් කරන්න</string>
+    <string name="document_signature_text">අත්සන පෙළ</string>
+    <string name="document_add_signature">අත්සන එක් කරන්න</string>
+    <string name="document_pdf_password">PDF මුරපදය</string>
+    <string name="document_password_protect">මුරපද ආරක්ෂාව</string>
+    <string name="document_no_folder">ෆෝල්ඩරයක් නැත</string>
+    <string name="document_folder">ෆෝල්ඩරය</string>
+    <string name="document_export_searchable_pdf">සෙවිය හැකි PDF සූදානම්</string>
+    <string name="document_export_original_pdf">මුල් PDF සූදානම්</string>
+    <string name="document_export_image">රූප නිර්යාතය සූදානම්</string>
+    <string name="document_export_none">නිර්යාතයක් නොමැත</string>
+    <string name="document_favorite">ප්‍රියතම</string>
+    <string name="document_preview_of">%1$s පෙරදසුන</string>
+    <string name="document_list_metadata">%1$s · %2$s</string>
+    <plurals name="document_page_count">
+        <item quantity="one">පිටු %d</item>
+        <item quantity="other">පිටු %d</item>
+    </plurals>
+
+    <!-- Accessibility -->
+    <string name="a11y_share_document">ලේඛනය බෙදාගන්න</string>
+    <string name="a11y_delete_document">ලේඛනය මකන්න</string>
+    <string name="a11y_delete_document_title">%1$s මකන්න</string>
+    <string name="a11y_export_ocr_text">OCR පෙළ නිර්යාත කරන්න</string>
+    <string name="a11y_print_document">ලේඛනය මුද්‍රණය කරන්න</string>
+    <string name="a11y_upload_self_host">ස්වයං-සත්කාරකයට උඩුගත කරන්න</string>
+
+    <!-- Annotator -->
+    <string name="annotator_cannot_annotate">සටහන් කළ නොහැක</string>
+    <string name="annotator_no_page_images">මෙම ලේඛනයට සටහන් කිරීමට පිටු රූප නැත.</string>
+    <string name="action_close">වසන්න</string>
+    <string name="action_add">එක් කරන්න</string>
+    <string name="annotator_add_note">සටහන එක් කරන්න</string>
+    <string name="annotator_note_text">සටහන පෙළ</string>
+    <string name="annotator_title">සටහන් කරන්න</string>
+    <string name="annotator_page_of">පිටු %1$d / %2$d</string>
+    <string name="annotator_undo">පෙරසේ</string>
+    <string name="annotator_apply">යොදන්න</string>
+    <string name="annotator_tool_sign">අත්සන</string>
+    <string name="annotator_tool_highlight">ඉස්මතු කරන්න</string>
+    <string name="annotator_tool_redact">සංස්කරණය</string>
+    <string name="annotator_tool_note">සටහන</string>
+    <string name="annotator_page">පිටුව</string>
+
+    <!-- Page editor -->
+    <string name="page_editor_reorder">පිටු නැවත සැකසීම</string>
+    <string name="page_editor_delete">පිටු මකන්න</string>
+    <string name="page_editor_reorder_hint">පිටු ඉහළට හෝ පහළට ගෙනයන්න, පසුව නව පිටපතක් සුරකින්න.</string>
+    <string name="page_editor_delete_hint">ඉවත් කිරීමට පිටු ඉවත් කරන්න. අවම වශයෙන් පිටුවක් තබා ගත යුතුය.</string>
+    <string name="page_editor_page">පිටු %1$d</string>
+    <string name="page_editor_move_up">ඉහළට ගෙනයන්න</string>
+    <string name="page_editor_move_down">පහළට ගෙනයන්න</string>
+    <string name="page_editor_keep_page">පිටුව තබා ගන්න</string>
+    <string name="page_editor_remove_page">පිටුව ඉවත් කරන්න</string>
+    <string name="page_editor_keep_one_page">අවම වශයෙන් පිටුවක් තබා ගන්න.</string>
+    <string name="page_editor_save_copy">පිටපත සුරකින්න</string>
+
+    <!-- Backup passphrase -->
+    <string name="backup_set_passphrase">උපස්ථ මුරපදය සකසන්න</string>
+    <string name="backup_enter_passphrase">උපස්ථ මුරපදය ඇතුළත් කරන්න</string>
+    <string name="backup_export_passphrase_body">මෙම මුරපදය ඕනෑම උපාංගයක උපස්ථය අගුළු හරිනු ඇත. අමතක වුවහොත් ClearScan එය ප්‍රතිසාධනය කළ නොහැක.</string>
+    <string name="backup_import_passphrase_body">මෙම උපස්ථය නිර්යාත කරන විට භාවිතා කළ මුරපදය ඇතුළත් කරන්න.</string>
+    <string name="backup_passphrase_label">මුරපදය</string>
+    <string name="backup_confirm_passphrase">මුරපදය තහවුරු කරන්න</string>
+    <string name="backup_save">උපස්ථය සුරකින්න</string>
+    <string name="backup_restore">ප්‍රතිසාධනය</string>
+
+    <!-- App update -->
+    <string name="update_available">යාවත්කාලයක් තිබේ</string>
+    <string name="update_version_available">%1$s අනුවාදය තිබේ.\n\n%2$s</string>
+    <string name="update_downloading">බාගත වෙමින්…</string>
+    <string name="update_download_install">බාගත කර ස්ථාපනය කරන්න</string>
+    <string name="update_not_now">දැන් නොවේ</string>
+
+    <!-- Selection bar -->
+    <string name="selection_exit">තේරීමෙන් පිටවන්න</string>
+    <string name="a11y_merge_selected">තෝරාගත් ලේඛන ඒකාබද්ධ කරන්න</string>
+    <string name="a11y_share_selected">තෝරාගත් ලේඛන බෙදාගන්න</string>
+    <string name="a11y_delete_selected">තෝරාගත් ලේඛන මකන්න</string>
+
+    <!-- OCR status badges -->
+    <string name="ocr_status_pending">පොරොත්තුව</string>
+    <string name="ocr_status_queued">පෝලිම</string>
+    <string name="ocr_status_scanning">ස්කෑන් කරමින්</string>
+    <string name="ocr_status_searchable">සෙවිය හැක</string>
+    <string name="ocr_status_failed">අසාර්ථක</string>
+    <string name="badge_offline">නොබැඳි</string>
+    <string name="badge_no_ads">දැන්වීම් නැත</string>
+    <string name="badge_private">පෞද්ගලික</string>
+
+    <!-- OCR language -->
+    <string name="ocr_language_title">OCR භාෂාව</string>
+    <string name="ocr_language_default_title">පෙරනිමි OCR භාෂාව</string>
+    <string name="ocr_language_latin">ලතින් / ඉංග්‍රීසි</string>
+    <string name="ocr_language_sinhala">සිංහල</string>
+    <string name="ocr_language_tamil">දෙමළ</string>
+    <string name="ocr_language_latin_hint">ලතින් අක්ෂර සඳහා උපාංගයේ ML Kit භාවිතා කරයි.</string>
+    <string name="ocr_language_sinhala_hint">බැඳි Tesseract sin traineddata භාවිතා කරයි. සම්පූර්ණයෙන් නොබැඳි.</string>
+    <string name="ocr_language_tamil_hint">බැඳි Tesseract tam traineddata භාවිතා කරයි. සම්පූර්ණයෙන් නොබැඳි.</string>
+
+    <!-- PDF compress quality -->
+    <string name="pdf_compress_high">ඉහළ ගුණත්වය</string>
+    <string name="pdf_compress_balanced">සමබර</string>
+    <string name="pdf_compress_small">කුඩාම ප්‍රමාණය</string>
+
+    <!-- Search field -->
+    <string name="search_clear">සෙවීම ඉවත් කරන්න</string>
 </resources>

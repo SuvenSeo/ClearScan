@@ -84,12 +84,12 @@ fun FolderFilterRow(
         AnimatedFilterChip(
             selected = !showFavoritesOnly && selectedFolderId == null,
             onClick = onSelectAll,
-            label = { Text("All") }
+            label = { Text(stringResource(R.string.filter_all)) }
         )
         AnimatedFilterChip(
             selected = showFavoritesOnly,
             onClick = onSelectFavorites,
-            label = { Text("Favorites") },
+            label = { Text(stringResource(R.string.filter_favorites)) },
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Outlined.Star,
@@ -137,7 +137,7 @@ fun FolderFilterRow(
         AnimatedFilterChip(
             selected = false,
             onClick = onCreateFolder,
-            label = { Text("New folder") },
+            label = { Text(stringResource(R.string.library_new_folder)) },
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Outlined.Add,
@@ -194,7 +194,7 @@ private fun DeleteFolderDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(R.string.folders_delete)) },
         text = {
-            Text("\"$folderName\" will be removed. Documents in this folder stay in your library.")
+            Text(stringResource(R.string.folders_delete_message, folderName))
         },
         confirmButton = {
             TextButton(onClick = onConfirm) {
