@@ -40,7 +40,7 @@ Every entry in the checked-in corpus must include `imageFile` pointing at an exi
 | `description` | no | Human note about capture conditions. |
 | `expectedText` | yes | Manually typed ground truth. |
 | `actualText` | no | OCR output to score on JVM; omit when scoring live on device. |
-| `imageFile` | no | PNG file name in the same corpus folder. |
+| `imageFile` | yes (CI) | PNG file name in the same corpus folder; required for checked-in corpus. |
 
 ## Running the Corpus Harness
 
