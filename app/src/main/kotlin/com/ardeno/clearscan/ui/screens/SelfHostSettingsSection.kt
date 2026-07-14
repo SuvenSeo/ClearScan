@@ -16,9 +16,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import com.ardeno.clearscan.R
 import com.ardeno.clearscan.data.SelfHostConfig
 import com.ardeno.clearscan.model.SelfHostTargetType
 
@@ -36,12 +38,12 @@ fun SelfHostSettingsSection(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         Text(
-            text = "Self-host export",
+            text = stringResource(R.string.self_host_title),
             style = MaterialTheme.typography.bodyLarge,
             fontWeight = FontWeight.SemiBold
         )
         Text(
-            text = "Optional upload to your Nextcloud, WebDAV folder, or paperless-ngx. Nothing leaves this device unless you tap Upload.",
+            text = stringResource(R.string.self_host_description),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -51,7 +53,7 @@ fun SelfHostSettingsSection(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(text = "Enable self-host export")
+            Text(text = stringResource(R.string.self_host_enable))
             Switch(
                 checked = config.enabled,
                 onCheckedChange = { enabled -> onConfigChange(config.copy(enabled = enabled)) }
@@ -64,9 +66,9 @@ fun SelfHostSettingsSection(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                Text(text = "Wi-Fi only uploads")
+                Text(text = stringResource(R.string.self_host_wifi_only))
                 Text(
-                    text = "Block self-host uploads on mobile data.",
+                    text = stringResource(R.string.self_host_wifi_only_description),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -90,8 +92,8 @@ fun SelfHostSettingsSection(
             label = {
                 Text(
                     when (config.targetType) {
-                        SelfHostTargetType.WebDav -> "WebDAV base URL"
-                        SelfHostTargetType.PaperlessNgx -> "Paperless server URL"
+                        SelfHostTargetType.WebDav -> stringResource(R.string.self_host_webdav_url_label)
+                        SelfHostTargetType.PaperlessNgx -> stringResource(R.string.self_host_paperless_url_label)
                     }
                 )
             },
@@ -99,9 +101,9 @@ fun SelfHostSettingsSection(
                 Text(
                     when (config.targetType) {
                         SelfHostTargetType.WebDav ->
-                            "https://cloud.example.com/remote.php/dav/files/you/"
+                            stringResource(R.string.self_host_webdav_url_placeholder)
                         SelfHostTargetType.PaperlessNgx ->
-                            "https://paperless.example.com"
+                            stringResource(R.string.self_host_paperless_url_placeholder)
                     }
                 )
             },
@@ -114,8 +116,8 @@ fun SelfHostSettingsSection(
                 value = config.remoteFolder,
                 onValueChange = { value -> onConfigChange(config.copy(remoteFolder = value)) },
                 singleLine = true,
-                label = { Text("Remote folder (optional)") },
-                placeholder = { Text("ClearScan") },
+                label = { Text(stringResource(R.string.self_host_remote_folder_label)) },
+                placeholder = { Text(stringResource(R.string.self_host_remote_folder_placeholder)) },
                 shape = MaterialTheme.shapes.medium
             )
             OutlinedTextField(
@@ -123,7 +125,7 @@ fun SelfHostSettingsSection(
                 value = config.username,
                 onValueChange = { value -> onConfigChange(config.copy(username = value)) },
                 singleLine = true,
-                label = { Text("Username") },
+                label = { Text(stringResource(R.string.self_host_username)) },
                 shape = MaterialTheme.shapes.medium
             )
             OutlinedTextField(
@@ -132,7 +134,7 @@ fun SelfHostSettingsSection(
                 onValueChange = { value -> onConfigChange(config.copy(password = value)) },
                 singleLine = true,
                 visualTransformation = PasswordVisualTransformation(),
-                label = { Text("Password") },
+                label = { Text(stringResource(R.string.self_host_password)) },
                 shape = MaterialTheme.shapes.medium
             )
         } else {
@@ -142,8 +144,8 @@ fun SelfHostSettingsSection(
                 onValueChange = { value -> onConfigChange(config.copy(apiToken = value)) },
                 singleLine = true,
                 visualTransformation = PasswordVisualTransformation(),
-                label = { Text("API token") },
-                placeholder = { Text("paperless API token") },
+                label = { Text(stringResource(R.string.self_host_api_token)) },
+                placeholder = { Text(stringResource(R.string.self_host_api_token_placeholder)) },
                 shape = MaterialTheme.shapes.medium
             )
         }
@@ -153,8 +155,14 @@ fun SelfHostSettingsSection(
             modifier = Modifier.fillMaxWidth(),
             shape = MaterialTheme.shapes.medium
         ) {
-            Icon(Icons.Outlined.CloudUpload, contentDescription = "Save self-host settings")
-            Text(modifier = Modifier.padding(start = 8.dp), text = "Save self-host settings")
+            Icon(
+                Icons.Outlined.CloudUpload,
+                contentDescription = stringResource(R.string.self_host_save_content_desc)
+            )
+            Text(
+                modifier = Modifier.padding(start = 8.dp),
+                text = stringResource(R.string.self_host_save)
+            )
         }
     }
 }
@@ -174,7 +182,7 @@ private fun TargetTypeRow(
             shape = MaterialTheme.shapes.medium,
             enabled = selected != SelfHostTargetType.WebDav
         ) {
-            Text("WebDAV")
+            Text(stringResource(R.string.self_host_target_webdav))
         }
         FilledTonalButton(
             onClick = { onSelect(SelfHostTargetType.PaperlessNgx) },
@@ -182,7 +190,7 @@ private fun TargetTypeRow(
             shape = MaterialTheme.shapes.medium,
             enabled = selected != SelfHostTargetType.PaperlessNgx
         ) {
-            Text("paperless-ngx")
+            Text(stringResource(R.string.self_host_target_paperless))
         }
     }
 }

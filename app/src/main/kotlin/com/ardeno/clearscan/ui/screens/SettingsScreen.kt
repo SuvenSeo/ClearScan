@@ -127,7 +127,7 @@ fun SettingsScreen(
         ) {
             GroupedSection(
                 title = stringResource(R.string.settings_section_capture),
-                footer = "All intelligence runs on-device. No cloud AI is used."
+                footer = stringResource(R.string.settings_capture_footer)
             ) {
                 CaptureSettingsSection(
                     autoPageTurnEnabled = autoPageTurnEnabled,
@@ -152,7 +152,7 @@ fun SettingsScreen(
 
             GroupedSection(
                 title = stringResource(R.string.backup_title),
-                footer = "Exports an encrypted backup via the system file picker. Restore replaces local scans on this device."
+                footer = stringResource(R.string.backup_section_footer)
             ) {
                 BackupGroupedRow(
                     isBackupRunning = isBackupRunning,
@@ -169,7 +169,7 @@ fun SettingsScreen(
 
             GroupedSection(
                 title = stringResource(R.string.self_host_title),
-                footer = "Credentials are stored with EncryptedSharedPreferences on this device only."
+                footer = stringResource(R.string.self_host_section_footer)
             ) {
                 SelfHostSettingsSection(
                     config = selfHostConfig,
@@ -182,7 +182,7 @@ fun SettingsScreen(
 
             GroupedSection(
                 title = stringResource(R.string.settings_section_app_updates),
-                footer = "Checks GitHub Releases only when you tap the button. No background tracking."
+                footer = stringResource(R.string.settings_app_updates_footer)
             ) {
                 AppUpdateSettingsRow(
                     installedVersionName = BuildConfig.VERSION_NAME,
@@ -201,7 +201,7 @@ fun SettingsScreen(
 
             GroupedSection(
                 title = stringResource(R.string.settings_section_developer),
-                footer = "Run the harness self-check, then add labeled scans for measured OCR accuracy."
+                footer = stringResource(R.string.settings_developer_footer)
             ) {
                 BenchmarkGroupedRow(
                     summary = benchmarkSummary,
@@ -210,7 +210,7 @@ fun SettingsScreen(
             }
 
             Text(
-                text = "ClearScan v${BuildConfig.VERSION_NAME} · Local-first · No ads · No subscriptions",
+                text = stringResource(R.string.settings_version_footer, BuildConfig.VERSION_NAME),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(horizontal = 32.dp, vertical = 8.dp)
@@ -230,15 +230,15 @@ private fun VaultSettingsRow(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         Text(
-            text = "Biometric vault",
+            text = stringResource(R.string.settings_vault_title),
             style = MaterialTheme.typography.bodyLarge,
             fontWeight = FontWeight.SemiBold
         )
         Text(
             text = if (vaultEnabled) {
-                "Your library locks when you leave. Unlock with fingerprint or device PIN."
+                stringResource(R.string.settings_vault_enabled_description)
             } else {
-                "Protect your scans behind biometric or device-credential authentication."
+                stringResource(R.string.settings_vault_disabled_description)
             },
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -255,18 +255,26 @@ private fun VaultSettingsRow(
             ) {
                 Icon(
                     imageVector = if (vaultEnabled) Icons.Outlined.LockOpen else Icons.Outlined.Lock,
-                    contentDescription = if (vaultEnabled) "Disable vault" else "Enable vault"
+                    contentDescription = if (vaultEnabled) {
+                        stringResource(R.string.settings_vault_disable)
+                    } else {
+                        stringResource(R.string.settings_vault_enable)
+                    }
                 )
                 Text(
                     modifier = Modifier.padding(start = 8.dp),
-                    text = if (vaultEnabled) "Disable vault" else "Enable vault"
+                    text = if (vaultEnabled) {
+                        stringResource(R.string.settings_vault_disable)
+                    } else {
+                        stringResource(R.string.settings_vault_enable)
+                    }
                 )
             }
             if (vaultEnabled) {
                 IconButton(onClick = onLockVault) {
                     Icon(
                         imageVector = Icons.Outlined.Lock,
-                        contentDescription = "Lock vault now"
+                        contentDescription = stringResource(R.string.settings_vault_lock_now)
                     )
                 }
             }
@@ -281,24 +289,24 @@ private fun AboutGroupedContent() {
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         Text(
-            text = "Built to stay free",
+            text = stringResource(R.string.settings_about_built_free),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.SemiBold
         )
         Text(
-            text = "No ads. No subscriptions. No watermarks. No forced accounts or cloud uploads.",
+            text = stringResource(R.string.settings_about_body),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             PromiseChip(
                 modifier = Modifier.weight(1f),
-                label = "Local-first",
+                label = stringResource(R.string.settings_about_local_first),
                 icon = Icons.Outlined.CloudOff
             )
             PromiseChip(
                 modifier = Modifier.weight(1f),
-                label = "Private",
+                label = stringResource(R.string.settings_about_private),
                 icon = Icons.Outlined.Lock
             )
         }
@@ -349,12 +357,12 @@ private fun BackupGroupedRow(
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         Text(
-            text = "Encrypted local backup",
+            text = stringResource(R.string.backup_encrypted_title),
             style = MaterialTheme.typography.bodyLarge,
             fontWeight = FontWeight.SemiBold
         )
         Text(
-            text = "Save or restore scans without enabling Android auto-backup.",
+            text = stringResource(R.string.backup_description),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -365,12 +373,12 @@ private fun BackupGroupedRow(
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = "Passphrase-protected backup",
+                    text = stringResource(R.string.backup_passphrase_protected),
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Medium
                 )
                 Text(
-                    text = "Restore the same backup on another device with your passphrase.",
+                    text = stringResource(R.string.backup_passphrase_description),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -391,8 +399,14 @@ private fun BackupGroupedRow(
                 modifier = Modifier.weight(1f),
                 shape = MaterialTheme.shapes.medium
             ) {
-                Icon(imageVector = Icons.Outlined.Backup, contentDescription = "Export backup")
-                Text(modifier = Modifier.padding(start = 8.dp), text = "Export")
+                Icon(
+                    imageVector = Icons.Outlined.Backup,
+                    contentDescription = stringResource(R.string.backup_export)
+                )
+                Text(
+                    modifier = Modifier.padding(start = 8.dp),
+                    text = stringResource(R.string.backup_export_action)
+                )
             }
             FilledTonalButton(
                 onClick = onImportBackup,
@@ -400,8 +414,14 @@ private fun BackupGroupedRow(
                 modifier = Modifier.weight(1f),
                 shape = MaterialTheme.shapes.medium
             ) {
-                Icon(imageVector = Icons.Outlined.Restore, contentDescription = "Restore backup")
-                Text(modifier = Modifier.padding(start = 8.dp), text = "Restore")
+                Icon(
+                    imageVector = Icons.Outlined.Restore,
+                    contentDescription = stringResource(R.string.backup_restore_content_desc)
+                )
+                Text(
+                    modifier = Modifier.padding(start = 8.dp),
+                    text = stringResource(R.string.backup_restore_action)
+                )
             }
         }
     }
@@ -414,12 +434,12 @@ private fun PrivacyDashboardEntryRow(onOpenPrivacyDashboard: () -> Unit) {
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         Text(
-            text = "Privacy dashboard",
+            text = stringResource(R.string.privacy_dashboard_title),
             style = MaterialTheme.typography.bodyLarge,
             fontWeight = FontWeight.SemiBold
         )
         Text(
-            text = "Review offline policy, storage location, export audit log, and ad SDK status.",
+            text = stringResource(R.string.privacy_dashboard_description),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -427,8 +447,14 @@ private fun PrivacyDashboardEntryRow(onOpenPrivacyDashboard: () -> Unit) {
             onClick = onOpenPrivacyDashboard,
             shape = MaterialTheme.shapes.medium
         ) {
-            Icon(imageVector = Icons.Outlined.Shield, contentDescription = "Open privacy dashboard")
-            Text(modifier = Modifier.padding(start = 8.dp), text = "Open dashboard")
+            Icon(
+                imageVector = Icons.Outlined.Shield,
+                contentDescription = stringResource(R.string.privacy_dashboard_open_content_desc)
+            )
+            Text(
+                modifier = Modifier.padding(start = 8.dp),
+                text = stringResource(R.string.privacy_dashboard_open)
+            )
         }
     }
 }
@@ -443,7 +469,7 @@ private fun BenchmarkGroupedRow(
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         Text(
-            text = "Sinhala / Tamil OCR benchmark",
+            text = stringResource(R.string.settings_benchmark_title),
             style = MaterialTheme.typography.bodyLarge,
             fontWeight = FontWeight.SemiBold
         )
@@ -460,11 +486,11 @@ private fun BenchmarkGroupedRow(
         ) {
             Icon(
                 imageVector = Icons.Outlined.TextFields,
-                contentDescription = "Run OCR benchmark"
+                contentDescription = stringResource(R.string.settings_benchmark_run_content_desc)
             )
             Text(
                 modifier = Modifier.padding(start = 8.dp),
-                text = "Run self-check"
+                text = stringResource(R.string.settings_benchmark_run)
             )
         }
     }
@@ -481,12 +507,12 @@ private fun AppUpdateSettingsRow(
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         Text(
-            text = "Installed version $installedVersionName",
+            text = stringResource(R.string.settings_installed_version, installedVersionName),
             style = MaterialTheme.typography.bodyLarge,
             fontWeight = FontWeight.SemiBold
         )
         Text(
-            text = "Download newer APKs from GitHub Releases when a version.json entry is published.",
+            text = stringResource(R.string.settings_app_update_description),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -495,10 +521,17 @@ private fun AppUpdateSettingsRow(
             enabled = !isChecking,
             shape = MaterialTheme.shapes.medium
         ) {
-            Icon(imageVector = Icons.Outlined.SystemUpdate, contentDescription = "Check for updates")
+            Icon(
+                imageVector = Icons.Outlined.SystemUpdate,
+                contentDescription = stringResource(R.string.settings_check_updates_content_desc)
+            )
             Text(
                 modifier = Modifier.padding(start = 8.dp),
-                text = if (isChecking) "Checking…" else "Check for updates"
+                text = if (isChecking) {
+                    stringResource(R.string.settings_checking_updates)
+                } else {
+                    stringResource(R.string.settings_check_for_updates)
+                }
             )
         }
     }
@@ -516,15 +549,15 @@ private fun CaptureSettingsSection(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         CaptureToggleRow(
-            title = "Auto page-turn capture",
-            description = "Uses CameraX frame analysis to auto-capture when a page flip settles.",
+            title = stringResource(R.string.settings_auto_page_turn),
+            description = stringResource(R.string.settings_auto_page_turn_description),
             icon = Icons.Outlined.AutoMode,
             checked = autoPageTurnEnabled,
             onCheckedChange = onAutoPageTurnChange
         )
         CaptureToggleRow(
-            title = "Shadow & glare reduction",
-            description = "Lightweight on-device tone adjustment before pages are saved.",
+            title = stringResource(R.string.settings_image_enhancement),
+            description = stringResource(R.string.settings_image_enhancement_description),
             icon = Icons.Outlined.Tune,
             checked = imageEnhancementEnabled,
             onCheckedChange = onImageEnhancementChange
@@ -541,7 +574,7 @@ private fun OcrLanguageSettingsSection(
         modifier = Modifier.padding(16.dp),
         selectedLanguage = defaultOcrLanguage,
         onLanguageSelected = onDefaultOcrLanguageChange,
-        title = "Default OCR language"
+        titleRes = R.string.settings_default_ocr_language
     )
 }
 

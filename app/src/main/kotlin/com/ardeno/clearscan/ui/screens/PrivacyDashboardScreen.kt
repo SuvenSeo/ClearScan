@@ -57,8 +57,10 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.ardeno.clearscan.R
 import com.ardeno.clearscan.ui.components.GroupedRowDivider
 import com.ardeno.clearscan.ui.components.GroupedSection
 import com.ardeno.clearscan.ui.theme.ClearScanMotion
@@ -83,7 +85,7 @@ fun PrivacyDashboardScreen(
             LargeTopAppBar(
                 title = {
                     Text(
-                        text = "Privacy",
+                        text = stringResource(R.string.privacy_title),
                         style = MaterialTheme.typography.displaySmall,
                         fontWeight = FontWeight.Bold
                     )
@@ -92,7 +94,7 @@ fun PrivacyDashboardScreen(
                     IconButton(onClick = onBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
-                            contentDescription = "Back"
+                            contentDescription = stringResource(R.string.action_go_back)
                         )
                     }
                 },
@@ -112,37 +114,37 @@ fun PrivacyDashboardScreen(
                 .padding(vertical = 8.dp),
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
-            GroupedSection(title = "Network") {
+            GroupedSection(title = stringResource(R.string.privacy_section_network)) {
                 PrivacyStatusRow(
                     icon = Icons.Outlined.CloudOff,
-                    title = "No background network",
+                    title = stringResource(R.string.privacy_no_background_network),
                     detail = status.networkPolicy,
                     positive = true
                 )
             }
 
-            GroupedSection(title = "Storage") {
+            GroupedSection(title = stringResource(R.string.privacy_section_storage)) {
                 PrivacyStatusRow(
                     icon = Icons.Outlined.Folder,
-                    title = "App-private storage",
+                    title = stringResource(R.string.privacy_app_private_storage),
                     detail = status.storageLocation,
                     positive = true
                 )
                 GroupedRowDivider(startIndent = 16.dp)
                 PrivacyStatusRow(
                     icon = Icons.Outlined.Shield,
-                    title = "Encryption at rest",
+                    title = stringResource(R.string.privacy_encryption_at_rest),
                     detail = status.encryptionHealthDetails,
                     positive = status.encryptionAtRestEnabled
                 )
                 GroupedRowDivider(startIndent = 16.dp)
                 PrivacyStatusRow(
                     icon = Icons.Outlined.Shield,
-                    title = "System backup",
+                    title = stringResource(R.string.privacy_system_backup),
                     detail = if (status.systemBackupExcluded) {
-                        "Android auto-backup is disabled. Use explicit backup in Settings."
+                        stringResource(R.string.privacy_system_backup_disabled)
                     } else {
-                        "Review backup rules before release."
+                        stringResource(R.string.privacy_system_backup_review)
                     },
                     positive = status.systemBackupExcluded
                 )
@@ -153,31 +155,31 @@ fun PrivacyDashboardScreen(
                 )
             }
 
-            GroupedSection(title = "Encryption health") {
+            GroupedSection(title = stringResource(R.string.privacy_section_encryption_health)) {
                 EncryptionHealthStatus(
                     healthy = status.encryptionAtRestEnabled,
                     details = status.encryptionHealthDetails
                 )
             }
 
-            GroupedSection(title = "SDK posture") {
+            GroupedSection(title = stringResource(R.string.privacy_section_sdk_posture)) {
                 AnimatedPrivacyStatusRow(
                     positive = status.adSdkFree,
                     iconPositive = Icons.Outlined.CheckCircle,
                     iconNegative = Icons.Outlined.Warning,
-                    titlePositive = "Ad SDK free",
-                    titleNegative = "Ad SDK check failed",
+                    titlePositive = stringResource(R.string.privacy_ad_sdk_free),
+                    titleNegative = stringResource(R.string.privacy_ad_sdk_check_failed),
                     detail = status.adSdkNotes
                 )
             }
 
             GroupedSection(
-                title = "Export audit log",
-                footer = "Only explicit share/export actions are recorded. Nothing leaves the device unless you choose to."
+                title = stringResource(R.string.privacy_audit_log),
+                footer = stringResource(R.string.privacy_audit_log_footer)
             ) {
                 if (status.exportAuditEntries.isEmpty()) {
                     Text(
-                        text = "No exports recorded yet.",
+                        text = stringResource(R.string.privacy_no_exports),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.padding(16.dp)
@@ -271,7 +273,7 @@ private fun StorageUsageBar(
                     modifier = Modifier.size(18.dp)
                 )
                 Text(
-                    text = "Document storage",
+                    text = stringResource(R.string.privacy_document_storage),
                     style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.SemiBold
                 )
@@ -326,7 +328,7 @@ private fun EncryptionHealthStatus(
                 tint = MaterialTheme.colorScheme.primary
             )
             Text(
-                text = "Encryption status",
+                text = stringResource(R.string.privacy_encryption_status),
                 style = MaterialTheme.typography.bodyLarge,
                 fontWeight = FontWeight.SemiBold
             )
@@ -339,7 +341,11 @@ private fun EncryptionHealthStatus(
                     .background(if (healthy) SystemGreen else SystemRed)
             )
             Text(
-                text = if (healthy) "Active" else "Inactive",
+                text = if (healthy) {
+                    stringResource(R.string.privacy_status_active)
+                } else {
+                    stringResource(R.string.privacy_status_inactive)
+                },
                 style = MaterialTheme.typography.labelMedium,
                 fontWeight = FontWeight.SemiBold,
                 color = if (healthy) SystemGreen else SystemRed
@@ -379,7 +385,11 @@ private fun ExpandableAuditEntry(
         ) {
             Icon(
                 imageVector = if (expanded) Icons.Outlined.ExpandLess else Icons.Outlined.ExpandMore,
-                contentDescription = if (expanded) "Collapse" else "Expand",
+                contentDescription = if (expanded) {
+                    stringResource(R.string.action_collapse)
+                } else {
+                    stringResource(R.string.action_expand)
+                },
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(20.dp)
             )
@@ -430,17 +440,17 @@ private fun ExpandableAuditEntry(
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 Text(
-                    text = "Document ID: ${entry.documentId}",
+                    text = stringResource(R.string.privacy_audit_document_id, entry.documentId),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(
-                    text = "Export type: ${entry.exportKind}",
+                    text = stringResource(R.string.privacy_audit_export_type, entry.exportKind),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(
-                    text = "Timestamp: $timestamp",
+                    text = stringResource(R.string.privacy_audit_timestamp, timestamp),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -449,12 +459,13 @@ private fun ExpandableAuditEntry(
     }
 }
 
+@Composable
 private fun formatBytes(bytes: Long): String {
     return when {
-        bytes >= 1_000_000_000 -> "%.1f GB".format(bytes / 1_000_000_000.0)
-        bytes >= 1_000_000 -> "%.1f MB".format(bytes / 1_000_000.0)
-        bytes >= 1_000 -> "%.1f KB".format(bytes / 1_000.0)
-        else -> "$bytes B"
+        bytes >= 1_000_000_000 -> stringResource(R.string.storage_bytes_gb, bytes / 1_000_000_000.0)
+        bytes >= 1_000_000 -> stringResource(R.string.storage_bytes_mb, bytes / 1_000_000.0)
+        bytes >= 1_000 -> stringResource(R.string.storage_bytes_kb, bytes / 1_000.0)
+        else -> stringResource(R.string.storage_bytes_b, bytes)
     }
 }
 
@@ -484,7 +495,11 @@ private fun AnimatedPrivacyStatusRow(
             ) { isPositive ->
                 Icon(
                     imageVector = if (isPositive) iconPositive else iconNegative,
-                    contentDescription = if (isPositive) "Healthy" else "Warning",
+                    contentDescription = if (isPositive) {
+                        stringResource(R.string.privacy_healthy)
+                    } else {
+                        stringResource(R.string.privacy_warning)
+                    },
                     tint = if (isPositive) SystemGreen else SystemRed,
                     modifier = Modifier.size(22.dp)
                 )

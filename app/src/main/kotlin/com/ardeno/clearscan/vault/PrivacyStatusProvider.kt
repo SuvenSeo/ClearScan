@@ -2,6 +2,7 @@ package com.ardeno.clearscan.vault
 
 import android.content.Context
 import android.content.pm.ApplicationInfo
+import com.ardeno.clearscan.R
 import java.io.File
 
 class PrivacyStatusProvider(
@@ -16,13 +17,13 @@ class PrivacyStatusProvider(
         val storageRoot = encryptedFileStore.storageRoot()
         val (usedBytes, totalBytes) = computeStorageUsage(storageRoot)
         return PrivacyStatus(
-            networkPolicy = "No network calls in core flows. Export and backup are explicit user actions only.",
+            networkPolicy = context.getString(R.string.privacy_network_policy),
             storageLocation = storageRoot.absolutePath,
             encryptionAtRestEnabled = cryptoHealthy,
             encryptionHealthDetails = if (cryptoHealthy) {
-                "AES-GCM 256-bit via Android Keystore · encryption + decryption verified"
+                context.getString(R.string.privacy_encryption_healthy)
             } else {
-                "Vault encryption is unavailable on this device."
+                context.getString(R.string.privacy_encryption_unavailable)
             },
             adSdkFree = adScan.isClean,
             adSdkNotes = adScan.summary,
@@ -66,12 +67,12 @@ class PrivacyStatusProvider(
         return if (hits.isEmpty()) {
             AdSdkScan(
                 isClean = true,
-                summary = "No common ad SDK classes detected in the app classpath."
+                summary = context.getString(R.string.privacy_ad_sdk_clean)
             )
         } else {
             AdSdkScan(
                 isClean = false,
-                summary = "Detected SDK markers: ${hits.joinToString()}"
+                summary = context.getString(R.string.privacy_ad_sdk_detected, hits.joinToString())
             )
         }
     }
