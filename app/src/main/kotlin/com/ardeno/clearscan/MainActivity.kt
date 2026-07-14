@@ -132,6 +132,8 @@ class MainActivity : FragmentActivity() {
                     onSelectFolder = viewModel::setSelectedFolder,
                     onSelectFavorites = { viewModel.setShowFavoritesOnly(true) },
                     onCreateFolder = viewModel::createFolder,
+                    onRenameFolder = viewModel::renameFolder,
+                    onDeleteFolder = viewModel::deleteFolder,
                     onEnterSelectionMode = viewModel::enterSelectionMode,
                     onExitSelectionMode = viewModel::exitSelectionMode,
                     onToggleDocumentSelection = viewModel::toggleDocumentSelection,

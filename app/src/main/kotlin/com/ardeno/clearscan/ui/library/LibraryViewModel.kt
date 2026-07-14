@@ -119,6 +119,8 @@ class LibraryViewModel(
                     )
                 }
                 onMessage("Folder deleted.")
+            } else {
+                onMessage("Could not delete folder.")
             }
         }
     }

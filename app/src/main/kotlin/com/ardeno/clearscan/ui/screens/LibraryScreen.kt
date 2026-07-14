@@ -106,6 +106,8 @@ fun LibraryScreen(
     onSelectFolder: (String?) -> Unit,
     onSelectFavorites: () -> Unit,
     onCreateFolder: (String) -> Unit,
+    onRenameFolder: (String, String) -> Unit,
+    onDeleteFolder: (String) -> Unit,
     onEnterSelectionMode: () -> Unit,
     onExitSelectionMode: () -> Unit,
     onToggleDocumentSelection: (String) -> Unit,
@@ -342,7 +344,9 @@ fun LibraryScreen(
                             onSelectAll = { onSelectFolder(null) },
                             onSelectFavorites = onSelectFavorites,
                             onSelectFolder = onSelectFolder,
-                            onCreateFolder = { showCreateFolderDialog = true }
+                            onCreateFolder = { showCreateFolderDialog = true },
+                            onRenameFolder = onRenameFolder,
+                            onDeleteFolder = onDeleteFolder
                         )
 
                         LibraryContentPane(
@@ -407,7 +411,9 @@ fun LibraryScreen(
                         onSelectAll = { onSelectFolder(null) },
                         onSelectFavorites = onSelectFavorites,
                         onSelectFolder = onSelectFolder,
-                        onCreateFolder = { showCreateFolderDialog = true }
+                        onCreateFolder = { showCreateFolderDialog = true },
+                        onRenameFolder = onRenameFolder,
+                        onDeleteFolder = onDeleteFolder
                     )
 
                     LibraryContentPane(
