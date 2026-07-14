@@ -324,4 +324,120 @@
 
     <!-- Search field -->
     <string name="search_clear">සෙවීම ඉවත් කරන්න</string>
+
+    <!-- Snackbar and status messages -->
+    <string name="msg_folder_created">\"%1$s\" ෆෝල්ඩරය සාදන ලදී.</string>
+    <string name="msg_folder_create_failed">ෆෝල්ඩරය සාදා ගත නොහැක.</string>
+    <string name="msg_folder_renamed">ෆෝල්ඩරය \"%1$s\" ලෙස නැවත නම් කරන ලදී.</string>
+    <string name="msg_folder_rename_failed">ෆෝල්ඩරය නැවත නම් කළ නොහැක.</string>
+    <string name="msg_folder_deleted">ෆෝල්ඩරය මකා ඇත.</string>
+    <string name="msg_folder_delete_failed">ෆෝල්ඩරය මකා දැමිය නොහැක.</string>
+    <plurals name="msg_documents_deleted">
+        <item quantity="one">ලේඛන 1ක් මකා ඇත.</item>
+        <item quantity="other">ලේඛන %dක් මකා ඇත.</item>
+    </plurals>
+    <string name="msg_vault_enabled_biometric">Vault සක්‍රියයි. ජෛවමිතික අගුළු හැරීම අවශ්‍ය වේ.</string>
+    <string name="msg_vault_enabled">Vault සක්‍රියයි.</string>
+    <string name="msg_vault_disabled">Vault අක්‍රියයි.</string>
+    <string name="msg_vault_setup_failed">Vault සැකසීම අසාර්ථක විය.</string>
+    <string name="msg_vault_unlocked">Vault අගුළු හරින ලදී.</string>
+    <string name="msg_vault_key_migration_failed">Vault යතුරු සංක්‍රමණය අසාර්ථක විය.</string>
+    <string name="msg_vault_locked">Vault අගුළු දමන ලදී.</string>
+    <string name="msg_self_host_enabled">ස්වයං-සත්කාරක නිර්යාතය සක්‍රියයි. උඩුගත කිරීම් සඳහා ඔබගේ පැහැදිලි ක්‍රියාව අවශ්‍යය.</string>
+    <string name="msg_self_host_saved">ස්වයං-සත්කාරක නිර්යාත සැකසුම් සුරකින ලදී.</string>
+    <string name="msg_ocr_benchmark_running">උපාංගයේ සිංහල/දෙමළ OCR පරීක්ෂණය ක්‍රියාත්මක වෙමින්…</string>
+    <string name="msg_ocr_benchmark_finished">සිංහල/දෙමළ OCR පරීක්ෂණය අවසන්.</string>
+    <string name="msg_ocr_benchmark_failed">OCR පරීක්ෂණය අසාර්ථක විය.</string>
+    <string name="msg_passphrases_mismatch">මුරපද නොගැලපේ.</string>
+    <string name="msg_app_up_to_date">ClearScan යාවත්කාලීනය (%1$s).</string>
+    <string name="msg_app_too_old">මෙම build %1$s සඳහා ඉතා පැරණිය. GitHub Releases වෙතින් නවතම APK අතින් ස්ථාපනය කරන්න.</string>
+    <string name="msg_update_check_failed">යාවත්කාලීන පරීක්ෂා කළ නොහැක.</string>
+    <string name="msg_downloading_update">ClearScan %1$s බාගත වෙමින්…</string>
+    <string name="msg_ocr_finished">%1$s සඳහා OCR අවසන්.</string>
+    <string name="msg_ocr_finished_tags">%1$s සඳහා OCR අවසන්. ටැග්: %2$s</string>
+    <string name="msg_ocr_finished_redaction">%1$s සඳහා OCR අවසන්. සංවේදී ක්ෂේත්‍ර හඳුනාගෙන ඇත — සංස්කරණය review කරන්න.</string>
+    <string name="msg_ocr_failed">%1$s සඳහා OCR අසාර්ථක විය.</string>
+    <string name="msg_ocr_amount_tag">මුදල %1$s</string>
+    <string name="msg_no_files_selected">ගොනු තෝරාගෙන නැත.</string>
+    <plurals name="msg_imported_pages">
+        <item quantity="one">පිටු 1ක් ආනයනය කරන ලදී. OCR ආරම්භ වෙමින්.</item>
+        <item quantity="other">පිටු %dක් ආනයනය කරන ලදී. OCR ආරම්භ වෙමින්.</item>
+    </plurals>
+    <string name="msg_import_failed">තෝරාගත් ගොනු ආනයනය කළ නොහැක.</string>
+    <plurals name="msg_saved_id_scan">
+        <item quantity="one">හැඳුනුම්පත් පිටු 1ක් සුරකින ලදී. OCR ආරම්භ වෙමින්.</item>
+        <item quantity="other">හැඳුනුම්පත් පිටු %dක් සුරකින ලදී. OCR ආරම්භ වෙමින්.</item>
+    </plurals>
+    <plurals name="msg_saved_document_scan">
+        <item quantity="one">පිටු 1ක් සුරකින ලදී. OCR ආරම්භ වෙමින්.</item>
+        <item quantity="other">පිටු %dක් සුරකින ලදී. OCR ආරම්භ වෙමින්.</item>
+    </plurals>
+    <string name="msg_save_scan_failed">මෙම ස්කෑන් සුරැකිය නොහැක.</string>
+    <string name="msg_no_pages_captured">පිටු සටහන් කර නැත.</string>
+    <plurals name="msg_saved_auto_capture">
+        <item quantity="one">ස්වයංක්‍රීයව සටහන් කළ පිටු 1ක් සුරකින ලදී. OCR ආරම්භ වෙමින්.</item>
+        <item quantity="other">ස්වයංක්‍රීයව සටහන් කළ පිටු %dක් සුරකින ලදී. OCR ආරම්භ වෙමින්.</item>
+    </plurals>
+    <string name="msg_page_turn_save_failed">පිටු-පෙරළුම් සටහන සුරැකිය නොහැක.</string>
+    <string name="msg_merge_select_two">ඒකාබද්ධ කිරීමට අවම වශයෙන් ලේඛන දෙකක් තෝරන්න.</string>
+    <string name="msg_merged_selected">තෝරාගත් ස්කෑන් %1$dක් ඒකාබද්ධ කරන ලදී.</string>
+    <string name="msg_merge_need_two">ඒකාබද්ධ කිරීමට පෙර අවම වශයෙන් ස්කෑන් දෙකක් එක් කරන්න.</string>
+    <string name="msg_merged_scans">ස්කෑන් %1$dක් ඒකාබද්ධ කරන ලදී.</string>
+    <string name="msg_split_document">%1$s තනි-පිටු PDF වලට බෙදන ලදී.</string>
+    <string name="msg_created_rotated_copy">කරකැවූ පිටපතක් සාදන ලදී.</string>
+    <string name="msg_created_signed_copy">අත්සන් කළ පිටපතක් සාදන ලදී.</string>
+    <string name="msg_created_redacted_copy">සංස්කරණය කළ පිටපතක් සාදන ලදී.</string>
+    <string name="msg_no_id_fields_redact">සංස්කරණය කිරීමට සංවේදී හැඳුනුම්පත් ක්ෂේත්‍ර හඳුනාගෙන නැත.</string>
+    <string name="msg_created_id_redacted_copy">හැඳුනුම්පත්-සංස්කරණය කළ පිටපතක් සාදන ලදී.</string>
+    <string name="msg_created_annotated_copy">සටහන් කළ පිටපතක් සාදන ලදී.</string>
+    <string name="msg_created_password_protected">මුරපද-ආරක්ෂිත PDF සාදන ලදී.</string>
+    <string name="msg_created_reordered_copy">නැවත සැකසූ පිටපතක් සාදන ලදී.</string>
+    <string name="msg_created_pages_removed">තෝරාගත් පිටු ඉවත් කළ පිටපතක් සාදන ලදී.</string>
+    <string name="msg_created_compressed_copy">සම්පීඩිත පිටපතක් සාදන ලදී (%1$s).</string>
+    <string name="msg_pdf_tool_failed">PDF මෙවලම අසාර්ථක විය.</string>
+    <string name="msg_tags_updated">ටැග් යාවත්කාලීන කරන ලදී.</string>
+    <string name="msg_added_favorites">ප්‍රියතම වලට එක් කරන ලදී.</string>
+    <string name="msg_removed_favorites">ප්‍රියතම වලින් ඉවත් කරන ලදී.</string>
+    <string name="msg_moved_to_library">පුස්තකාලයට ගෙන යන ලදී.</string>
+    <string name="msg_moved_to_folder">\"%1$s\" වෙත ගෙන යන ලදී.</string>
+    <string name="msg_select_one_document">අවම වශයෙන් ලේඛනයක් තෝරන්න.</string>
+    <string name="msg_self_host_enable_first">පළමුව සැකසුම් වලින් ස්වයං-සත්කාරක නිර්යාතය සක්‍රිය කරන්න.</string>
+    <string name="msg_self_host_configure">සැකසුම් වලින් ඔබගේ ස්වයං-සත්කාරක අන්ත ලක්ෂ්‍යය සහ අක්තපත්‍ර එක් කරන්න.</string>
+    <string name="msg_no_export_file">මෙම ස්කෑන් සඳහා නිර්යාත ගොනුවක් නොමැත.</string>
+    <string name="msg_export_file_missing">නිර්යාත ගොනුව නැත.</string>
+    <string name="msg_self_host_uploaded">%1$s ඔබගේ ස්වයං-සත්කාරක අන්ත ලක්ෂ්‍යයට උඩුගත කරන ලදී.</string>
+    <string name="msg_self_host_upload_failed">ස්වයං-සත්කාරක උඩුගත කිරීම අසාර්ථක විය.</string>
+    <string name="msg_backup_nothing">තවම backup කිරීමට කිසිවක් නැත.</string>
+    <string name="msg_backup_write_failed">backup ගොනුව ලිවිය නොහැක.</string>
+    <string name="msg_backup_passphrase_saved">මුරපද-ආරක්ෂිත backup සුරකින ලදී. වෙනත් උපාංගයක restore කිරීමට එම මුරපදය භාවිතා කරන්න.</string>
+    <string name="msg_backup_encrypted_saved">ගුප්ත backup සුරකින ලදී.</string>
+    <string name="msg_backup_read_failed">backup ගොනුව කියවිය නොහැක.</string>
+    <string name="msg_backup_too_small">backup ගොනුව ඉතා කුඩාය.</string>
+    <string name="msg_backup_not_clearscan">මෙය ClearScan backup ගොනුවක් නොවේ.</string>
+    <string name="msg_backup_decrypt_failed">backup ගුප්ත විසඳිය නොහැක. restore කිරීම එය සාදන ලද උපාංගයේ පමණක් ක්‍රියා කරයි.</string>
+    <string name="msg_backup_wrong_passphrase">වැරදි මුරපදය හෝ හානි වූ backup ගොනුව.</string>
+    <string name="msg_backup_unsupported_version">සහාය නොදක්වන backup අනුවාදය.</string>
+    <string name="msg_backup_manifest_missing">backup manifest නැත.</string>
+    <plurals name="msg_backup_restored">
+        <item quantity="one">backup වෙතින් ස්කෑන් 1ක් restore කරන ලදී.</item>
+        <item quantity="other">backup වෙතින් ස්කෑන් %dක් restore කරන ලදී.</item>
+    </plurals>
+    <string name="msg_backup_enter_passphrase">restore කිරීමට backup මුරපදය ඇතුළත් කරන්න.</string>
+    <string name="msg_scanner_no_pages">ස්කෑනරයෙන් පිටු කිසිවක් ලබා දී නැත.</string>
+    <string name="msg_scanner_unavailable">ලේඛන ස්කෑනරය මෙම උපාංගයේ නොමැත.</string>
+    <string name="msg_no_ocr_text">තවම OCR පෙළ නිර්යාත කිරීමට නොමැත.</string>
+    <string name="msg_no_pdf_print">මෙම ස්කෑන් සඳහා මුද්‍රණය කිරීමට PDF නොමැත.</string>
+    <string name="msg_no_export_files_selected">තෝරාගත් ස්කෑන් සඳහා නිර්යාත ගොනු නොමැත.</string>
+    <string name="msg_selected_exports_missing">තෝරාගත් නිර්යාත ගොනු නැත.</string>
+    <string name="msg_setup_screen_lock">පළමුව තිර අගුළු හෝ ජෛවමිතික සැකසන්න.</string>
+    <string name="msg_biometric_unavailable">ජෛවමිතික vault මෙම උපාංගයේ නොමැත.</string>
+    <string name="msg_vault_crypto_unavailable">Vault crypto නොමැත.</string>
+    <string name="msg_allow_install_updates">ClearScan වෙත යාවත්කාලීන ස්ථාපනය කිරීමට අවසර දෙන්න, පසුව Download නැවත ඔබන්න.</string>
+    <string name="chooser_share_scan">ස්කෑන් බෙදාගන්න</string>
+    <string name="chooser_export_ocr_text">OCR පෙළ නිර්යාත කරන්න</string>
+    <string name="chooser_share_selected">තෝරාගත් ස්කෑන් බෙදාගන්න</string>
+    <string name="biometric_enable_vault_title">ClearScan vault සක්‍රිය කරන්න</string>
+    <string name="biometric_enable_vault_subtitle">vault lock සක්‍රිය කිරීමට පෙර ඔබගේ අනන්‍යතාව තහවුරු කරන්න.</string>
+    <string name="biometric_unlock_title">ClearScan අගුළු හරින්න</string>
+    <string name="biometric_unlock_subtitle">ඔබගේ ස්කෑන් අගුළු හැරීමට ජෛවමිතික හෝ උපාංග අක්තපත්‍ර භාවිතා කරන්න.</string>
 </resources>

@@ -12,6 +12,7 @@ import com.ardeno.clearscan.ocr.IdRedactionSuggester
 import com.ardeno.clearscan.ocr.IdRedactionSuggestion
 import com.ardeno.clearscan.ocr.OcrEngine
 import com.ardeno.clearscan.pdf.SearchablePdfWriter
+import com.ardeno.clearscan.ui.UiStrings
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -20,6 +21,7 @@ class OcrProcessor(
     private val repository: LocalDocumentRepository,
     private val ocrEngine: OcrEngine,
     private val searchablePdfWriter: SearchablePdfWriter,
+    private val uiStrings: UiStrings,
     private val onReplaceDocument: (ScanDocument) -> Unit,
     private val onOcrRunningChanged: (Boolean) -> Unit,
     private val onMessage: (String) -> Unit,
@@ -63,21 +65,19 @@ class OcrProcessor(
                 }
                 val intelligenceNote = buildList {
                     if (ocrSuccess.suggestedTags.isNotEmpty()) add(ocrSuccess.suggestedTags.joinToString())
-                    ocrSuccess.receiptFields?.amount?.let { add("amount $it") }
+                    ocrSuccess.receiptFields?.amount?.let { add(uiStrings.ocrAmountTag(it)) }
                 }.takeIf { it.isNotEmpty() }?.joinToString(" · ")
                 onMessage(
                     when {
-                        idSuggestion != null ->
-                            "OCR finished for ${document.title}. Sensitive fields detected — review redaction."
-                        intelligenceNote != null ->
-                            "OCR finished for ${document.title}. Tags: $intelligenceNote"
-                        else -> "OCR finished for ${document.title}."
+                        idSuggestion != null -> uiStrings.ocrFinishedRedaction(document.title)
+                        intelligenceNote != null -> uiStrings.ocrFinishedTags(document.title, intelligenceNote)
+                        else -> uiStrings.ocrFinished(document.title)
                     }
                 )
                 if (idSuggestion != null) onIdRedactionSuggestion(document.id, idSuggestion)
             }.onFailure { error ->
                 repository.markOcrFailed(document.id)?.let { onReplaceDocument(it) }
-                onMessage(error.localizedMessage ?: "OCR failed for ${document.title}.")
+                onMessage(error.localizedMessage ?: uiStrings.ocrFailed(document.title))
             }
             decrementOcrJobs()
         }

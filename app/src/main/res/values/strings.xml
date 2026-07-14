@@ -383,4 +383,120 @@
 
     <!-- Search field -->
     <string name="search_clear">Clear search</string>
+
+    <!-- Snackbar and status messages -->
+    <string name="msg_folder_created">Created folder \"%1$s\".</string>
+    <string name="msg_folder_create_failed">Could not create folder.</string>
+    <string name="msg_folder_renamed">Renamed folder to \"%1$s\".</string>
+    <string name="msg_folder_rename_failed">Could not rename folder.</string>
+    <string name="msg_folder_deleted">Folder deleted.</string>
+    <string name="msg_folder_delete_failed">Could not delete folder.</string>
+    <plurals name="msg_documents_deleted">
+        <item quantity="one">Deleted 1 document.</item>
+        <item quantity="other">Deleted %d documents.</item>
+    </plurals>
+    <string name="msg_vault_enabled_biometric">Vault enabled. Biometric unlock will be required.</string>
+    <string name="msg_vault_enabled">Vault enabled.</string>
+    <string name="msg_vault_disabled">Vault disabled.</string>
+    <string name="msg_vault_setup_failed">Vault setup failed.</string>
+    <string name="msg_vault_unlocked">Vault unlocked.</string>
+    <string name="msg_vault_key_migration_failed">Vault key migration failed.</string>
+    <string name="msg_vault_locked">Vault locked.</string>
+    <string name="msg_self_host_enabled">Self-host export enabled. Uploads require your explicit action.</string>
+    <string name="msg_self_host_saved">Self-host export settings saved.</string>
+    <string name="msg_ocr_benchmark_running">Running on-device Sinhala/Tamil OCR benchmark…</string>
+    <string name="msg_ocr_benchmark_finished">Sinhala/Tamil OCR benchmark finished.</string>
+    <string name="msg_ocr_benchmark_failed">OCR benchmark failed.</string>
+    <string name="msg_passphrases_mismatch">Passphrases do not match.</string>
+    <string name="msg_app_up_to_date">ClearScan is up to date (%1$s).</string>
+    <string name="msg_app_too_old">This build is too old for %1$s. Install the latest APK manually from GitHub Releases.</string>
+    <string name="msg_update_check_failed">Could not check for updates.</string>
+    <string name="msg_downloading_update">Downloading ClearScan %1$s…</string>
+    <string name="msg_ocr_finished">OCR finished for %1$s.</string>
+    <string name="msg_ocr_finished_tags">OCR finished for %1$s. Tags: %2$s</string>
+    <string name="msg_ocr_finished_redaction">OCR finished for %1$s. Sensitive fields detected — review redaction.</string>
+    <string name="msg_ocr_failed">OCR failed for %1$s.</string>
+    <string name="msg_ocr_amount_tag">amount %1$s</string>
+    <string name="msg_no_files_selected">No files were selected.</string>
+    <plurals name="msg_imported_pages">
+        <item quantity="one">Imported 1 page. OCR is starting.</item>
+        <item quantity="other">Imported %d pages. OCR is starting.</item>
+    </plurals>
+    <string name="msg_import_failed">Could not import the selected files.</string>
+    <plurals name="msg_saved_id_scan">
+        <item quantity="one">Saved 1 page ID scan. OCR is starting.</item>
+        <item quantity="other">Saved %d page ID scans. OCR is starting.</item>
+    </plurals>
+    <plurals name="msg_saved_document_scan">
+        <item quantity="one">Saved 1 page scan. OCR is starting.</item>
+        <item quantity="other">Saved %d page scans. OCR is starting.</item>
+    </plurals>
+    <string name="msg_save_scan_failed">Could not save this scan.</string>
+    <string name="msg_no_pages_captured">No pages were captured.</string>
+    <plurals name="msg_saved_auto_capture">
+        <item quantity="one">Saved 1 auto-captured page. OCR is starting.</item>
+        <item quantity="other">Saved %d auto-captured pages. OCR is starting.</item>
+    </plurals>
+    <string name="msg_page_turn_save_failed">Could not save page-turn capture.</string>
+    <string name="msg_merge_select_two">Select at least two documents to merge.</string>
+    <string name="msg_merged_selected">Merged %1$d selected scans.</string>
+    <string name="msg_merge_need_two">Add at least two scans before merging.</string>
+    <string name="msg_merged_scans">Merged %1$d scans.</string>
+    <string name="msg_split_document">Split %1$s into single-page PDFs.</string>
+    <string name="msg_created_rotated_copy">Created rotated copy.</string>
+    <string name="msg_created_signed_copy">Created signed copy.</string>
+    <string name="msg_created_redacted_copy">Created redacted copy.</string>
+    <string name="msg_no_id_fields_redact">No sensitive ID fields were detected to redact.</string>
+    <string name="msg_created_id_redacted_copy">Created ID-redacted copy.</string>
+    <string name="msg_created_annotated_copy">Created annotated copy.</string>
+    <string name="msg_created_password_protected">Created password-protected PDF.</string>
+    <string name="msg_created_reordered_copy">Created reordered copy.</string>
+    <string name="msg_created_pages_removed">Created copy with selected pages removed.</string>
+    <string name="msg_created_compressed_copy">Created compressed copy (%1$s).</string>
+    <string name="msg_pdf_tool_failed">PDF tool failed.</string>
+    <string name="msg_tags_updated">Tags updated.</string>
+    <string name="msg_added_favorites">Added to favorites.</string>
+    <string name="msg_removed_favorites">Removed from favorites.</string>
+    <string name="msg_moved_to_library">Moved to library.</string>
+    <string name="msg_moved_to_folder">Moved to \"%1$s\".</string>
+    <string name="msg_select_one_document">Select at least one document.</string>
+    <string name="msg_self_host_enable_first">Enable self-host export in Settings first.</string>
+    <string name="msg_self_host_configure">Add your self-host endpoint and credentials in Settings.</string>
+    <string name="msg_no_export_file">No export file is available for this scan.</string>
+    <string name="msg_export_file_missing">The export file is missing.</string>
+    <string name="msg_self_host_uploaded">Uploaded %1$s to your self-host target.</string>
+    <string name="msg_self_host_upload_failed">Self-host upload failed.</string>
+    <string name="msg_backup_nothing">Nothing to back up yet.</string>
+    <string name="msg_backup_write_failed">Could not write backup file.</string>
+    <string name="msg_backup_passphrase_saved">Passphrase-protected backup saved. Use the same passphrase to restore on another device.</string>
+    <string name="msg_backup_encrypted_saved">Encrypted backup saved.</string>
+    <string name="msg_backup_read_failed">Could not read backup file.</string>
+    <string name="msg_backup_too_small">Backup file is too small.</string>
+    <string name="msg_backup_not_clearscan">This is not a ClearScan backup file.</string>
+    <string name="msg_backup_decrypt_failed">Could not decrypt backup. Restore only works on the device that created it.</string>
+    <string name="msg_backup_wrong_passphrase">Incorrect passphrase or corrupted backup file.</string>
+    <string name="msg_backup_unsupported_version">Unsupported backup version.</string>
+    <string name="msg_backup_manifest_missing">Backup manifest is missing.</string>
+    <plurals name="msg_backup_restored">
+        <item quantity="one">Restored 1 scan from backup.</item>
+        <item quantity="other">Restored %d scans from backup.</item>
+    </plurals>
+    <string name="msg_backup_enter_passphrase">Enter the backup passphrase to restore.</string>
+    <string name="msg_scanner_no_pages">No pages were returned from the scanner.</string>
+    <string name="msg_scanner_unavailable">Document scanner is unavailable on this device.</string>
+    <string name="msg_no_ocr_text">No OCR text is available to export yet.</string>
+    <string name="msg_no_pdf_print">No PDF is available to print for this scan.</string>
+    <string name="msg_no_export_files_selected">No export files are available for the selected scans.</string>
+    <string name="msg_selected_exports_missing">The selected export files are missing.</string>
+    <string name="msg_setup_screen_lock">Set up a screen lock or biometric first.</string>
+    <string name="msg_biometric_unavailable">Biometric vault is unavailable on this device.</string>
+    <string name="msg_vault_crypto_unavailable">Vault crypto is unavailable.</string>
+    <string name="msg_allow_install_updates">Allow ClearScan to install updates, then tap Download again.</string>
+    <string name="chooser_share_scan">Share scan</string>
+    <string name="chooser_export_ocr_text">Export OCR text</string>
+    <string name="chooser_share_selected">Share selected scans</string>
+    <string name="biometric_enable_vault_title">Enable ClearScan vault</string>
+    <string name="biometric_enable_vault_subtitle">Confirm your identity before enabling vault lock.</string>
+    <string name="biometric_unlock_title">Unlock ClearScan</string>
+    <string name="biometric_unlock_subtitle">Use biometrics or device credentials to unlock your scans.</string>
 </resources>

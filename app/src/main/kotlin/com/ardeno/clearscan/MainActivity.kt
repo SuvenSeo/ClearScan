@@ -28,6 +28,7 @@ import com.ardeno.clearscan.export.DocumentPrintHelper
 import com.ardeno.clearscan.export.TextExportHelper
 import com.ardeno.clearscan.widget.ScanWidgetProvider
 import com.ardeno.clearscan.ui.ClearScanApp
+import com.ardeno.clearscan.ui.UiStrings
 import com.ardeno.clearscan.ui.theme.ClearScanTheme
 import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanning
@@ -36,6 +37,7 @@ import java.io.File
 
 class MainActivity : FragmentActivity() {
     private val viewModel by viewModels<ClearScanViewModel>()
+    private val uiStrings by lazy { UiStrings(applicationContext) }
     private var pendingScanMode = ScanMode.Document
     /** True while BiometricPrompt UI is showing — skip auto-lock on process ON_STOP. */
     private var isBiometricPromptActive = false
@@ -60,7 +62,7 @@ class MainActivity : FragmentActivity() {
         val pageUris = scanResult?.pages.orEmpty().map { it.imageUri }
 
         if (pdfUri == null && pageUris.isEmpty()) {
-            viewModel.reportMessage("No pages were returned from the scanner.")
+            viewModel.reportMessage(uiStrings.scannerNoPages())
             return@registerForActivityResult
         }
 
@@ -234,7 +236,7 @@ class MainActivity : FragmentActivity() {
                 scannerLauncher.launch(IntentSenderRequest.Builder(intentSender).build())
             }
             .addOnFailureListener { error ->
-                val message = error.localizedMessage ?: "Document scanner is unavailable on this device."
+                val message = error.localizedMessage ?: uiStrings.scannerUnavailable()
                 viewModel.reportMessage(message)
                 Toast.makeText(this, message, Toast.LENGTH_LONG).show()
             }
@@ -243,13 +245,13 @@ class MainActivity : FragmentActivity() {
     private fun shareDocument(document: ScanDocument) {
         val exportPath = viewModel.exportPathFor(document)
         if (exportPath == null) {
-            viewModel.reportMessage("No export file is available for this scan.")
+            viewModel.reportMessage(uiStrings.noExportFile())
             return
         }
 
         val file = File(exportPath)
         if (!file.exists()) {
-            viewModel.reportMessage("The export file is missing.")
+            viewModel.reportMessage(uiStrings.exportFileMissing())
             return
         }
 
@@ -260,7 +262,7 @@ class MainActivity : FragmentActivity() {
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
 
-        startActivity(Intent.createChooser(shareIntent, "Share scan"))
+        startActivity(Intent.createChooser(shareIntent, uiStrings.chooserShareScan()))
         viewModel.logDocumentExport(document)
     }
 
@@ -313,17 +315,17 @@ class MainActivity : FragmentActivity() {
     private fun exportText(document: ScanDocument) {
         val shareIntent = TextExportHelper.createShareIntent(this, document)
         if (shareIntent == null) {
-            viewModel.reportMessage("No OCR text is available to export yet.")
+            viewModel.reportMessage(uiStrings.noOcrText())
             return
         }
-        startActivity(Intent.createChooser(shareIntent, "Export OCR text"))
+        startActivity(Intent.createChooser(shareIntent, uiStrings.chooserExportOcrText()))
         viewModel.logDocumentExport(document, exportKind = "text")
     }
 
     private fun printDocument(document: ScanDocument) {
         val started = DocumentPrintHelper.printDocument(this, document)
         if (!started) {
-            viewModel.reportMessage("No PDF is available to print for this scan.")
+            viewModel.reportMessage(uiStrings.noPdfToPrint())
             return
         }
         viewModel.logDocumentExport(document, exportKind = "print")
@@ -342,7 +344,7 @@ class MainActivity : FragmentActivity() {
     private fun shareSelectedDocuments() {
         val exports = viewModel.exportPathsForSelectedDocuments()
         if (exports.isEmpty()) {
-            viewModel.reportMessage("No export files are available for the selected scans.")
+            viewModel.reportMessage(uiStrings.noExportFilesSelected())
             return
         }
 
@@ -359,7 +361,7 @@ class MainActivity : FragmentActivity() {
         }
 
         if (uris.isEmpty()) {
-            viewModel.reportMessage("The selected export files are missing.")
+            viewModel.reportMessage(uiStrings.selectedExportsMissing())
             return
         }
 
@@ -377,7 +379,7 @@ class MainActivity : FragmentActivity() {
             }
         }
 
-        startActivity(Intent.createChooser(shareIntent, "Share selected scans"))
+        startActivity(Intent.createChooser(shareIntent, uiStrings.chooserShareSelected()))
         val selectedIds = viewModel.uiState.value.selectedDocumentIds
         viewModel.uiState.value.documents
             .filter { it.id in selectedIds }
@@ -393,16 +395,16 @@ class MainActivity : FragmentActivity() {
         }
 
         authenticateForVaultCrypto(
-            title = "Enable ClearScan vault",
-            subtitle = "Confirm your identity before enabling vault lock.",
+            title = uiStrings.biometricEnableVaultTitle(),
+            subtitle = uiStrings.biometricEnableVaultSubtitle(),
             onSuccess = { viewModel.setVaultEnabled(true) }
         )
     }
 
     private fun unlockVault() {
         authenticateForVaultCrypto(
-            title = "Unlock ClearScan",
-            subtitle = "Use biometrics or device credentials to unlock your scans.",
+            title = uiStrings.biometricUnlockTitle(),
+            subtitle = uiStrings.biometricUnlockSubtitle(),
             onSuccess = {}
         )
     }
@@ -419,12 +421,12 @@ class MainActivity : FragmentActivity() {
             BiometricManager.BIOMETRIC_SUCCESS -> Unit
             BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED -> {
                 viewModel.reportVaultAuthError()
-                viewModel.reportMessage("Set up a screen lock or biometric first.")
+                viewModel.reportMessage(uiStrings.setupScreenLock())
                 return
             }
             else -> {
                 viewModel.reportVaultAuthError()
-                viewModel.reportMessage("Biometric vault is unavailable on this device.")
+                viewModel.reportMessage(uiStrings.biometricUnavailable())
                 return
             }
         }
@@ -432,7 +434,7 @@ class MainActivity : FragmentActivity() {
         val cipher: javax.crypto.Cipher = runCatching { viewModel.createVaultDecryptCipher() }
             .getOrElse { error ->
                 viewModel.reportVaultAuthError()
-                viewModel.reportMessage(error.localizedMessage ?: "Vault crypto is unavailable.")
+                viewModel.reportMessage(error.localizedMessage ?: uiStrings.vaultCryptoUnavailable())
                 return
             }
 
@@ -480,7 +482,7 @@ class MainActivity : FragmentActivity() {
         val updateManager = ApkUpdateManager(this)
         if (!updateManager.canInstallPackages()) {
             startActivity(updateManager.createInstallPermissionIntent())
-            viewModel.reportMessage("Allow ClearScan to install updates, then tap Download again.")
+            viewModel.reportMessage(uiStrings.allowInstallUpdates())
             return
         }
         viewModel.downloadPendingAppUpdate()

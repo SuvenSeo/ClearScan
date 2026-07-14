@@ -8,6 +8,7 @@ import com.ardeno.clearscan.ocr.IdRedactionSuggestion
 import com.ardeno.clearscan.pdf.PdfCompressQuality
 import com.ardeno.clearscan.pdf.PdfToolEngine
 import com.ardeno.clearscan.pdf.PdfToolOutput
+import com.ardeno.clearscan.ui.UiStrings
 import java.io.File
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -16,6 +17,7 @@ class PdfToolsProcessor(
     private val scope: CoroutineScope,
     private val repository: LocalDocumentRepository,
     private val pdfToolEngine: PdfToolEngine,
+    private val uiStrings: UiStrings,
     private val getDocuments: () -> List<ScanDocument>,
     private val getSelectedIds: () -> Set<String>,
     private val getSignatureText: () -> String,
@@ -30,10 +32,10 @@ class PdfToolsProcessor(
     fun mergeSelectedDocuments() {
         val selectedDocuments = getDocuments().filter { it.id in getSelectedIds() }
         if (selectedDocuments.size < 2) {
-            onMessage("Select at least two documents to merge.")
+            onMessage(uiStrings.mergeSelectTwo())
             return
         }
-        runPdfTool("Merged ${selectedDocuments.size} selected scans.", selectedDocuments) { workingDir ->
+        runPdfTool(uiStrings.mergedSelected(selectedDocuments.size), selectedDocuments) { workingDir ->
             listOf(repository.createGeneratedDocument(pdfToolEngine.merge(selectedDocuments, workingDir), selectedDocuments))
         }
         onExitSelectionMode()
@@ -42,39 +44,39 @@ class PdfToolsProcessor(
     fun mergeAllDocuments() {
         val documents = getDocuments()
         if (documents.size < 2) {
-            onMessage("Add at least two scans before merging.")
+            onMessage(uiStrings.mergeNeedTwo())
             return
         }
-        runPdfTool("Merged ${documents.size} scans.", documents) { workingDir ->
+        runPdfTool(uiStrings.mergedScans(documents.size), documents) { workingDir ->
             listOf(repository.createGeneratedDocument(pdfToolEngine.merge(documents, workingDir), documents))
         }
     }
 
     fun splitDocument(document: ScanDocument) {
-        runPdfTool("Split ${document.title} into single-page PDFs.", listOf(document)) { workingDir ->
+        runPdfTool(uiStrings.splitDocument(document.title), listOf(document)) { workingDir ->
             pdfToolEngine.split(document, workingDir).map { repository.createGeneratedDocument(it, listOf(document)) }
         }
     }
 
-    fun rotateDocument(document: ScanDocument) = runSingleDocumentTool(document, "Created rotated copy.") {
+    fun rotateDocument(document: ScanDocument) = runSingleDocumentTool(document, uiStrings.createdRotatedCopy()) {
         pdfToolEngine.rotateClockwise(document, it)
     }
 
-    fun signDocument(document: ScanDocument) = runSingleDocumentTool(document, "Created signed copy.") {
+    fun signDocument(document: ScanDocument) = runSingleDocumentTool(document, uiStrings.createdSignedCopy()) {
         pdfToolEngine.sign(document, getSignatureText().ifBlank { "ClearScan" }, it)
     }
 
-    fun redactDocument(document: ScanDocument) = runSingleDocumentTool(document, "Created redacted copy.") {
+    fun redactDocument(document: ScanDocument) = runSingleDocumentTool(document, uiStrings.createdRedactedCopy()) {
         pdfToolEngine.redactHeader(document, it)
     }
 
     fun redactIdSensitiveFields(document: ScanDocument) {
         val suggestion = getIdRedactionSuggestions()[document.id] ?: IdRedactionSuggester.suggestFromText(document.ocrText)
         if (suggestion == null) {
-            onMessage("No sensitive ID fields were detected to redact.")
+            onMessage(uiStrings.noIdFieldsToRedact())
             return
         }
-        runSingleDocumentTool(document, "Created ID-redacted copy.") {
+        runSingleDocumentTool(document, uiStrings.createdIdRedactedCopy()) {
             pdfToolEngine.redactIdSensitiveFields(document, suggestion.regions, it)
         }
     }
@@ -88,28 +90,28 @@ class PdfToolsProcessor(
             val pageAnnotations = List(document.pageCount) { annotationsByPage[it].orEmpty() }
             val updatedSource = repository.updatePageAnnotations(document.id, pageAnnotations)
             updatedSource?.let { onReplaceDocument(it) }
-            runSingleDocumentTool(updatedSource ?: document, "Created annotated copy.") {
+            runSingleDocumentTool(updatedSource ?: document, uiStrings.createdAnnotatedCopy()) {
                 pdfToolEngine.applyAnnotations(updatedSource ?: document, annotationsByPage, it)
             }
         }
     }
 
-    fun passwordProtectDocument(document: ScanDocument) = runSingleDocumentTool(document, "Created password-protected PDF.") {
+    fun passwordProtectDocument(document: ScanDocument) = runSingleDocumentTool(document, uiStrings.createdPasswordProtected()) {
         pdfToolEngine.passwordProtect(document, getPdfPassword(), it)
     }
 
-    fun reorderDocument(document: ScanDocument, pageOrder: List<Int>) = runSingleDocumentTool(document, "Created reordered copy.") {
+    fun reorderDocument(document: ScanDocument, pageOrder: List<Int>) = runSingleDocumentTool(document, uiStrings.createdReorderedCopy()) {
         pdfToolEngine.reorderPages(document, pageOrder, it)
     }
 
     fun deletePagesFromDocument(document: ScanDocument, pageIndicesToKeep: List<Int>) =
-        runSingleDocumentTool(document, "Created copy with selected pages removed.") {
+        runSingleDocumentTool(document, uiStrings.createdPagesRemovedCopy()) {
             pdfToolEngine.deletePages(document, pageIndicesToKeep, it)
         }
 
     fun compressDocument(document: ScanDocument) {
         val quality = getCompressQuality()
-        runSingleDocumentTool(document, "Created compressed copy (${quality.label.lowercase()}).") {
+        runSingleDocumentTool(document, uiStrings.createdCompressedCopy(quality)) {
             pdfToolEngine.compress(document, quality, it)
         }
     }
@@ -133,7 +135,7 @@ class PdfToolsProcessor(
                 .onFailure { error ->
                     workingDir.deleteRecursively()
                     onPdfToolRunningChanged(false)
-                    onMessage(error.localizedMessage ?: "PDF tool failed.")
+                    onMessage(error.localizedMessage ?: uiStrings.pdfToolFailed())
                 }
         }
     }

@@ -4,6 +4,7 @@ import com.ardeno.clearscan.data.LocalDocumentRepository
 import com.ardeno.clearscan.export.SelfHostExporter
 import com.ardeno.clearscan.model.DocumentFolder
 import com.ardeno.clearscan.model.ScanDocument
+import com.ardeno.clearscan.ui.UiStrings
 import com.ardeno.clearscan.ui.settings.SettingsUiState
 import java.io.File
 import kotlinx.coroutines.CoroutineScope
@@ -13,6 +14,7 @@ class DocumentActionsHandler(
     private val scope: CoroutineScope,
     private val repository: LocalDocumentRepository,
     private val selfHostExporter: SelfHostExporter,
+    private val uiStrings: UiStrings,
     private val getFolders: () -> List<DocumentFolder>,
     private val getSelectedIds: () -> Set<String>,
     private val getSettings: () -> SettingsUiState,
@@ -27,7 +29,7 @@ class DocumentActionsHandler(
         scope.launch {
             repository.updateDocumentTags(document.id, tags)?.let {
                 onReplaceDocument(it)
-                onMessage("Tags updated.")
+                onMessage(uiStrings.tagsUpdated())
             }
         }
     }
@@ -36,7 +38,7 @@ class DocumentActionsHandler(
         scope.launch {
             repository.setDocumentFavorite(document.id, !document.isFavorite)?.let { updated ->
                 onReplaceDocument(updated)
-                onMessage(if (updated.isFavorite) "Added to favorites." else "Removed from favorites.")
+                onMessage(if (updated.isFavorite) uiStrings.addedToFavorites() else uiStrings.removedFromFavorites())
             }
         }
     }
@@ -46,7 +48,7 @@ class DocumentActionsHandler(
             repository.moveDocumentToFolder(document.id, folderId)?.let { updated ->
                 onReplaceDocument(updated)
                 val folderName = folderId?.let { id -> getFolders().find { it.id == id }?.name }
-                onMessage(if (folderName == null) "Moved to library." else "Moved to \"$folderName\".")
+                onMessage(if (folderName == null) uiStrings.movedToLibrary() else uiStrings.movedToFolder(folderName))
             }
         }
     }
@@ -54,7 +56,7 @@ class DocumentActionsHandler(
     fun deleteSelectedDocuments() {
         val selectedIds = getSelectedIds()
         if (selectedIds.isEmpty()) {
-            onMessage("Select at least one document.")
+            onMessage(uiStrings.selectOneDocument())
             return
         }
         scope.launch {
@@ -74,27 +76,27 @@ class DocumentActionsHandler(
         val settings = getSettings()
         val config = settings.selfHostConfig
         if (!config.enabled) {
-            onMessage("Enable self-host export in Settings first.")
+            onMessage(uiStrings.selfHostEnableFirst())
             return
         }
         if (!config.isConfigured) {
-            onMessage("Add your self-host endpoint and credentials in Settings.")
+            onMessage(uiStrings.selfHostConfigure())
             return
         }
         scope.launch {
             onSelfHostUploadingChanged(true)
             runCatching {
-                val exportPath = exportPathFor(document) ?: error("No export file is available for this scan.")
+                val exportPath = exportPathFor(document) ?: error(uiStrings.noExportFile())
                 val exportFile = File(exportPath)
-                require(exportFile.exists()) { "The export file is missing." }
+                require(exportFile.exists()) { uiStrings.exportFileMissing() }
                 selfHostExporter.export(document, exportFile, config, wifiOnly = settings.wifiOnlySelfHostUpload)
             }.onSuccess {
                 logDocumentExport(document, "self-host")
                 onSelfHostUploadingChanged(false)
-                onMessage("Uploaded ${document.title} to your self-host target.")
+                onMessage(uiStrings.selfHostUploaded(document.title))
             }.onFailure { error ->
                 onSelfHostUploadingChanged(false)
-                onMessage(error.localizedMessage ?: "Self-host upload failed.")
+                onMessage(error.localizedMessage ?: uiStrings.selfHostUploadFailed())
             }
         }
     }

@@ -4,6 +4,7 @@ import com.ardeno.clearscan.data.LocalDocumentRepository
 import com.ardeno.clearscan.duplicate.DuplicateDetector
 import com.ardeno.clearscan.model.DocumentFolder
 import com.ardeno.clearscan.model.ScanDocument
+import com.ardeno.clearscan.ui.UiStrings
 import com.ardeno.clearscan.ui.settings.BackupImportReload
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,6 +29,7 @@ class LibraryViewModel(
     private val scope: CoroutineScope,
     private val repository: LocalDocumentRepository,
     private val duplicateDetector: DuplicateDetector,
+    private val uiStrings: UiStrings,
     private val onMessage: (String) -> Unit
 ) {
     private val _uiState = MutableStateFlow(LibraryUiState())
@@ -87,9 +89,9 @@ class LibraryViewModel(
             runCatching { repository.createFolder(name) }
                 .onSuccess { folder ->
                     _uiState.update { it.copy(folders = listOf(folder) + it.folders) }
-                    onMessage("Created folder \"${folder.name}\".")
+                    onMessage(uiStrings.folderCreated(folder.name))
                 }
-                .onFailure { onMessage(it.localizedMessage ?: "Could not create folder.") }
+                .onFailure { onMessage(it.localizedMessage ?: uiStrings.folderCreateFailed()) }
         }
     }
 
@@ -101,10 +103,10 @@ class LibraryViewModel(
                         _uiState.update { current ->
                             current.copy(folders = current.folders.map { existing -> if (existing.id == it.id) it else existing })
                         }
-                        onMessage("Renamed folder to \"${it.name}\".")
+                        onMessage(uiStrings.folderRenamed(it.name))
                     }
                 }
-                .onFailure { onMessage(it.localizedMessage ?: "Could not rename folder.") }
+                .onFailure { onMessage(it.localizedMessage ?: uiStrings.folderRenameFailed()) }
         }
     }
 
@@ -118,9 +120,9 @@ class LibraryViewModel(
                         selectedFolderId = current.selectedFolderId.takeUnless { it == folderId }
                     )
                 }
-                onMessage("Folder deleted.")
+                onMessage(uiStrings.folderDeleted())
             } else {
-                onMessage("Could not delete folder.")
+                onMessage(uiStrings.folderDeleteFailed())
             }
         }
     }
@@ -174,7 +176,7 @@ class LibraryViewModel(
                 selectionMode = current.selectionMode && (current.selectedDocumentIds - deletedIds).isNotEmpty()
             )
         }
-        onMessage(if (deletedCount == 1) "Deleted 1 document." else "Deleted $deletedCount documents.")
+        onMessage(uiStrings.documentsDeleted(deletedCount))
     }
 
     fun applyBackupImport(reload: BackupImportReload) {

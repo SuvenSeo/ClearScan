@@ -15,6 +15,7 @@ import com.ardeno.clearscan.model.ScanDocument
 import com.ardeno.clearscan.ocr.OcrBenchmark
 import com.ardeno.clearscan.ocr.OcrBenchmarkRunner
 import com.ardeno.clearscan.ocr.OcrLanguage
+import com.ardeno.clearscan.ui.UiStrings
 import com.ardeno.clearscan.update.AppUpdateCheckResult
 import com.ardeno.clearscan.update.ApkUpdateManager
 import com.ardeno.clearscan.vault.ExportAuditLog
@@ -49,6 +50,7 @@ class SettingsViewModel(
     private val selfHostSettings: SelfHostSettings,
     private val apkUpdateManager: ApkUpdateManager,
     private val duplicateDetector: DuplicateDetector,
+    private val uiStrings: UiStrings,
     private val onMessage: (String) -> Unit,
     private val onBackupImportSuccess: (BackupImportReload) -> Unit
 ) {
@@ -131,13 +133,13 @@ class SettingsViewModel(
                 }
                 onMessage(
                     when {
-                        enabled && healthy -> "Vault enabled. Biometric unlock will be required."
-                        enabled -> "Vault enabled."
-                        else -> "Vault disabled."
+                        enabled && healthy -> uiStrings.vaultEnabledBiometric()
+                        enabled -> uiStrings.vaultEnabled()
+                        else -> uiStrings.vaultDisabled()
                     }
                 )
             }.onFailure { error ->
-                onMessage(error.localizedMessage ?: "Vault setup failed.")
+                onMessage(error.localizedMessage ?: uiStrings.vaultSetupFailed())
             }
         }
     }
@@ -149,11 +151,11 @@ class SettingsViewModel(
     fun onVaultCryptoUnlocked() {
         vaultCrypto.markSessionAuthorized()
         _uiState.update { it.copy(vaultUnlocked = true, vaultAuthError = false) }
-        onMessage("Vault unlocked.")
+        onMessage(uiStrings.vaultUnlocked())
         scope.launch {
             runCatching { vaultKeyMigration.migrateIfNeeded() }
                 .onFailure { error ->
-                    onMessage(error.localizedMessage ?: "Vault key migration failed.")
+                    onMessage(error.localizedMessage ?: uiStrings.vaultKeyMigrationFailed())
                 }
         }
     }
@@ -176,7 +178,7 @@ class SettingsViewModel(
             }
         }
         if (announce) {
-            onMessage("Vault locked.")
+            onMessage(uiStrings.vaultLocked())
         }
         scope.launch {
             repository.clearReadableCache()
@@ -197,16 +199,16 @@ class SettingsViewModel(
         }
         onMessage(
             if (config.enabled) {
-                "Self-host export enabled. Uploads require your explicit action."
+                uiStrings.selfHostEnabled()
             } else {
-                "Self-host export settings saved."
+                uiStrings.selfHostSaved()
             }
         )
     }
 
     fun runSinhalaTamilBenchmarkSelfCheck() {
         scope.launch {
-            onMessage("Running on-device Sinhala/Tamil OCR benchmark…")
+            onMessage(uiStrings.ocrBenchmarkRunning())
             runCatching {
                 OcrBenchmarkRunner.runSyntheticEngineBenchmark(application)
             }.onSuccess { metrics ->
@@ -217,9 +219,9 @@ class SettingsViewModel(
                 _uiState.update { current ->
                     current.copy(benchmarkSummary = summary)
                 }
-                onMessage("Sinhala/Tamil OCR benchmark finished.")
+                onMessage(uiStrings.ocrBenchmarkFinished())
             }.onFailure { error ->
-                onMessage(error.localizedMessage ?: "OCR benchmark failed.")
+                onMessage(error.localizedMessage ?: uiStrings.ocrBenchmarkFailed())
             }
         }
     }
@@ -272,7 +274,7 @@ class SettingsViewModel(
     fun submitBackupPassphrase(passphrase: CharArray, confirmation: CharArray?) {
         val request = _uiState.value.backupPassphraseRequest ?: return
         if (request.confirmPassphrase && confirmation != null && !passphrase.contentEquals(confirmation)) {
-            onMessage("Passphrases do not match.")
+            onMessage(uiStrings.passphrasesMismatch())
             return
         }
         _uiState.update { it.copy(backupPassphraseRequest = null) }
@@ -302,17 +304,15 @@ class SettingsViewModel(
                         }
                     }
                     is AppUpdateCheckResult.UpToDate -> {
-                        onMessage("ClearScan is up to date (${checkResult.latestVersionName}).")
+                        onMessage(uiStrings.appUpToDate(checkResult.latestVersionName))
                     }
                     is AppUpdateCheckResult.Unsupported -> {
                         val requiredUpdate = checkResult.info
-                        onMessage(
-                            "This build is too old for ${requiredUpdate.versionName}. Install the latest APK manually from GitHub Releases."
-                        )
+                        onMessage(uiStrings.appTooOld(requiredUpdate.versionName))
                     }
                 }
             }.onFailure { error ->
-                onMessage(error.localizedMessage ?: "Could not check for updates.")
+                onMessage(error.localizedMessage ?: uiStrings.updateCheckFailed())
             }
         }
     }
@@ -327,7 +327,7 @@ class SettingsViewModel(
 
         _uiState.update { it.copy(isUpdateDownloading = true) }
         apkUpdateManager.enqueueDownload(update)
-        onMessage("Downloading ClearScan ${update.versionName}…")
+        onMessage(uiStrings.downloadingUpdate(update.versionName))
     }
 
     private fun exportBackupWithPassphrase(targetUri: Uri, passphrase: CharArray?) {

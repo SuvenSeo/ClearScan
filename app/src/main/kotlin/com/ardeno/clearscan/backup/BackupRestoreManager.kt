@@ -5,6 +5,7 @@ import android.net.Uri
 import com.ardeno.clearscan.data.LocalDocumentRepository
 import com.ardeno.clearscan.vault.EncryptedFileStore
 import com.ardeno.clearscan.vault.VaultCrypto
+import com.ardeno.clearscan.ui.UiStrings
 import java.io.BufferedInputStream
 import java.io.BufferedOutputStream
 import java.io.File
@@ -20,6 +21,7 @@ class BackupRestoreManager(
     private val repository: LocalDocumentRepository,
     private val encryptedFileStore: EncryptedFileStore,
     private val vaultCrypto: VaultCrypto,
+    private val uiStrings: UiStrings,
     private val passphraseBackupCrypto: PassphraseBackupCrypto = PassphraseBackupCrypto()
 ) {
     suspend fun exportBackup(
@@ -28,7 +30,7 @@ class BackupRestoreManager(
     ): BackupResult = withContext(Dispatchers.IO) {
         vaultCrypto.ensureVaultKey()
         if (!repository.hasStoredDocuments()) {
-            return@withContext BackupResult.failure("Nothing to back up yet.")
+            return@withContext BackupResult.failure(uiStrings.backupNothing())
         }
 
         val documentsRoot = encryptedFileStore.storageRoot()
@@ -53,12 +55,12 @@ class BackupRestoreManager(
                     stream.write(byteArrayOf(version))
                     stream.write(encryptedPayload)
                 }
-            } ?: return@withContext BackupResult.failure("Could not write backup file.")
+            } ?: return@withContext BackupResult.failure(uiStrings.backupWriteFailed())
 
             val message = if (passphrase != null) {
-                "Passphrase-protected backup saved. Use the same passphrase to restore on another device."
+                uiStrings.backupPassphraseSaved()
             } else {
-                "Encrypted backup saved."
+                uiStrings.backupEncryptedSaved()
             }
             BackupResult.success(message)
         } finally {
@@ -74,13 +76,13 @@ class BackupRestoreManager(
 
         val encryptedBytes = context.contentResolver.openInputStream(sourceUri)?.use { input ->
             BufferedInputStream(input).readBytes()
-        } ?: return@withContext BackupResult.failure("Could not read backup file.")
+        } ?: return@withContext BackupResult.failure(uiStrings.backupReadFailed())
 
         if (encryptedBytes.size < BACKUP_MAGIC.size + 1) {
-            return@withContext BackupResult.failure("Backup file is too small.")
+            return@withContext BackupResult.failure(uiStrings.backupTooSmall())
         }
         if (!encryptedBytes.copyOfRange(0, BACKUP_MAGIC.size).contentEquals(BACKUP_MAGIC)) {
-            return@withContext BackupResult.failure("This is not a ClearScan backup file.")
+            return@withContext BackupResult.failure(uiStrings.backupNotClearScan())
         }
 
         val version = encryptedBytes[BACKUP_MAGIC.size]
@@ -89,21 +91,19 @@ class BackupRestoreManager(
             BACKUP_VERSION_DEVICE -> runCatching {
                 vaultCrypto.decrypt(EncryptedFileStore.unpackCiphertext(payload))
             }.getOrElse {
-                return@withContext BackupResult.failure(
-                    "Could not decrypt backup. Restore only works on the device that created it."
-                )
+                return@withContext BackupResult.failure(uiStrings.backupDecryptFailed())
             }
             BACKUP_VERSION_PASSPHRASE -> {
                 if (passphrase == null) {
-                    return@withContext BackupResult.needsPassphrase()
+                    return@withContext BackupResult.needsPassphrase(uiStrings)
                 }
                 runCatching {
                     passphraseBackupCrypto.decrypt(payload, passphrase)
                 }.getOrElse {
-                    return@withContext BackupResult.failure("Incorrect passphrase or corrupted backup file.")
+                    return@withContext BackupResult.failure(uiStrings.backupWrongPassphrase())
                 }
             }
-            else -> return@withContext BackupResult.failure("Unsupported backup version.")
+            else -> return@withContext BackupResult.failure(uiStrings.backupUnsupportedVersion())
         }
 
         restoreZipBytes(zipBytes)
@@ -127,7 +127,7 @@ class BackupRestoreManager(
         return try {
             unzipToDirectory(zipBytes, stagingDir)
             if (!File(stagingDir, "index.json").exists()) {
-                BackupResult.failure("Backup manifest is missing.")
+                BackupResult.failure(uiStrings.backupManifestMissing())
             } else {
                 val documentsRoot = encryptedFileStore.storageRoot()
                 documentsRoot.deleteRecursively()
@@ -144,7 +144,7 @@ class BackupRestoreManager(
                 encryptedFileStore.clearAllReadableCache()
                 repository.invalidateIndexCache()
                 val documents = repository.loadDocuments()
-                BackupResult.success("Restored ${documents.size} scans from backup.")
+                BackupResult.success(uiStrings.backupRestored(documents.size))
             }
         } finally {
             stagingDir.deleteRecursively()
@@ -237,9 +237,9 @@ data class BackupResult(
     companion object {
         fun success(message: String) = BackupResult(success = true, message = message)
         fun failure(message: String) = BackupResult(success = false, message = message)
-        fun needsPassphrase() = BackupResult(
+        fun needsPassphrase(uiStrings: UiStrings) = BackupResult(
             success = false,
-            message = "Enter the backup passphrase to restore.",
+            message = uiStrings.backupEnterPassphrase(),
             requiresPassphrase = true
         )
     }

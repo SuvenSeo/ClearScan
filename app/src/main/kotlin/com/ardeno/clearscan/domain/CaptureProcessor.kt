@@ -8,6 +8,7 @@ import com.ardeno.clearscan.model.ScanDocument
 import com.ardeno.clearscan.model.ScanMode
 import com.ardeno.clearscan.scanner.FileImportResolver
 import com.ardeno.clearscan.scanner.ScannerImport
+import com.ardeno.clearscan.ui.UiStrings
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -16,6 +17,7 @@ class CaptureProcessor(
     private val scope: CoroutineScope,
     private val repository: LocalDocumentRepository,
     private val appPreferences: AppPreferences,
+    private val uiStrings: UiStrings,
     private val onSavingChanged: (Boolean) -> Unit,
     private val onDocumentCaptured: (ScanDocument, String) -> Unit,
     private val onCaptureFailed: (String) -> Unit,
@@ -23,7 +25,7 @@ class CaptureProcessor(
 ) {
     fun importFiles(uris: List<Uri>) {
         if (uris.isEmpty()) {
-            onCaptureFailed("No files were selected.")
+            onCaptureFailed(uiStrings.noFilesSelected())
             return
         }
         scope.launch {
@@ -35,11 +37,11 @@ class CaptureProcessor(
                     titlePrefix = "Import"
                 )
             }.onSuccess { document ->
-                onDocumentCaptured(document, "Imported ${document.pageCount} page${if (document.pageCount == 1) "" else "s"}. OCR is starting.")
+                onDocumentCaptured(document, uiStrings.importedPages(document.pageCount))
                 runOcr(document)
             }.onFailure { error ->
                 onSavingChanged(false)
-                onCaptureFailed(error.localizedMessage ?: "Could not import the selected files.")
+                onCaptureFailed(error.localizedMessage ?: uiStrings.importFailed())
             }
         }
     }
@@ -54,21 +56,21 @@ class CaptureProcessor(
                 )
             }.onSuccess { document ->
                 val message = when (import.scanMode) {
-                    ScanMode.IdCard -> "Saved ${document.pageCount} page ID scan. OCR is starting."
-                    ScanMode.Document -> "Saved ${document.pageCount} page scan. OCR is starting."
+                    ScanMode.IdCard -> uiStrings.savedIdScan(document.pageCount)
+                    ScanMode.Document -> uiStrings.savedDocumentScan(document.pageCount)
                 }
                 onDocumentCaptured(document, message)
                 runOcr(document)
             }.onFailure { error ->
                 onSavingChanged(false)
-                onCaptureFailed(error.localizedMessage ?: "Could not save this scan.")
+                onCaptureFailed(error.localizedMessage ?: uiStrings.saveScanFailed())
             }
         }
     }
 
     fun savePageTurnCapture(pagePaths: List<String>) {
         if (pagePaths.isEmpty()) {
-            onCaptureFailed("No pages were captured.")
+            onCaptureFailed(uiStrings.noPagesCaptured())
             return
         }
         scope.launch {
@@ -80,11 +82,11 @@ class CaptureProcessor(
                     ocrLanguage = appPreferences.defaultOcrLanguage
                 )
             }.onSuccess { document ->
-                onDocumentCaptured(document, "Saved ${document.pageCount} auto-captured page${if (document.pageCount == 1) "" else "s"}. OCR is starting.")
+                onDocumentCaptured(document, uiStrings.savedAutoCapture(document.pageCount))
                 runOcr(document)
             }.onFailure { error ->
                 onSavingChanged(false)
-                onCaptureFailed(error.localizedMessage ?: "Could not save page-turn capture.")
+                onCaptureFailed(error.localizedMessage ?: uiStrings.pageTurnSaveFailed())
             }
         }
     }

@@ -29,6 +29,7 @@ import com.ardeno.clearscan.scanner.ScannerImport
 import com.ardeno.clearscan.ui.library.LibraryViewModel
 import com.ardeno.clearscan.ui.settings.SettingsUiState
 import com.ardeno.clearscan.ui.settings.SettingsViewModel
+import com.ardeno.clearscan.ui.UiStrings
 import com.ardeno.clearscan.update.ApkUpdateManager
 import com.ardeno.clearscan.vault.EncryptedFileStore
 import com.ardeno.clearscan.vault.ExportAuditLog
@@ -78,7 +79,8 @@ class ClearScanViewModel(application: Application) : AndroidViewModel(applicatio
     private val vaultKeyMigration = VaultKeyMigration(application, vaultCrypto, encryptedFileStore, vaultSettings)
     private val exportAuditLog = ExportAuditLog(application)
     private val privacyStatusProvider = PrivacyStatusProvider(application, encryptedFileStore, exportAuditLog, vaultCrypto)
-    private val backupRestoreManager = BackupRestoreManager(application, repository, encryptedFileStore, vaultCrypto)
+    private val uiStrings = UiStrings(application)
+    private val backupRestoreManager = BackupRestoreManager(application, repository, encryptedFileStore, vaultCrypto, uiStrings)
     private val appPreferences = AppPreferences(application)
     private val selfHostExporter = SelfHostExporter(application)
     private val duplicateDetector = DuplicateDetector()
@@ -89,6 +91,7 @@ class ClearScanViewModel(application: Application) : AndroidViewModel(applicatio
         scope = viewModelScope,
         repository = repository,
         duplicateDetector = duplicateDetector,
+        uiStrings = uiStrings,
         onMessage = ::reportMessage
     )
 
@@ -97,6 +100,7 @@ class ClearScanViewModel(application: Application) : AndroidViewModel(applicatio
         repository = repository,
         ocrEngine = ocrEngine,
         searchablePdfWriter = searchablePdfWriter,
+        uiStrings = uiStrings,
         onReplaceDocument = libraryViewModel::replaceDocument,
         onOcrRunningChanged = { running -> _uiState.update { it.copy(isOcrRunning = running) } },
         onMessage = ::reportMessage,
@@ -111,6 +115,7 @@ class ClearScanViewModel(application: Application) : AndroidViewModel(applicatio
         scope = viewModelScope,
         repository = repository,
         pdfToolEngine = pdfToolEngine,
+        uiStrings = uiStrings,
         getDocuments = { libraryViewModel.uiState.value.documents },
         getSelectedIds = { libraryViewModel.uiState.value.selectedDocumentIds },
         getSignatureText = { _uiState.value.signatureText },
@@ -135,6 +140,7 @@ class ClearScanViewModel(application: Application) : AndroidViewModel(applicatio
         scope = viewModelScope,
         repository = repository,
         appPreferences = appPreferences,
+        uiStrings = uiStrings,
         onSavingChanged = { saving ->
             _uiState.update { current ->
                 current.copy(isSaving = saving, message = if (saving) null else current.message)
@@ -156,6 +162,7 @@ class ClearScanViewModel(application: Application) : AndroidViewModel(applicatio
         scope = viewModelScope,
         repository = repository,
         selfHostExporter = selfHostExporter,
+        uiStrings = uiStrings,
         getFolders = { libraryViewModel.uiState.value.folders },
         getSelectedIds = { libraryViewModel.uiState.value.selectedDocumentIds },
         getSettings = { _uiState.value.settings },
@@ -185,6 +192,7 @@ class ClearScanViewModel(application: Application) : AndroidViewModel(applicatio
         selfHostSettings = SelfHostSettings(application),
         apkUpdateManager = apkUpdateManager,
         duplicateDetector = duplicateDetector,
+        uiStrings = uiStrings,
         onMessage = ::reportMessage,
         onBackupImportSuccess = libraryViewModel::applyBackupImport
     )

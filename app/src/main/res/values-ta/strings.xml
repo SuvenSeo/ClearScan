@@ -324,4 +324,120 @@
 
     <!-- Search field -->
     <string name="search_clear">தேடலை அழி</string>
+
+    <!-- Snackbar and status messages -->
+    <string name="msg_folder_created">\"%1$s\" கோப்புறை உருவாக்கப்பட்டது.</string>
+    <string name="msg_folder_create_failed">கோப்புறையை உருவாக்க முடியவில்லை.</string>
+    <string name="msg_folder_renamed">கோப்புறை \"%1$s\" என மறுபெயரிடப்பட்டது.</string>
+    <string name="msg_folder_rename_failed">கோப்புறையை மறுபெயரிட முடியவில்லை.</string>
+    <string name="msg_folder_deleted">கோப்புறை நீக்கப்பட்டது.</string>
+    <string name="msg_folder_delete_failed">கோப்புறையை நீக்க முடியவில்லை.</string>
+    <plurals name="msg_documents_deleted">
+        <item quantity="one">1 ஆவணம் நீக்கப்பட்டது.</item>
+        <item quantity="other">%d ஆவணங்கள் நீக்கப்பட்டன.</item>
+    </plurals>
+    <string name="msg_vault_enabled_biometric">Vault இயக்கப்பட்டது. பயோமெட்ரிக் திறப்பு தேவை.</string>
+    <string name="msg_vault_enabled">Vault இயக்கப்பட்டது.</string>
+    <string name="msg_vault_disabled">Vault முடக்கப்பட்டது.</string>
+    <string name="msg_vault_setup_failed">Vault அமைப்பு தோல்வியடைந்தது.</string>
+    <string name="msg_vault_unlocked">Vault திறக்கப்பட்டது.</string>
+    <string name="msg_vault_key_migration_failed">Vault விசை இடம்பெயர்வு தோல்வியடைந்தது.</string>
+    <string name="msg_vault_locked">Vault பூட்டப்பட்டது.</string>
+    <string name="msg_self_host_enabled">சுய-ஹோஸ்ட் ஏற்றுமதி இயக்கப்பட்டது. பதிவேற்றங்களுக்கு உங்கள் வெளிப்படையான செயல் தேவை.</string>
+    <string name="msg_self_host_saved">சுய-ஹோஸ்ட் ஏற்றுமதி அமைப்புகள் சேமிக்கப்பட்டன.</string>
+    <string name="msg_ocr_benchmark_running">சாதனத்தில் சிங்கள/தமிழ் OCR சோதனை இயங்குகிறது…</string>
+    <string name="msg_ocr_benchmark_finished">சிங்கள/தமிழ் OCR சோதனை முடிந்தது.</string>
+    <string name="msg_ocr_benchmark_failed">OCR சோதனை தோல்வியடைந்தது.</string>
+    <string name="msg_passphrases_mismatch">கடவுச்சொற்கள் பொருந்தவில்லை.</string>
+    <string name="msg_app_up_to_date">ClearScan புதுப்பித்த நிலையில் (%1$s).</string>
+    <string name="msg_app_too_old">இந்த build %1$s க்கு மிகவும் பழையது. GitHub Releases இலிருந்து சமீபத்திய APK ஐ கைமுறையாக நல்த்திருக்கவும்.</string>
+    <string name="msg_update_check_failed">புதுப்பிப்புகளை சரிபார்க்க முடியவில்லை.</string>
+    <string name="msg_downloading_update">ClearScan %1$s பதிவிறக்கப்படுகிறது…</string>
+    <string name="msg_ocr_finished">%1$s க்கான OCR முடிந்தது.</string>
+    <string name="msg_ocr_finished_tags">%1$s க்கான OCR முடிந்தது. குறிச்சொற்கள்: %2$s</string>
+    <string name="msg_ocr_finished_redaction">%1$s க்கான OCR முடிந்தது. உணர்திறன் கொண்ட புலங்கள் கண்டறியப்பட்டன — மறைப்பை மதிப்பாய்வு செய்யவும்.</string>
+    <string name="msg_ocr_failed">%1$s க்கான OCR தோல்வியடைந்தது.</string>
+    <string name="msg_ocr_amount_tag">தொகை %1$s</string>
+    <string name="msg_no_files_selected">கோப்புகள் எதுவும் தேர்ந்தெடுக்கப்படவில்லை.</string>
+    <plurals name="msg_imported_pages">
+        <item quantity="one">1 பக்கம் இறக்குமதி செய்யப்பட்டது. OCR தொடங்குகிறது.</item>
+        <item quantity="other">%d பக்கங்கள் இறக்குமதி செய்யப்பட்டன. OCR தொடங்குகிறது.</item>
+    </plurals>
+    <string name="msg_import_failed">தேர்ந்தெடுத்த கோப்புகளை இறக்குமதி செய்ய முடியவில்லை.</string>
+    <plurals name="msg_saved_id_scan">
+        <item quantity="one">1 அடையாளப் பக்கம் சேமிக்கப்பட்டது. OCR தொடங்குகிறது.</item>
+        <item quantity="other">%d அடையாளப் பக்கங்கள் சேமிக்கப்பட்டன. OCR தொடங்குகிறது.</item>
+    </plurals>
+    <plurals name="msg_saved_document_scan">
+        <item quantity="one">1 பக்கம் சேமிக்கப்பட்டது. OCR தொடங்குகிறது.</item>
+        <item quantity="other">%d பக்கங்கள் சேமிக்கப்பட்டன. OCR தொடங்குகிறது.</item>
+    </plurals>
+    <string name="msg_save_scan_failed">இந்த ஸ்கேனை சேமிக்க முடியவில்லை.</string>
+    <string name="msg_no_pages_captured">பக்கங்கள் எதுவும் பிடிக்கப்படவில்லை.</string>
+    <plurals name="msg_saved_auto_capture">
+        <item quantity="one">1 தானியங்கி பிடிப்பு பக்கம் சேமிக்கப்பட்டது. OCR தொடங்குகிறது.</item>
+        <item quantity="other">%d தானியங்கி பிடிப்பு பக்கங்கள் சேமிக்கப்பட்டன. OCR தொடங்குகிறது.</item>
+    </plurals>
+    <string name="msg_page_turn_save_failed">பக்கம்-திருப்பல் பிடிப்பை சேமிக்க முடியவில்லை.</string>
+    <string name="msg_merge_select_two">இணைக்க குறைந்தது இரண்டு ஆவணங்களைத் தேர்ந்தெடுக்கவும்.</string>
+    <string name="msg_merged_selected">தேர்ந்தெடுத்த %1$d ஸ்கேன்கள் இணைக்கப்பட்டன.</string>
+    <string name="msg_merge_need_two">இணைப்பதற்கு முன் குறைந்தது இரண்டு ஸ்கேன்களைச் சேர்க்கவும்.</string>
+    <string name="msg_merged_scans">%1$d ஸ்கேன்கள் இணைக்கப்பட்டன.</string>
+    <string name="msg_split_document">%1$s ஐ ஒற்றை-பக்க PDF களாக பிரிக்கப்பட்டது.</string>
+    <string name="msg_created_rotated_copy">சுழற்றப்பட்ட நகல் உருவாக்கப்பட்டது.</string>
+    <string name="msg_created_signed_copy">கையொப்பமிடப்பட்ட நகல் உருவாக்கப்பட்டது.</string>
+    <string name="msg_created_redacted_copy">மறைக்கப்பட்ட நகல் உருவாக்கப்பட்டது.</string>
+    <string name="msg_no_id_fields_redact">மறைக்க உணர்திறன் கொண்ட அடையாளப் புலங்கள் எதுவும் கண்டறியப்படவில்லை.</string>
+    <string name="msg_created_id_redacted_copy">அடையாள-மறைக்கப்பட்ட நகல் உருவாக்கப்பட்டது.</string>
+    <string name="msg_created_annotated_copy">குறிப்பிடப்பட்ட நகல் உருவாக்கப்பட்டது.</string>
+    <string name="msg_created_password_protected">கடவுச்சொல்-பாதுகாக்கப்பட்ட PDF உருவாக்கப்பட்டது.</string>
+    <string name="msg_created_reordered_copy">மறுவரிசைப்படுத்தப்பட்ட நகல் உருவாக்கப்பட்டது.</string>
+    <string name="msg_created_pages_removed">தேர்ந்தெடுத்த பக்கங்கள் நீக்கப்பட்ட நகல் உருவாக்கப்பட்டது.</string>
+    <string name="msg_created_compressed_copy">சுருக்கப்பட்ட நகல் உருவாக்கப்பட்டது (%1$s).</string>
+    <string name="msg_pdf_tool_failed">PDF கருவி தோல்வியடைந்தது.</string>
+    <string name="msg_tags_updated">குறிச்சொற்கள் புதுப்பிக்கப்பட்டன.</string>
+    <string name="msg_added_favorites">பிடித்தவையில் சேர்க்கப்பட்டது.</string>
+    <string name="msg_removed_favorites">பிடித்தவையிலிருந்து அகற்றப்பட்டது.</string>
+    <string name="msg_moved_to_library">நூலகத்திற்கு நகர்த்தப்பட்டது.</string>
+    <string name="msg_moved_to_folder">\"%1$s\" க்கு நகர்த்தப்பட்டது.</string>
+    <string name="msg_select_one_document">குறைந்தது ஒரு ஆவணத்தைத் தேர்ந்தெடுக்கவும்.</string>
+    <string name="msg_self_host_enable_first">முதலில் அமைப்புகளில் சுய-ஹோஸ்ட் ஏற்றுமதியை இயக்கவும்.</string>
+    <string name="msg_self_host_configure">அமைப்புகளில் உங்கள் சுய-ஹோஸ்ட் முடிவுப்புள்ளி மற்றும் சான்றுகளைச் சேர்க்கவும்.</string>
+    <string name="msg_no_export_file">இந்த ஸ்கேனுக்கு ஏற்றுமதி கோப்பு இல்லை.</string>
+    <string name="msg_export_file_missing">ஏற்றுமதி கோப்பு காணவில்லை.</string>
+    <string name="msg_self_host_uploaded">%1$s உங்கள் சுய-ஹோஸ்ட் இலக்குக்கு பதிவேற்றப்பட்டது.</string>
+    <string name="msg_self_host_upload_failed">சுய-ஹோஸ்ட் பதிவேற்றம் தோல்வியடைந்தது.</string>
+    <string name="msg_backup_nothing">இன்னும் காப்புப்பிரதி எடுக்க எதுவும் இல்லை.</string>
+    <string name="msg_backup_write_failed">காப்புப்பிரதி கோப்பை எழுத முடியவில்லை.</string>
+    <string name="msg_backup_passphrase_saved">கடவுச்சொல்-பாதுகாக்கப்பட்ட காப்புப்பிரதி சேமிக்கப்பட்டது. வேறு சாதனத்தில் மீட்டமைக்க அதே கடவுச்சொல்லைப் பயன்படுத்தவும்.</string>
+    <string name="msg_backup_encrypted_saved">மறைகுறியாக்கப்பட்ட காப்புப்பிரதி சேமிக்கப்பட்டது.</string>
+    <string name="msg_backup_read_failed">காப்புப்பிரதி கோப்பைப் படிக்க முடியவில்லை.</string>
+    <string name="msg_backup_too_small">காப்புப்பிரதி கோப்பு மிகச் சிறியது.</string>
+    <string name="msg_backup_not_clearscan">இது ClearScan காப்புப்பிரதி கோப்பு அல்ல.</string>
+    <string name="msg_backup_decrypt_failed">காப்புப்பிரதியை மறைகுறியாக்க முடியவில்லை. மீட்டமைப்பு அதை உருவாக்கிய சாதனத்தில் மட்டுமே வேலை செய்கிறது.</string>
+    <string name="msg_backup_wrong_passphrase">தவறான கடவுச்சொல் அல்லது சேதமடைந்த காப்புப்பிரதி கோப்பு.</string>
+    <string name="msg_backup_unsupported_version">ஆதரிக்கப்படாத காப்புப்பிரதி பதிப்பு.</string>
+    <string name="msg_backup_manifest_missing">காப்புப்பிரதி manifest காணவில்லை.</string>
+    <plurals name="msg_backup_restored">
+        <item quantity="one">காப்புப்பிரதியிலிருந்து 1 ஸ்கேன் மீட்டமைக்கப்பட்டது.</item>
+        <item quantity="other">காப்புப்பிரதியிலிருந்து %d ஸ்கேன்கள் மீட்டமைக்கப்பட்டன.</item>
+    </plurals>
+    <string name="msg_backup_enter_passphrase">மீட்டமைக்க காப்புப்பிரதி கடவுச்சொல்லை உள்ளிடவும்.</string>
+    <string name="msg_scanner_no_pages">ஸ்கேனரிலிருந்து பக்கங்கள் எதுவும் திரும்பவில்லை.</string>
+    <string name="msg_scanner_unavailable">ஆவண ஸ்கேனர் இந்த சாதனத்தில் கிடைக்கவில்லை.</string>
+    <string name="msg_no_ocr_text">இன்னும் OCR உரை ஏற்றுமதி செய்ய கிடைக்கவில்லை.</string>
+    <string name="msg_no_pdf_print">இந்த ஸ்கேனை அச்சிட PDF இல்லை.</string>
+    <string name="msg_no_export_files_selected">தேர்ந்தெடுத்த ஸ்கேன்களுக்கு ஏற்றுமதி கோப்புகள் இல்லை.</string>
+    <string name="msg_selected_exports_missing">தேர்ந்தெடுத்த ஏற்றுமதி கோப்புகள் காணவில்லை.</string>
+    <string name="msg_setup_screen_lock">முதலில் திரை பூட்டு அல்லது பயோமெட்ரிக் அமைக்கவும்.</string>
+    <string name="msg_biometric_unavailable">பயோமெட்ரிக் vault இந்த சாதனத்தில் கிடைக்கவில்லை.</string>
+    <string name="msg_vault_crypto_unavailable">Vault crypto கிடைக்கவில்லை.</string>
+    <string name="msg_allow_install_updates">ClearScan க்கு புதுப்பிப்புகளை நல்த்தல் அனுமதிக்கவும், பின்னர் Download ஐ மீண்டும் தட்டவும்.</string>
+    <string name="chooser_share_scan">ஸ்கேனைப் பகிர்</string>
+    <string name="chooser_export_ocr_text">OCR உரையை ஏற்றுமதி செய்</string>
+    <string name="chooser_share_selected">தேர்ந்தெடுத்த ஸ்கேன்களைப் பகிர்</string>
+    <string name="biometric_enable_vault_title">ClearScan vault ஐ இயக்கு</string>
+    <string name="biometric_enable_vault_subtitle">vault பூட்டை இயக்குவதற்கு முன் உங்கள் அடையாளத்தை உறுதிப்படுத்தவும்.</string>
+    <string name="biometric_unlock_title">ClearScan ஐ திற</string>
+    <string name="biometric_unlock_subtitle">உங்கள் ஸ்கேன்களைத் திறக்க பயோமெட்ரிக் அல்லது சாதன சான்றுகளைப் பயன்படுத்தவும்.</string>
 </resources>
