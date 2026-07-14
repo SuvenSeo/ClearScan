@@ -163,6 +163,7 @@ class UiStrings(private val context: Context) {
     fun chooserShareScan() = context.getString(R.string.chooser_share_scan)
     fun chooserShareImages() = context.getString(R.string.chooser_share_images)
     fun chooserExportOcrText() = context.getString(R.string.chooser_export_ocr_text)
+    fun chooserExportDocx() = context.getString(R.string.chooser_export_docx)
     fun chooserShareSelected() = context.getString(R.string.chooser_share_selected)
     fun biometricEnableVaultTitle() = context.getString(R.string.biometric_enable_vault_title)
     fun biometricEnableVaultSubtitle() = context.getString(R.string.biometric_enable_vault_subtitle)

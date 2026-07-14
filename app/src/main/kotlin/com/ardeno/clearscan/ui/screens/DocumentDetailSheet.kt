@@ -19,6 +19,7 @@ import androidx.compose.material.icons.outlined.CloudUpload
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Description
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material.icons.outlined.Image
@@ -103,6 +104,7 @@ fun DocumentDetailSheet(
     onShare: () -> Unit,
     onShareImages: () -> Unit = {},
     onExportText: () -> Unit = {},
+    onExportDocx: () -> Unit = {},
     onPrint: () -> Unit = {},
     onUploadToSelfHost: () -> Unit = {},
     onRedactIdFields: () -> Unit = {},
@@ -472,6 +474,26 @@ fun DocumentDetailSheet(
                     Icon(Icons.Outlined.TextSnippet, contentDescription = stringResource(R.string.a11y_export_ocr_text))
                     Text(modifier = Modifier.padding(start = ClearScanSpacing.sm), text = stringResource(R.string.document_export_text))
                 }
+                FilledTonalButton(
+                    onClick = {
+                        performHaptic(ClearScanHaptic.Confirm)
+                        onExportDocx()
+                    },
+                    enabled = document.ocrText.isNotBlank(),
+                    modifier = Modifier
+                        .weight(1f)
+                        .defaultMinSize(minHeight = ClearScanSpacing.minTouchTarget),
+                    shape = MaterialTheme.shapes.medium
+                ) {
+                    Icon(Icons.Outlined.Description, contentDescription = stringResource(R.string.a11y_export_docx))
+                    Text(modifier = Modifier.padding(start = ClearScanSpacing.sm), text = stringResource(R.string.document_export_docx))
+                }
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(ClearScanSpacing.sm)
+            ) {
                 FilledTonalButton(
                     onClick = {
                         performHaptic(ClearScanHaptic.Confirm)

@@ -156,7 +156,7 @@ Scan, PDF tools, OCR, folders, vault, backup, self-host, annotations, soft trash
 - Benchmarked Sinhala/Tamil OCR 🟡 (harness + synthetic PNG corpus; needs camera captures + device CER tables)
 
 ### Tier C — Future (never paywall core)
-- PDF→Office (local or BYO key)
+- PDF→Office layout conversion (local or BYO key) — text OCR→DOCX ✅ v0.2.6; layout-preserving conversion still open
 - Scan-to-translate (on-device)
 - Desktop companion (export sync)
 - Collaboration links (self-host)

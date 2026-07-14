@@ -1,8 +1,8 @@
 {
-  "versionCode": 7,
-  "versionName": "0.2.5",
-  "apkUrl": "https://github.com/SuvenSeo/ClearScan/releases/download/v0.2.5/ClearScan-v0.2.5-debug.apk",
-  "releaseNotes": "Free-parity completion: soft trash, scan color filters, rename/copy OCR/share images; vault CryptoObject session hardening + disable→legacy; OCR evaluateWithRecognizer; locale parity CI.",
+  "versionCode": 8,
+  "versionName": "0.2.6",
+  "apkUrl": "https://github.com/SuvenSeo/ClearScan/releases/download/v0.2.6/ClearScan-v0.2.6-debug.apk",
+  "releaseNotes": "Local OCR→Word (DOCX) export without cloud libraries. Free, on-device text conversion from recognized OCR.",
   "minVersionCode": 1,
-  "sha256": "0f453f5b69c8fd0af2bc85ca1b1292fecbd611930c61f37b927682fe49f992ac"
+  "sha256": "1453c656e6feac9866ec67ebb060525ac0bfa356d54f425b20fc61236f6d2975"
 }

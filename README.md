@@ -16,9 +16,9 @@ See [docs/PHASES.md](docs/PHASES.md) for done-when criteria per phase.
 
 ## Current Release
 
-**v0.2.5** — Free-parity completion: soft trash, scan color filters, document rename, copy OCR, share images; vault CryptoObject session fix + disable→legacy downgrade; OCR `evaluateWithRecognizer` for image fixtures; remaining i18n + locale parity CI.
+**v0.2.6** — Local OCR→Word (DOCX) export without cloud conversion libraries.
 
-Previous: **v0.2.4** — full localization, folder rename/delete, vault auto-lock, 54 OCR PNG fixtures, ViewModel under 380 lines.
+Previous: **v0.2.5** — soft trash, color filters, rename/copy/share images, vault CryptoObject hardening, locale parity CI.
 
 Download: [GitHub Releases](https://github.com/SuvenSeo/ClearScan/releases/latest)
 

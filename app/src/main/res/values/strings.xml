@@ -270,6 +270,7 @@
     <string name="document_tags_label">Tags (comma separated)</string>
     <string name="document_save_tags">Save tags</string>
     <string name="document_export_text">Export text</string>
+    <string name="document_export_docx">Export Word</string>
     <string name="document_print">Print</string>
     <string name="document_upload_self_host">Upload to self-host</string>
     <string name="document_uploading">Uploading…</string>
@@ -321,6 +322,7 @@
     <string name="a11y_delete_document">Delete document</string>
     <string name="a11y_delete_document_title">Delete %1$s</string>
     <string name="a11y_export_ocr_text">Export OCR text</string>
+    <string name="a11y_export_docx">Export Word document</string>
     <string name="a11y_print_document">Print document</string>
     <string name="a11y_upload_self_host">Upload to self-host</string>
 
@@ -532,6 +534,7 @@
     <string name="chooser_share_scan">Share scan</string>
     <string name="chooser_share_images">Share page images</string>
     <string name="chooser_export_ocr_text">Export OCR text</string>
+    <string name="chooser_export_docx">Export Word document</string>
     <string name="chooser_share_selected">Share selected scans</string>
     <string name="biometric_enable_vault_title">Enable ClearScan vault</string>
     <string name="biometric_enable_vault_subtitle">Confirm your identity before enabling vault lock.</string>

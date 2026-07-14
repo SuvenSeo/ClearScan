@@ -226,6 +226,7 @@
     <string name="document_tags_label">ටැග් (කොමාවකින් වෙන් කර)</string>
     <string name="document_save_tags">ටැග් සුරකින්න</string>
     <string name="document_export_text">පෙළ නිර්යාත කරන්න</string>
+    <string name="document_export_docx">Word නිර්යාත කරන්න</string>
     <string name="document_print">මුද්‍රණය</string>
     <string name="document_upload_self_host">ස්වයං-සත්කාරකයට උඩුගත කරන්න</string>
     <string name="document_uploading">උඩුගත වෙමින්…</string>
@@ -277,6 +278,7 @@
     <string name="a11y_delete_document">ලේඛනය මකන්න</string>
     <string name="a11y_delete_document_title">%1$s මකන්න</string>
     <string name="a11y_export_ocr_text">OCR පෙළ නිර්යාත කරන්න</string>
+    <string name="a11y_export_docx">Word ලේඛනය නිර්යාත කරන්න</string>
     <string name="a11y_print_document">ලේඛනය මුද්‍රණය කරන්න</string>
     <string name="a11y_upload_self_host">ස්වයං-සත්කාරකයට උඩුගත කරන්න</string>
 
@@ -488,6 +490,7 @@
     <string name="chooser_share_scan">ස්කෑන් බෙදාගන්න</string>
     <string name="chooser_share_images">පිටු රූප බෙදාගන්න</string>
     <string name="chooser_export_ocr_text">OCR පෙළ නිර්යාත කරන්න</string>
+    <string name="chooser_export_docx">Word ලේඛනය නිර්යාත කරන්න</string>
     <string name="chooser_share_selected">තෝරාගත් ස්කෑන් බෙදාගන්න</string>
     <string name="biometric_enable_vault_title">ClearScan vault සක්‍රිය කරන්න</string>
     <string name="biometric_enable_vault_subtitle">vault lock සක්‍රිය කිරීමට පෙර ඔබගේ අනන්‍යතාව තහවුරු කරන්න.</string>

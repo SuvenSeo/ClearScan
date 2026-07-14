@@ -24,6 +24,7 @@ import com.ardeno.clearscan.model.ScanDocument
 import com.ardeno.clearscan.model.ScanMode
 import com.ardeno.clearscan.scanner.ScannerImport
 import com.ardeno.clearscan.update.ApkUpdateManager
+import com.ardeno.clearscan.export.DocxExportHelper
 import com.ardeno.clearscan.export.DocumentPrintHelper
 import com.ardeno.clearscan.export.TextExportHelper
 import com.ardeno.clearscan.widget.ScanWidgetProvider
@@ -131,6 +132,7 @@ class MainActivity : FragmentActivity() {
                     onShareDocument = ::shareDocument,
                     onShareDocumentImages = ::shareDocumentImages,
                     onExportText = ::exportText,
+                    onExportDocx = ::exportDocx,
                     onPrintDocument = ::printDocument,
                     onDeleteDocument = viewModel::deleteDocument,
                     onRestoreDocument = viewModel::restoreDocument,
@@ -357,6 +359,16 @@ class MainActivity : FragmentActivity() {
         }
         startActivity(Intent.createChooser(shareIntent, uiStrings.chooserExportOcrText()))
         viewModel.logDocumentExport(document, exportKind = "text")
+    }
+
+    private fun exportDocx(document: ScanDocument) {
+        val shareIntent = DocxExportHelper.createShareIntent(this, document)
+        if (shareIntent == null) {
+            viewModel.reportMessage(uiStrings.noOcrText())
+            return
+        }
+        startActivity(Intent.createChooser(shareIntent, uiStrings.chooserExportDocx()))
+        viewModel.logDocumentExport(document, exportKind = "docx")
     }
 
     private fun printDocument(document: ScanDocument) {

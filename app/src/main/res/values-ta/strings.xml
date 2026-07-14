@@ -226,6 +226,7 @@
     <string name="document_tags_label">குறிச்சொற்கள் (காற்புள்ளியால் பிரிக்க)</string>
     <string name="document_save_tags">குறிச்சொற்களைச் சேமி</string>
     <string name="document_export_text">உரையை ஏற்றுமதி செய்</string>
+    <string name="document_export_docx">Word ஏற்றுமதி</string>
     <string name="document_print">அச்சிடு</string>
     <string name="document_upload_self_host">சுய-ஹோஸ்ட்டுக்கு பதிவேற்று</string>
     <string name="document_uploading">பதிவேற்றுகிறது…</string>
@@ -277,6 +278,7 @@
     <string name="a11y_delete_document">ஆவணத்தை நீக்கு</string>
     <string name="a11y_delete_document_title">%1$s ஐ நீக்கு</string>
     <string name="a11y_export_ocr_text">OCR உரையை ஏற்றுமதி செய்</string>
+    <string name="a11y_export_docx">Word ஆவணத்தை ஏற்றுமதி செய்</string>
     <string name="a11y_print_document">ஆவணத்தை அச்சிடு</string>
     <string name="a11y_upload_self_host">சுய-ஹோஸ்ட்டுக்கு பதிவேற்று</string>
 
@@ -488,6 +490,7 @@
     <string name="chooser_share_scan">ஸ்கேனைப் பகிர்</string>
     <string name="chooser_share_images">பக்கப் படங்களைப் பகிர்</string>
     <string name="chooser_export_ocr_text">OCR உரையை ஏற்றுமதி செய்</string>
+    <string name="chooser_export_docx">Word ஆவணத்தை ஏற்றுமதி செய்</string>
     <string name="chooser_share_selected">தேர்ந்தெடுத்த ஸ்கேன்களைப் பகிர்</string>
     <string name="biometric_enable_vault_title">ClearScan vault ஐ இயக்கு</string>
     <string name="biometric_enable_vault_subtitle">vault பூட்டை இயக்குவதற்கு முன் உங்கள் அடையாளத்தை உறுதிப்படுத்தவும்.</string>
