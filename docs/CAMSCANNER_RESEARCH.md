@@ -121,12 +121,16 @@ Sources: [Kaspersky](https://www.kaspersky.com/blog/camscanner-malicious-android
 | No subscription for core features | ✅ |
 | No account | ✅ |
 | Local OCR | ✅ |
-| Metadata + blob encryption | ✅ v0.2.3 |
-| Biometric-bound vault | ✅ v0.2.3 |
-| Sinhala/Tamil OCR benchmarks | 🟡 corpus expanding |
+| Metadata + blob encryption | ✅ |
+| Biometric-bound vault (session + CryptoObject) | ✅ |
+| Soft trash / restore | ✅ v0.2.5 |
+| Scan color filters | ✅ v0.2.5 |
+| Rename / copy OCR / share images | ✅ v0.2.5 |
+| Sinhala/Tamil OCR corpus + image evaluate API | 🟡 synthetic PNG fixtures; camera corpus still open |
 | Self-host export | ✅ |
 | Open source auditability | ✅ |
 | Duplicate detection | ✅ |
+| Localization (en/si/ta) | ✅ UI + snackbars |
 
 ## Where CamScanner Still Wins
 
@@ -143,13 +147,13 @@ Sources: [Kaspersky](https://www.kaspersky.com/blog/camscanner-malicious-android
 ## Recommended Roadmap vs CamScanner
 
 ### Tier A — Free parity (shipped)
-Scan, PDF tools, OCR, folders, vault, backup, self-host, annotations.
+Scan, PDF tools, OCR, folders, vault, backup, self-host, annotations, soft trash, color filters, rename, copy text, share images.
 
-### Tier B — Differentiators (in progress)
-- Benchmarked Sinhala/Tamil OCR
-- Metadata encryption
-- Biometric crypto binding
-- Localization (si/ta UI)
+### Tier B — Differentiators (mostly shipped)
+- Metadata encryption ✅
+- Biometric crypto binding ✅
+- Localization (si/ta UI) ✅
+- Benchmarked Sinhala/Tamil OCR 🟡 (harness + synthetic PNG corpus; needs camera captures + device CER tables)
 
 ### Tier C — Future (never paywall core)
 - PDF→Office (local or BYO key)

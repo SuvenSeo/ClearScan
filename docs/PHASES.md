@@ -77,7 +77,7 @@ Done when:
 
 ## Phase 4 - Language And Platform Expansion
 
-Status: in progress — self-host export and ID scan mode implemented; Sinhala/Tamil OCR corpus has 27 JSON + PNG fixtures per language; camera-captured scans still needed for production claims.
+Status: in progress — camera-captured corpus + measured device CER tables still open; synthetic PNG corpus and `evaluateWithRecognizer` shipped.
 
 - Sinhala/Tamil OCR CER/WER benchmark scoring harness with 27-entry classpath corpus per language (JSON + rendered PNG via `imageFile`).
 - Planned: real camera Sinhala/Tamil scan corpus and on-device Tesseract category benchmarks.

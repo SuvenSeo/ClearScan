@@ -16,9 +16,9 @@ See [docs/PHASES.md](docs/PHASES.md) for done-when criteria per phase.
 
 ## Current Release
 
-**v0.2.4** — Complete remaining remediations: full Compose + snackbar localization (en/si/ta), folder rename/delete UI, vault auto-lock + recovery messaging, 54 rendered OCR PNG fixtures with `imageFile`, ViewModel façade under 380 lines.
+**v0.2.5** — Free-parity completion: soft trash, scan color filters, document rename, copy OCR, share images; vault CryptoObject session fix + disable→legacy downgrade; OCR `evaluateWithRecognizer` for image fixtures; remaining i18n + locale parity CI.
 
-Previous: **v0.2.3** — metadata encryption, biometric-bound vault keys, ViewModel split, OCR corpus JSON expansion, CamScanner research.
+Previous: **v0.2.4** — full localization, folder rename/delete, vault auto-lock, 54 OCR PNG fixtures, ViewModel under 380 lines.
 
 Download: [GitHub Releases](https://github.com/SuvenSeo/ClearScan/releases/latest)
 

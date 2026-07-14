@@ -41,6 +41,9 @@ jobs:
         shell: pwsh
         run: ./scripts/check-ocr-corpus.ps1
 
+      - name: String locale parity (en/si/ta)
+        run: bash ./scripts/check-string-locale-parity.sh
+
       - name: Privacy release gate
         shell: pwsh
         run: ./scripts/privacy-release-gate.ps1
