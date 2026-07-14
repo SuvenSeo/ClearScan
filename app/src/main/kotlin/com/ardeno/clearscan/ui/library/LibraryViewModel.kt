@@ -18,6 +18,7 @@ data class LibraryUiState(
     val folders: List<DocumentFolder> = emptyList(),
     val selectedFolderId: String? = null,
     val showFavoritesOnly: Boolean = false,
+    val showTrashOnly: Boolean = false,
     val selectionMode: Boolean = false,
     val selectedDocumentIds: Set<String> = emptySet(),
     val duplicateDocumentIds: Set<String> = emptySet(),
@@ -37,26 +38,45 @@ class LibraryViewModel(
 
     fun loadInitial(onComplete: (List<ScanDocument>) -> Unit = {}) {
         scope.launch {
+            repository.purgeDeleted()
             val documents = repository.loadDocuments()
             val folders = repository.loadFolders()
             _uiState.update {
                 it.copy(
                     documents = documents,
                     folders = folders,
-                    duplicateDocumentIds = duplicateDetector.duplicateDocumentIds(documents)
+                    duplicateDocumentIds = duplicateDetector.duplicateDocumentIds(documents.filterNot { doc -> doc.isDeleted })
                 )
             }
-            onComplete(documents)
+            onComplete(documents.filterNot { it.isDeleted })
         }
     }
 
     fun setSelectedFolder(folderId: String?) {
-        _uiState.update { it.copy(selectedFolderId = folderId, showFavoritesOnly = false) }
+        _uiState.update {
+            it.copy(selectedFolderId = folderId, showFavoritesOnly = false, showTrashOnly = false)
+        }
     }
 
     fun setShowFavoritesOnly(showFavoritesOnly: Boolean) {
         _uiState.update {
-            it.copy(showFavoritesOnly = showFavoritesOnly, selectedFolderId = if (showFavoritesOnly) null else it.selectedFolderId)
+            it.copy(
+                showFavoritesOnly = showFavoritesOnly,
+                showTrashOnly = false,
+                selectedFolderId = if (showFavoritesOnly) null else it.selectedFolderId
+            )
+        }
+    }
+
+    fun setShowTrashOnly(showTrashOnly: Boolean) {
+        _uiState.update {
+            it.copy(
+                showTrashOnly = showTrashOnly,
+                showFavoritesOnly = false,
+                selectedFolderId = if (showTrashOnly) null else it.selectedFolderId,
+                selectionMode = if (showTrashOnly) false else it.selectionMode,
+                selectedDocumentIds = if (showTrashOnly) emptySet() else it.selectedDocumentIds
+            )
         }
     }
 
@@ -140,7 +160,10 @@ class LibraryViewModel(
     fun replaceDocument(document: ScanDocument) {
         _uiState.update { current ->
             val nextDocuments = current.documents.map { if (it.id == document.id) document else it }
-            current.copy(documents = nextDocuments, duplicateDocumentIds = duplicateDetector.duplicateDocumentIds(nextDocuments))
+            current.copy(
+                documents = nextDocuments,
+                duplicateDocumentIds = duplicateDetector.duplicateDocumentIds(nextDocuments.filterNot { it.isDeleted })
+            )
         }
     }
 
@@ -149,7 +172,7 @@ class LibraryViewModel(
             val nextDocuments = documents + current.documents
             current.copy(
                 documents = nextDocuments,
-                duplicateDocumentIds = duplicateDetector.duplicateDocumentIds(nextDocuments),
+                duplicateDocumentIds = duplicateDetector.duplicateDocumentIds(nextDocuments.filterNot { it.isDeleted }),
                 expandedDocumentId = expandedDocumentId ?: current.expandedDocumentId
             )
         }
@@ -159,24 +182,60 @@ class LibraryViewModel(
         _uiState.update {
             it.copy(
                 documents = documents,
-                duplicateDocumentIds = duplicateDetector.duplicateDocumentIds(documents),
+                duplicateDocumentIds = duplicateDetector.duplicateDocumentIds(documents.filterNot { doc -> doc.isDeleted }),
                 expandedDocumentId = expandedDocumentId
             )
         }
     }
 
-    fun refreshDocumentsAfterDeletion(deletedIds: Set<String>, deletedCount: Int) {
+    fun softDeleteApplied(updatedDocuments: List<ScanDocument>) {
+        if (updatedDocuments.isEmpty()) return
+        val byId = updatedDocuments.associateBy { it.id }
+        _uiState.update { current ->
+            val nextDocuments = current.documents.map { doc -> byId[doc.id] ?: doc }
+            current.copy(
+                documents = nextDocuments,
+                duplicateDocumentIds = duplicateDetector.duplicateDocumentIds(nextDocuments.filterNot { it.isDeleted }),
+                expandedDocumentId = current.expandedDocumentId.takeUnless { it in byId.keys },
+                selectedDocumentIds = current.selectedDocumentIds - byId.keys,
+                selectionMode = current.selectionMode && (current.selectedDocumentIds - byId.keys).isNotEmpty()
+            )
+        }
+        onMessage(uiStrings.documentsMovedToTrash(updatedDocuments.size))
+    }
+
+    fun restoreApplied(updatedDocuments: List<ScanDocument>) {
+        if (updatedDocuments.isEmpty()) return
+        val byId = updatedDocuments.associateBy { it.id }
+        _uiState.update { current ->
+            val nextDocuments = current.documents.map { doc -> byId[doc.id] ?: doc }
+            current.copy(
+                documents = nextDocuments,
+                duplicateDocumentIds = duplicateDetector.duplicateDocumentIds(nextDocuments.filterNot { it.isDeleted }),
+                selectedDocumentIds = current.selectedDocumentIds - byId.keys,
+                selectionMode = current.selectionMode && (current.selectedDocumentIds - byId.keys).isNotEmpty()
+            )
+        }
+        onMessage(uiStrings.documentsRestored(updatedDocuments.size))
+    }
+
+    fun permanentlyDeleted(deletedIds: Set<String>, deletedCount: Int) {
         _uiState.update { current ->
             val nextDocuments = current.documents.filterNot { it.id in deletedIds }
             current.copy(
                 documents = nextDocuments,
-                duplicateDocumentIds = duplicateDetector.duplicateDocumentIds(nextDocuments),
+                duplicateDocumentIds = duplicateDetector.duplicateDocumentIds(nextDocuments.filterNot { it.isDeleted }),
                 expandedDocumentId = current.expandedDocumentId.takeUnless { it in deletedIds },
                 selectedDocumentIds = current.selectedDocumentIds - deletedIds,
                 selectionMode = current.selectionMode && (current.selectedDocumentIds - deletedIds).isNotEmpty()
             )
         }
-        onMessage(uiStrings.documentsDeleted(deletedCount))
+        onMessage(uiStrings.documentsPermanentlyDeleted(deletedCount))
+    }
+
+    @Deprecated("Use softDeleteApplied for soft trash")
+    fun refreshDocumentsAfterDeletion(deletedIds: Set<String>, deletedCount: Int) {
+        permanentlyDeleted(deletedIds, deletedCount)
     }
 
     fun applyBackupImport(reload: BackupImportReload) {
@@ -196,7 +255,7 @@ class LibraryViewModel(
     ): List<Pair<String, String>> {
         val selectedIds = _uiState.value.selectedDocumentIds
         return _uiState.value.documents
-            .filter { it.id in selectedIds }
+            .filter { it.id in selectedIds && !it.isDeleted }
             .mapNotNull { document -> exportPathFor(document)?.let { it to exportMimeTypeFor(document) } }
     }
 }

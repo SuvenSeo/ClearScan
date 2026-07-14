@@ -113,6 +113,13 @@
     <string name="settings_auto_page_turn_description">பக்கம் திரும்பிய பிறகு CameraX சட்டக பகுப்பாய்வு மூலம் தானாகப் பிடிக்கிறது.</string>
     <string name="settings_image_enhancement">நிழல் மற்றும் பிரகாசம் குறைப்பு</string>
     <string name="settings_image_enhancement_description">பக்கங்கள் சேமிக்கப்படுவதற்கு முன் லேசான சாதன-நிலை டோன் சரிசெய்தல்.</string>
+    <string name="settings_scan_color_filter">ஸ்கேன் வண்ண வடிகட்டி</string>
+    <string name="settings_scan_color_filter_description">பட மேம்பாடு இயக்கப்பட்டிருக்கும்போது பக்கங்கள் எப்படித் தோன்றும் என்பதைத் தேர்ந்தெடுக்கவும்.</string>
+    <string name="scan_color_filter_auto">தானியங்கி</string>
+    <string name="scan_color_filter_original">அசல்</string>
+    <string name="scan_color_filter_grayscale">சாம்பல் நிறம்</string>
+    <string name="scan_color_filter_high_contrast">உயர் மாறுபாடு</string>
+    <string name="scan_color_filter_magic_color">மேஜிக் வண்ணம்</string>
     <string name="settings_default_ocr_language">இயல்புநிலை OCR மொழி</string>
     <string name="settings_vault_title">பயோமெட்ரிக் பாதுகாப்பறை</string>
     <string name="settings_vault_enabled_description">நீங்கள் வெளியேறும்போது உங்கள் நூலகம் பூட்டப்படும். கைரேகை அல்லது சாதன PIN மூலம் திறக்கவும்.</string>
@@ -184,6 +191,8 @@
     <string name="action_save">சேமி</string>
     <string name="action_cancel">ரத்துசெய்</string>
     <string name="action_delete">நீக்கு</string>
+    <string name="action_delete_permanently">நிரந்தரமாக நீக்கு</string>
+    <string name="action_restore">மீட்டமை</string>
     <string name="action_rename">மறுபெயரிடு</string>
     <string name="action_share">பகிர்</string>
     <string name="action_merge">இணை</string>
@@ -195,11 +204,16 @@
     <!-- Filters -->
     <string name="filter_all">அனைத்தும்</string>
     <string name="filter_favorites">பிடித்தவை</string>
+    <string name="filter_trash">குப்பை</string>
+    <string name="library_empty_trash_title">குப்பை காலியாக உள்ளது</string>
+    <string name="library_empty_trash_message">நீக்கப்பட்ட ஸ்கேன்கள் 30 நாட்கள் இங்கே இருக்கும்; பிறகு நிரந்தரமாக அகற்றப்படும்.</string>
     <string name="folders_delete_message">\"%1$s\" அகற்றப்படும். இந்த கோப்புறையில் உள்ள ஆவணங்கள் உங்கள் நூலகத்தில் இருக்கும்.</string>
 
     <!-- Document detail -->
-    <string name="document_delete_title">ஆவணத்தை நீக்கவா?</string>
-    <string name="document_delete_message">\"%1$s\" இந்த சாதனத்திலிருந்து நிரந்தரமாக அகற்றப்படும்.</string>
+    <string name="document_delete_title">குப்பைக்கு நகர்த்தவா?</string>
+    <string name="document_delete_message">\"%1$s\" குப்பைக்கு நகர்த்தப்படும். 30 நாட்களுக்குள் மீட்டமைக்கலாம்.</string>
+    <string name="document_delete_permanently_title">நிரந்தரமாக நீக்கவா?</string>
+    <string name="document_delete_permanently_message">\"%1$s\" இந்த சாதனத்திலிருந்து நிரந்தரமாக அகற்றப்படும்.</string>
     <string name="document_rename_title">ஆவணத்தை மறுபெயரிடு</string>
     <string name="document_title_label">தலைப்பு</string>
     <string name="document_possible_duplicate">சாத்தியமான நகல்</string>
@@ -357,6 +371,18 @@
     <plurals name="msg_documents_deleted">
         <item quantity="one">1 ஆவணம் நீக்கப்பட்டது.</item>
         <item quantity="other">%d ஆவணங்கள் நீக்கப்பட்டன.</item>
+    </plurals>
+    <plurals name="msg_documents_moved_to_trash">
+        <item quantity="one">1 ஆவணம் குப்பைக்கு நகர்த்தப்பட்டது.</item>
+        <item quantity="other">%d ஆவணங்கள் குப்பைக்கு நகர்த்தப்பட்டன.</item>
+    </plurals>
+    <plurals name="msg_documents_restored">
+        <item quantity="one">1 ஆவணம் மீட்டமைக்கப்பட்டது.</item>
+        <item quantity="other">%d ஆவணங்கள் மீட்டமைக்கப்பட்டன.</item>
+    </plurals>
+    <plurals name="msg_documents_permanently_deleted">
+        <item quantity="one">1 ஆவணம் நிரந்தரமாக நீக்கப்பட்டது.</item>
+        <item quantity="other">%d ஆவணங்கள் நிரந்தரமாக நீக்கப்பட்டன.</item>
     </plurals>
     <string name="msg_vault_enabled_biometric">Vault இயக்கப்பட்டது. பயோமெட்ரிக் திறப்பு தேவை.</string>
     <string name="msg_vault_enabled">Vault இயக்கப்பட்டது.</string>

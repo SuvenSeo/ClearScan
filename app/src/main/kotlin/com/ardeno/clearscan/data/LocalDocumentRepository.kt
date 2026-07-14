@@ -5,6 +5,7 @@ import android.net.Uri
 import com.ardeno.clearscan.R
 import com.ardeno.clearscan.data.db.*
 import com.ardeno.clearscan.image.ImageEnhancer
+import com.ardeno.clearscan.image.ScanColorFilter
 import com.ardeno.clearscan.model.DocumentFolder
 import com.ardeno.clearscan.model.OcrStatus
 import com.ardeno.clearscan.model.PageAnnotation
@@ -23,6 +24,7 @@ import com.ardeno.clearscan.duplicate.ImagePerceptualHasher
 import com.ardeno.clearscan.duplicate.PerceptualHash
 import com.ardeno.clearscan.model.ReceiptFields
 import java.io.File
+import java.time.Duration
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -76,7 +78,8 @@ class LocalDocumentRepository(
     suspend fun createDocument(
         import: ScannerImport,
         ocrLanguage: OcrLanguage = OcrLanguage.Latin,
-        titlePrefix: String = appContext.getString(R.string.document_title_scan)
+        titlePrefix: String = appContext.getString(R.string.document_title_scan),
+        colorFilter: ScanColorFilter = ScanColorFilter.Auto
     ): ScanDocument = withContext(Dispatchers.IO) {
         vaultCrypto.ensureVaultKey()
         val createdAt = Instant.now()
@@ -86,7 +89,7 @@ class LocalDocumentRepository(
             val file = File(documentDir, "page-${index + 1}.jpg")
             copyUriToFile(uri, file)
             if (import.enhanceImages) {
-                enhanceImageFile(file)
+                enhanceImageFile(file, colorFilter)
             }
             file
         }
@@ -134,7 +137,8 @@ class LocalDocumentRepository(
     suspend fun createDocumentFromPagePaths(
         pagePaths: List<String>,
         enhanceImages: Boolean = true,
-        ocrLanguage: OcrLanguage = OcrLanguage.Latin
+        ocrLanguage: OcrLanguage = OcrLanguage.Latin,
+        colorFilter: ScanColorFilter = ScanColorFilter.Auto
     ): ScanDocument = withContext(Dispatchers.IO) {
         vaultCrypto.ensureVaultKey()
         val createdAt = Instant.now()
@@ -145,7 +149,7 @@ class LocalDocumentRepository(
             val file = File(documentDir, "page-${index + 1}.jpg")
             source.copyTo(file, overwrite = true)
             if (enhanceImages) {
-                enhanceImageFile(file)
+                enhanceImageFile(file, colorFilter)
             }
             file
         }
@@ -289,10 +293,48 @@ class LocalDocumentRepository(
     }
 
     suspend fun deleteDocument(id: String): Boolean = withContext(Dispatchers.IO) {
-        deleteDocuments(setOf(id)) == 1
+        softDeleteDocuments(setOf(id)).size == 1
     }
 
     suspend fun deleteDocuments(ids: Set<String>): Int = withContext(Dispatchers.IO) {
+        softDeleteDocuments(ids).size
+    }
+
+    suspend fun softDeleteDocuments(ids: Set<String>): List<ScanDocument> = withContext(Dispatchers.IO) {
+        if (ids.isEmpty()) return@withContext emptyList()
+        val now = Instant.now()
+        val updated = mutableListOf<ScanDocument>()
+        val documents = readIndex().map { document ->
+            if (document.id in ids && document.deletedAt == null) {
+                document.copy(deletedAt = now, updatedAt = now).also { updated += it }
+            } else {
+                document
+            }
+        }
+        if (updated.isNotEmpty()) {
+            writeIndex(documents)
+        }
+        updated.map(::toReadableDocument)
+    }
+
+    suspend fun restoreDocuments(ids: Set<String>): List<ScanDocument> = withContext(Dispatchers.IO) {
+        if (ids.isEmpty()) return@withContext emptyList()
+        val now = Instant.now()
+        val restored = mutableListOf<ScanDocument>()
+        val documents = readIndex().map { document ->
+            if (document.id in ids && document.deletedAt != null) {
+                document.copy(deletedAt = null, updatedAt = now).also { restored += it }
+            } else {
+                document
+            }
+        }
+        if (restored.isNotEmpty()) {
+            writeIndex(documents)
+        }
+        restored.map(::toReadableDocument)
+    }
+
+    suspend fun permanentlyDeleteDocuments(ids: Set<String>): Int = withContext(Dispatchers.IO) {
         if (ids.isEmpty()) return@withContext 0
         val documents = readIndex()
         val toDelete = documents.filter { it.id in ids }
@@ -305,8 +347,16 @@ class LocalDocumentRepository(
         ids.forEach { id ->
             runCatching { db.scanDocumentDao().deleteById(id) }
         }
-
         toDelete.size
+    }
+
+    suspend fun purgeDeleted(olderThan: Duration = Duration.ofDays(30)): Int = withContext(Dispatchers.IO) {
+        val cutoff = Instant.now().minus(olderThan)
+        val expiredIds = readIndex()
+            .filter { document -> document.deletedAt?.isBefore(cutoff) == true }
+            .map { it.id }
+            .toSet()
+        permanentlyDeleteDocuments(expiredIds)
     }
 
     suspend fun createFolder(name: String): DocumentFolder = withContext(Dispatchers.IO) {
@@ -536,9 +586,10 @@ class LocalDocumentRepository(
         }
     }
 
-    private fun enhanceImageFile(file: File) {
+    private fun enhanceImageFile(file: File, filter: ScanColorFilter) {
+        if (filter == ScanColorFilter.Original) return
         val original = BitmapFactory.decodeFile(file.absolutePath) ?: return
-        val enhanced = ImageEnhancer.enhance(original)
+        val enhanced = ImageEnhancer.apply(filter, original)
         if (enhanced !== original) {
             original.recycle()
         }
@@ -617,6 +668,7 @@ class LocalDocumentRepository(
         .put("pageHashes", JSONArray(pageHashes))
         .put("receiptFields", receiptFields?.toJson())
         .put("pageAnnotations", JSONArray(PageAnnotationJson.encodePages(pageAnnotations)))
+        .put("deletedAt", deletedAt?.toString())
 
     private fun JSONObject.toScanDocument(): ScanDocument = ScanDocument(
         id = getString("id"),
@@ -640,7 +692,9 @@ class LocalDocumentRepository(
         isFavorite = optBoolean("isFavorite", false),
         pageHashes = optJSONArray("pageHashes")?.toStringList().orEmpty(),
         receiptFields = optJSONObject("receiptFields")?.toReceiptFields(),
-        pageAnnotations = PageAnnotationJson.decodePages(optString("pageAnnotations").takeUnless { it.isBlank() || it == "null" })
+        pageAnnotations = PageAnnotationJson.decodePages(optString("pageAnnotations").takeUnless { it.isBlank() || it == "null" }),
+        deletedAt = optString("deletedAt").takeUnless { it.isBlank() || it == "null" }
+            ?.let { runCatching { Instant.parse(it) }.getOrNull() }
     )
 
     private fun ReceiptFields.toJson(): JSONObject = JSONObject()

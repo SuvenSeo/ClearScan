@@ -18,6 +18,21 @@ class UiStrings(private val context: Context) {
         count,
         count
     )
+    fun documentsMovedToTrash(count: Int): String = context.resources.getQuantityString(
+        R.plurals.msg_documents_moved_to_trash,
+        count,
+        count
+    )
+    fun documentsRestored(count: Int): String = context.resources.getQuantityString(
+        R.plurals.msg_documents_restored,
+        count,
+        count
+    )
+    fun documentsPermanentlyDeleted(count: Int): String = context.resources.getQuantityString(
+        R.plurals.msg_documents_permanently_deleted,
+        count,
+        count
+    )
 
     // Vault & settings
     fun vaultEnabledBiometric() = context.getString(R.string.msg_vault_enabled_biometric)

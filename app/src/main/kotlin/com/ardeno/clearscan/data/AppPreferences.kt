@@ -1,6 +1,7 @@
 package com.ardeno.clearscan.data
 
 import android.content.Context
+import com.ardeno.clearscan.image.ScanColorFilter
 import com.ardeno.clearscan.model.LibraryViewMode
 import com.ardeno.clearscan.ocr.OcrLanguage
 
@@ -25,6 +26,9 @@ class AppPreferences(context: Context) {
     val imageEnhancementEnabled: Boolean
         get() = preferences.getBoolean(KEY_IMAGE_ENHANCEMENT, true)
 
+    val scanColorFilter: ScanColorFilter
+        get() = ScanColorFilter.fromName(preferences.getString(KEY_SCAN_COLOR_FILTER, ScanColorFilter.Auto.name))
+
     fun setOnboardingComplete() {
         preferences.edit().putBoolean(KEY_ONBOARDING_COMPLETE, true).apply()
     }
@@ -39,6 +43,10 @@ class AppPreferences(context: Context) {
 
     fun setImageEnhancementEnabled(enabled: Boolean) {
         preferences.edit().putBoolean(KEY_IMAGE_ENHANCEMENT, enabled).apply()
+    }
+
+    fun setScanColorFilter(filter: ScanColorFilter) {
+        preferences.edit().putString(KEY_SCAN_COLOR_FILTER, filter.name).apply()
     }
 
     fun setDefaultOcrLanguage(language: OcrLanguage) {
@@ -65,6 +73,7 @@ class AppPreferences(context: Context) {
         const val KEY_VIEW_MODE = "library_view_mode"
         const val KEY_AUTO_PAGE_TURN = "auto_page_turn_enabled"
         const val KEY_IMAGE_ENHANCEMENT = "image_enhancement_enabled"
+        const val KEY_SCAN_COLOR_FILTER = "scan_color_filter"
         const val KEY_OCR_LANGUAGE = "default_ocr_language"
         const val KEY_PASSPHRASE_BACKUP = "passphrase_backup_enabled"
         const val KEY_WIFI_ONLY_SELF_HOST = "wifi_only_self_host_upload"

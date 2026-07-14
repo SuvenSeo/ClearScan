@@ -32,8 +32,11 @@ data class ScanDocument(
     val searchablePdfReady: Boolean = false,
     val scanMode: ScanMode = ScanMode.Document,
     val ocrLanguage: OcrLanguage = OcrLanguage.Latin,
-    val pageAnnotations: List<List<PageAnnotation>> = emptyList()
-)
+    val pageAnnotations: List<List<PageAnnotation>> = emptyList(),
+    val deletedAt: Instant? = null
+) {
+    val isDeleted: Boolean get() = deletedAt != null
+}
 
 fun ScanDocument.matchesQuery(query: String): Boolean {
     val trimmed = query.trim()

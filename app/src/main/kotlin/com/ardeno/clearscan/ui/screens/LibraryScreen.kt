@@ -29,6 +29,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Badge
 import androidx.compose.material.icons.outlined.Checklist
 import androidx.compose.material.icons.outlined.Close
+import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Description
 import androidx.compose.material.icons.outlined.FileUpload
 import androidx.compose.material.icons.outlined.GridView
@@ -89,6 +90,7 @@ fun LibraryScreen(
     folders: List<DocumentFolder>,
     selectedFolderId: String?,
     showFavoritesOnly: Boolean,
+    showTrashOnly: Boolean = false,
     selectionMode: Boolean,
     selectedDocumentIds: Set<String>,
     duplicateDocumentIds: Set<String>,
@@ -105,6 +107,7 @@ fun LibraryScreen(
     onSelectAllDocuments: () -> Unit,
     onSelectFolder: (String?) -> Unit,
     onSelectFavorites: () -> Unit,
+    onSelectTrash: () -> Unit = {},
     onCreateFolder: (String) -> Unit,
     onRenameFolder: (String, String) -> Unit,
     onDeleteFolder: (String) -> Unit,
@@ -120,6 +123,7 @@ fun LibraryScreen(
     onImportClick: () -> Unit,
     onDocumentClick: (ScanDocument) -> Unit,
     onDeleteDocument: (ScanDocument) -> Unit,
+    onRestoreDocument: (ScanDocument) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
@@ -341,8 +345,10 @@ fun LibraryScreen(
                             folders = folders,
                             selectedFolderId = selectedFolderId,
                             showFavoritesOnly = showFavoritesOnly,
+                            showTrashOnly = showTrashOnly,
                             onSelectAll = { onSelectFolder(null) },
                             onSelectFavorites = onSelectFavorites,
+                            onSelectTrash = onSelectTrash,
                             onSelectFolder = onSelectFolder,
                             onCreateFolder = { showCreateFolderDialog = true },
                             onRenameFolder = onRenameFolder,
@@ -356,11 +362,13 @@ fun LibraryScreen(
                             viewMode = viewMode,
                             selectedFolderId = selectedFolderId,
                             showFavoritesOnly = showFavoritesOnly,
+                            showTrashOnly = showTrashOnly,
                             selectionMode = selectionMode,
                             selectedDocumentIds = selectedDocumentIds,
                             duplicateDocumentIds = duplicateDocumentIds,
                             onDocumentClick = onDocumentClick,
                             onDeleteDocument = onDeleteDocument,
+                            onRestoreDocument = onRestoreDocument,
                             onToggleDocumentSelection = onToggleDocumentSelection,
                             onScanClick = {
                                 performHaptic(ClearScanHaptic.Confirm)
@@ -408,8 +416,10 @@ fun LibraryScreen(
                         folders = folders,
                         selectedFolderId = selectedFolderId,
                         showFavoritesOnly = showFavoritesOnly,
+                        showTrashOnly = showTrashOnly,
                         onSelectAll = { onSelectFolder(null) },
                         onSelectFavorites = onSelectFavorites,
+                        onSelectTrash = onSelectTrash,
                         onSelectFolder = onSelectFolder,
                         onCreateFolder = { showCreateFolderDialog = true },
                         onRenameFolder = onRenameFolder,
@@ -423,11 +433,13 @@ fun LibraryScreen(
                         viewMode = viewMode,
                         selectedFolderId = selectedFolderId,
                         showFavoritesOnly = showFavoritesOnly,
+                        showTrashOnly = showTrashOnly,
                         selectionMode = selectionMode,
                         selectedDocumentIds = selectedDocumentIds,
                         duplicateDocumentIds = duplicateDocumentIds,
                         onDocumentClick = onDocumentClick,
                         onDeleteDocument = onDeleteDocument,
+                        onRestoreDocument = onRestoreDocument,
                         onToggleDocumentSelection = onToggleDocumentSelection,
                         onScanClick = {
                             performHaptic(ClearScanHaptic.Confirm)
@@ -463,18 +475,20 @@ private fun LibraryContentPane(
     viewMode: LibraryViewMode,
     selectedFolderId: String?,
     showFavoritesOnly: Boolean,
+    showTrashOnly: Boolean,
     selectionMode: Boolean,
     selectedDocumentIds: Set<String>,
     duplicateDocumentIds: Set<String>,
     onDocumentClick: (ScanDocument) -> Unit,
     onDeleteDocument: (ScanDocument) -> Unit,
+    onRestoreDocument: (ScanDocument) -> Unit,
     onToggleDocumentSelection: (String) -> Unit,
     onScanClick: () -> Unit,
     onImportClick: () -> Unit,
     onPerformHaptic: (ClearScanHaptic) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val hasFolderFilter = selectedFolderId != null || showFavoritesOnly
+    val hasFolderFilter = selectedFolderId != null || showFavoritesOnly || showTrashOnly
     val showEmptyFolderFilter = documents.isEmpty() && hasFolderFilter && !showEmptySearch && !isWorking
 
     AnimatedContent(
@@ -501,7 +515,13 @@ private fun LibraryContentPane(
                 }
             }
             LibraryContentState.EmptySearch -> EmptySearchState()
-            LibraryContentState.EmptyFolderFilter -> EmptyFolderFilterState()
+            LibraryContentState.EmptyFolderFilter -> {
+                if (showTrashOnly) {
+                    EmptyTrashState()
+                } else {
+                    EmptyFolderFilterState()
+                }
+            }
             LibraryContentState.EmptyLibrary -> {
                 EmptyLibraryState(
                     onScanClick = {
@@ -716,6 +736,23 @@ private fun EmptyFolderFilterState() {
             icon = Icons.Outlined.SearchOff,
             title = stringResource(R.string.library_empty_filter_title),
             message = stringResource(R.string.library_empty_filter_message)
+        )
+    }
+}
+
+@Composable
+private fun EmptyTrashState() {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = ClearScanSpacing.xxxl),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(ClearScanSpacing.lg)
+    ) {
+        EmptyState(
+            icon = Icons.Outlined.Delete,
+            title = stringResource(R.string.library_empty_trash_title),
+            message = stringResource(R.string.library_empty_trash_message)
         )
     }
 }

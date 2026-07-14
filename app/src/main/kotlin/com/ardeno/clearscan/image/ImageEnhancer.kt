@@ -5,7 +5,18 @@ import android.graphics.Color
 import kotlin.math.pow
 
 object ImageEnhancer {
-    fun enhance(input: Bitmap): Bitmap {
+    fun enhance(input: Bitmap): Bitmap = apply(ScanColorFilter.Auto, input)
+
+    fun apply(filter: ScanColorFilter, input: Bitmap): Bitmap =
+        when (filter) {
+            ScanColorFilter.Auto -> enhanceAuto(input)
+            ScanColorFilter.Original -> input.copy(Bitmap.Config.ARGB_8888, false)
+            ScanColorFilter.Grayscale -> applyGrayscale(input)
+            ScanColorFilter.HighContrast -> applyHighContrast(input)
+            ScanColorFilter.MagicColor -> applyMagicColor(input)
+        }
+
+    private fun enhanceAuto(input: Bitmap): Bitmap {
         val width = input.width
         val height = input.height
         val output = input.copy(Bitmap.Config.ARGB_8888, true)
@@ -37,6 +48,60 @@ object ImageEnhancer {
 
         output.setPixels(pixels, 0, width, 0, 0, width, height)
         return output
+    }
+
+    private fun applyGrayscale(input: Bitmap): Bitmap {
+        val width = input.width
+        val height = input.height
+        val output = input.copy(Bitmap.Config.ARGB_8888, true)
+        val pixels = IntArray(width * height)
+        output.getPixels(pixels, 0, width, 0, 0, width, height)
+        for (index in pixels.indices) {
+            val pixel = pixels[index]
+            val gray = luminance(pixel)
+            pixels[index] = Color.argb(Color.alpha(pixel), gray, gray, gray)
+        }
+        output.setPixels(pixels, 0, width, 0, 0, width, height)
+        return output
+    }
+
+    private fun applyHighContrast(input: Bitmap): Bitmap {
+        val width = input.width
+        val height = input.height
+        val output = input.copy(Bitmap.Config.ARGB_8888, true)
+        val pixels = IntArray(width * height)
+        output.getPixels(pixels, 0, width, 0, 0, width, height)
+        for (index in pixels.indices) {
+            val pixel = pixels[index]
+            val gray = luminance(pixel)
+            val bw = if (gray >= 140) 255 else 0
+            pixels[index] = Color.argb(Color.alpha(pixel), bw, bw, bw)
+        }
+        output.setPixels(pixels, 0, width, 0, 0, width, height)
+        return output
+    }
+
+    private fun applyMagicColor(input: Bitmap): Bitmap {
+        val width = input.width
+        val height = input.height
+        val output = input.copy(Bitmap.Config.ARGB_8888, true)
+        val pixels = IntArray(width * height)
+        output.getPixels(pixels, 0, width, 0, 0, width, height)
+        for (index in pixels.indices) {
+            val pixel = pixels[index]
+            val alpha = Color.alpha(pixel)
+            val red = boostChannel(Color.red(pixel))
+            val green = boostChannel(Color.green(pixel))
+            val blue = boostChannel(Color.blue(pixel))
+            pixels[index] = Color.argb(alpha, red, green, blue)
+        }
+        output.setPixels(pixels, 0, width, 0, 0, width, height)
+        return output
+    }
+
+    private fun boostChannel(channel: Int): Int {
+        val centered = (channel - 128) * 1.25f + 128f
+        return centered.toInt().coerceIn(0, 255)
     }
 
     private fun luminance(pixel: Int): Int {

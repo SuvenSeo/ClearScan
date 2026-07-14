@@ -33,9 +33,12 @@ class CaptureProcessor(
             onSavingChanged(true)
             runCatching {
                 repository.createDocument(
-                    import = FileImportResolver.resolve(application, uris),
+                    import = FileImportResolver.resolve(application, uris).copy(
+                        enhanceImages = appPreferences.imageEnhancementEnabled
+                    ),
                     ocrLanguage = appPreferences.defaultOcrLanguage,
-                    titlePrefix = application.getString(R.string.document_title_import)
+                    titlePrefix = application.getString(R.string.document_title_import),
+                    colorFilter = appPreferences.scanColorFilter
                 )
             }.onSuccess { document ->
                 onDocumentCaptured(document, uiStrings.importedPages(document.pageCount))
@@ -53,7 +56,8 @@ class CaptureProcessor(
             runCatching {
                 repository.createDocument(
                     import = import.copy(enhanceImages = appPreferences.imageEnhancementEnabled),
-                    ocrLanguage = appPreferences.defaultOcrLanguage
+                    ocrLanguage = appPreferences.defaultOcrLanguage,
+                    colorFilter = appPreferences.scanColorFilter
                 )
             }.onSuccess { document ->
                 val message = when (import.scanMode) {
@@ -80,7 +84,8 @@ class CaptureProcessor(
                 repository.createDocumentFromPagePaths(
                     pagePaths = pagePaths,
                     enhanceImages = appPreferences.imageEnhancementEnabled,
-                    ocrLanguage = appPreferences.defaultOcrLanguage
+                    ocrLanguage = appPreferences.defaultOcrLanguage,
+                    colorFilter = appPreferences.scanColorFilter
                 )
             }.onSuccess { document ->
                 onDocumentCaptured(document, uiStrings.savedAutoCapture(document.pageCount))

@@ -18,6 +18,7 @@ import com.ardeno.clearscan.model.LibraryViewMode
 import com.ardeno.clearscan.model.OcrStatus
 import com.ardeno.clearscan.model.PageAnnotation
 import com.ardeno.clearscan.model.ScanDocument
+import com.ardeno.clearscan.image.ScanColorFilter
 import com.ardeno.clearscan.ocr.OcrEngine
 import com.ardeno.clearscan.ocr.OcrLanguage
 import com.ardeno.clearscan.pdf.PdfCompressQuality
@@ -134,7 +135,9 @@ class ClearScanViewModel(application: Application) : AndroidViewModel(applicatio
         getSelectedIds = { libraryViewModel.uiState.value.selectedDocumentIds },
         getSettings = { _uiState.value.settings },
         onReplaceDocument = libraryViewModel::replaceDocument,
-        onRefreshAfterDeletion = libraryViewModel::refreshDocumentsAfterDeletion,
+        onSoftDeleteApplied = libraryViewModel::softDeleteApplied,
+        onRestoreApplied = libraryViewModel::restoreApplied,
+        onPermanentlyDeleted = libraryViewModel::permanentlyDeleted,
         onMessage = ::reportMessage,
         onSelfHostUploadingChanged = { uploading ->
             _uiState.update { it.copy(isSelfHostUploading = uploading, message = if (uploading) null else it.message) }
@@ -184,6 +187,7 @@ class ClearScanViewModel(application: Application) : AndroidViewModel(applicatio
                             folders = library.folders,
                             selectedFolderId = library.selectedFolderId,
                             showFavoritesOnly = library.showFavoritesOnly,
+                            showTrashOnly = library.showTrashOnly,
                             selectionMode = library.selectionMode,
                             selectedDocumentIds = library.selectedDocumentIds,
                             duplicateDocumentIds = library.duplicateDocumentIds,
@@ -238,9 +242,14 @@ class ClearScanViewModel(application: Application) : AndroidViewModel(applicatio
 
     fun setImageEnhancementEnabled(enabled: Boolean) = settingsViewModel.setImageEnhancementEnabled(enabled)
 
+    fun setScanColorFilter(filter: ScanColorFilter) =
+        settingsViewModel.setScanColorFilter(filter)
+
     fun setSelectedFolder(folderId: String?) = libraryViewModel.setSelectedFolder(folderId)
 
     fun setShowFavoritesOnly(showFavoritesOnly: Boolean) = libraryViewModel.setShowFavoritesOnly(showFavoritesOnly)
+
+    fun setShowTrashOnly(showTrashOnly: Boolean) = libraryViewModel.setShowTrashOnly(showTrashOnly)
 
     fun enterSelectionMode() = libraryViewModel.enterSelectionMode()
 
@@ -267,7 +276,13 @@ class ClearScanViewModel(application: Application) : AndroidViewModel(applicatio
 
     fun moveDocumentToFolder(document: ScanDocument, folderId: String?) = documentActionsHandler.moveDocumentToFolder(document, folderId)
 
-    fun deleteSelectedDocuments() = documentActionsHandler.deleteSelectedDocuments()
+    fun deleteSelectedDocuments() {
+        if (libraryViewModel.uiState.value.showTrashOnly) {
+            documentActionsHandler.permanentlyDeleteSelectedDocuments()
+        } else {
+            documentActionsHandler.deleteSelectedDocuments()
+        }
+    }
 
     fun mergeSelectedDocuments() = pdfToolsProcessor.mergeSelectedDocuments()
 
@@ -287,6 +302,11 @@ class ClearScanViewModel(application: Application) : AndroidViewModel(applicatio
     fun toggleDocumentExpanded(document: ScanDocument) = libraryViewModel.toggleDocumentExpanded(document)
 
     fun deleteDocument(document: ScanDocument) = documentActionsHandler.deleteDocument(document)
+
+    fun restoreDocument(document: ScanDocument) = documentActionsHandler.restoreDocument(document)
+
+    fun permanentlyDeleteDocument(document: ScanDocument) =
+        documentActionsHandler.permanentlyDeleteDocument(document)
 
     fun setDefaultOcrLanguage(language: OcrLanguage) = settingsViewModel.setDefaultOcrLanguage(language)
 

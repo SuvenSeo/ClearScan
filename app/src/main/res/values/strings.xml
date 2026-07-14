@@ -137,6 +137,13 @@
     <string name="settings_auto_page_turn_description">Uses CameraX frame analysis to auto-capture when a page flip settles.</string>
     <string name="settings_image_enhancement">Shadow &amp; glare reduction</string>
     <string name="settings_image_enhancement_description">Lightweight on-device tone adjustment before pages are saved.</string>
+    <string name="settings_scan_color_filter">Scan color filter</string>
+    <string name="settings_scan_color_filter_description">Choose how pages look when image enhancement is enabled.</string>
+    <string name="scan_color_filter_auto">Auto</string>
+    <string name="scan_color_filter_original">Original</string>
+    <string name="scan_color_filter_grayscale">Grayscale</string>
+    <string name="scan_color_filter_high_contrast">High contrast</string>
+    <string name="scan_color_filter_magic_color">Magic color</string>
     <string name="settings_default_ocr_language">Default OCR language</string>
 
     <!-- Settings vault -->
@@ -228,6 +235,8 @@
     <string name="action_save">Save</string>
     <string name="action_cancel">Cancel</string>
     <string name="action_delete">Delete</string>
+    <string name="action_delete_permanently">Delete forever</string>
+    <string name="action_restore">Restore</string>
     <string name="action_rename">Rename</string>
     <string name="action_share">Share</string>
     <string name="action_merge">Merge</string>
@@ -239,11 +248,16 @@
     <!-- Filters -->
     <string name="filter_all">All</string>
     <string name="filter_favorites">Favorites</string>
+    <string name="filter_trash">Trash</string>
+    <string name="library_empty_trash_title">Trash is empty</string>
+    <string name="library_empty_trash_message">Deleted scans stay here for 30 days before permanent removal.</string>
     <string name="folders_delete_message">\"%1$s\" will be removed. Documents in this folder stay in your library.</string>
 
     <!-- Document detail -->
-    <string name="document_delete_title">Delete document?</string>
-    <string name="document_delete_message">\"%1$s\" will be permanently removed from this device.</string>
+    <string name="document_delete_title">Move to trash?</string>
+    <string name="document_delete_message">\"%1$s\" will move to Trash and can be restored for 30 days.</string>
+    <string name="document_delete_permanently_title">Delete forever?</string>
+    <string name="document_delete_permanently_message">\"%1$s\" will be permanently removed from this device.</string>
     <string name="document_rename_title">Rename document</string>
     <string name="document_title_label">Title</string>
     <string name="document_possible_duplicate">Possible duplicate</string>
@@ -401,6 +415,18 @@
     <plurals name="msg_documents_deleted">
         <item quantity="one">Deleted 1 document.</item>
         <item quantity="other">Deleted %d documents.</item>
+    </plurals>
+    <plurals name="msg_documents_moved_to_trash">
+        <item quantity="one">Moved 1 document to Trash.</item>
+        <item quantity="other">Moved %d documents to Trash.</item>
+    </plurals>
+    <plurals name="msg_documents_restored">
+        <item quantity="one">Restored 1 document.</item>
+        <item quantity="other">Restored %d documents.</item>
+    </plurals>
+    <plurals name="msg_documents_permanently_deleted">
+        <item quantity="one">Permanently deleted 1 document.</item>
+        <item quantity="other">Permanently deleted %d documents.</item>
     </plurals>
     <string name="msg_vault_enabled_biometric">Vault enabled. Biometric unlock will be required.</string>
     <string name="msg_vault_enabled">Vault enabled.</string>

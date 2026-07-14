@@ -19,7 +19,9 @@ class DocumentActionsHandler(
     private val getSelectedIds: () -> Set<String>,
     private val getSettings: () -> SettingsUiState,
     private val onReplaceDocument: (ScanDocument) -> Unit,
-    private val onRefreshAfterDeletion: (Set<String>, Int) -> Unit,
+    private val onSoftDeleteApplied: (List<ScanDocument>) -> Unit,
+    private val onRestoreApplied: (List<ScanDocument>) -> Unit,
+    private val onPermanentlyDeleted: (Set<String>, Int) -> Unit,
     private val onMessage: (String) -> Unit,
     private val onSelfHostUploadingChanged: (Boolean) -> Unit,
     private val logDocumentExport: (ScanDocument, String) -> Unit
@@ -82,16 +84,58 @@ class DocumentActionsHandler(
             onMessage(uiStrings.selectOneDocument())
             return
         }
-        scope.launch {
-            onRefreshAfterDeletion(selectedIds, repository.deleteDocuments(selectedIds))
-        }
+        softDeleteDocuments(selectedIds)
     }
 
     fun deleteDocument(document: ScanDocument) {
+        if (document.isDeleted) {
+            permanentlyDeleteDocuments(setOf(document.id))
+        } else {
+            softDeleteDocuments(setOf(document.id))
+        }
+    }
+
+    fun restoreDocument(document: ScanDocument) {
+        restoreDocuments(setOf(document.id))
+    }
+
+    fun restoreSelectedDocuments() {
+        val selectedIds = getSelectedIds()
+        if (selectedIds.isEmpty()) {
+            onMessage(uiStrings.selectOneDocument())
+            return
+        }
+        restoreDocuments(selectedIds)
+    }
+
+    fun permanentlyDeleteSelectedDocuments() {
+        val selectedIds = getSelectedIds()
+        if (selectedIds.isEmpty()) {
+            onMessage(uiStrings.selectOneDocument())
+            return
+        }
+        permanentlyDeleteDocuments(selectedIds)
+    }
+
+    fun permanentlyDeleteDocument(document: ScanDocument) {
+        permanentlyDeleteDocuments(setOf(document.id))
+    }
+
+    private fun softDeleteDocuments(ids: Set<String>) {
         scope.launch {
-            if (repository.deleteDocument(document.id)) {
-                onRefreshAfterDeletion(setOf(document.id), 1)
-            }
+            onSoftDeleteApplied(repository.softDeleteDocuments(ids))
+        }
+    }
+
+    private fun restoreDocuments(ids: Set<String>) {
+        scope.launch {
+            onRestoreApplied(repository.restoreDocuments(ids))
+        }
+    }
+
+    private fun permanentlyDeleteDocuments(ids: Set<String>) {
+        scope.launch {
+            onPermanentlyDeleted(ids, repository.permanentlyDeleteDocuments(ids))
         }
     }
 

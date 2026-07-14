@@ -46,7 +46,10 @@ fun ScanDocumentEntity.toDocument(): ScanDocument {
         pageAnnotations = PageAnnotationJson.decodePages(
             json.optString("pageAnnotations")
                 .takeUnless { it.isBlank() || it == "null" }
-        )
+        ),
+        deletedAt = json.optString("deletedAt")
+            .takeUnless { it.isBlank() || it == "null" }
+            ?.let { runCatching { Instant.parse(it) }.getOrNull() }
     )
 }
 
@@ -87,6 +90,7 @@ private fun scanDocumentToJsonPayload(doc: ScanDocument): String = JSONObject()
     .put("pageHashes", JSONArray(doc.pageHashes))
     .put("receiptFields", doc.receiptFields?.let { receiptFieldsToJson(it) })
     .put("pageAnnotations", JSONArray(PageAnnotationJson.encodePages(doc.pageAnnotations)))
+    .put("deletedAt", doc.deletedAt?.toString())
     .toString()
 
 private fun documentFolderToJsonPayload(folder: DocumentFolder): String = JSONObject()

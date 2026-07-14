@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.AlertDialog
@@ -41,8 +42,10 @@ fun FolderFilterRow(
     folders: List<DocumentFolder>,
     selectedFolderId: String?,
     showFavoritesOnly: Boolean,
+    showTrashOnly: Boolean = false,
     onSelectAll: () -> Unit,
     onSelectFavorites: () -> Unit,
+    onSelectTrash: () -> Unit = {},
     onSelectFolder: (String) -> Unit,
     onCreateFolder: () -> Unit,
     onRenameFolder: (String, String) -> Unit,
@@ -82,7 +85,7 @@ fun FolderFilterRow(
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         AnimatedFilterChip(
-            selected = !showFavoritesOnly && selectedFolderId == null,
+            selected = !showFavoritesOnly && !showTrashOnly && selectedFolderId == null,
             onClick = onSelectAll,
             label = { Text(stringResource(R.string.filter_all)) }
         )
@@ -93,6 +96,18 @@ fun FolderFilterRow(
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Outlined.Star,
+                    contentDescription = null,
+                    modifier = Modifier.padding(start = 4.dp)
+                )
+            }
+        )
+        AnimatedFilterChip(
+            selected = showTrashOnly,
+            onClick = onSelectTrash,
+            label = { Text(stringResource(R.string.filter_trash)) },
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Outlined.Delete,
                     contentDescription = null,
                     modifier = Modifier.padding(start = 4.dp)
                 )

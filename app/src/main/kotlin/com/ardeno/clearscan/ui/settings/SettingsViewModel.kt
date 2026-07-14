@@ -16,6 +16,7 @@ import com.ardeno.clearscan.model.ScanDocument
 import com.ardeno.clearscan.ocr.OcrBenchmark
 import com.ardeno.clearscan.ocr.OcrBenchmarkRunner
 import com.ardeno.clearscan.ocr.OcrLanguage
+import com.ardeno.clearscan.image.ScanColorFilter
 import com.ardeno.clearscan.ui.UiStrings
 import com.ardeno.clearscan.update.AppUpdateCheckResult
 import com.ardeno.clearscan.update.ApkUpdateManager
@@ -65,6 +66,7 @@ class SettingsViewModel(
                 selfHostConfig = selfHostSettings.load(),
                 autoPageTurnEnabled = appPreferences.autoPageTurnEnabled,
                 imageEnhancementEnabled = appPreferences.imageEnhancementEnabled,
+                scanColorFilter = appPreferences.scanColorFilter,
                 defaultOcrLanguage = appPreferences.defaultOcrLanguage,
                 passphraseBackupEnabled = appPreferences.passphraseBackupEnabled,
                 wifiOnlySelfHostUpload = appPreferences.wifiOnlySelfHostUpload
@@ -94,6 +96,11 @@ class SettingsViewModel(
     fun setImageEnhancementEnabled(enabled: Boolean) {
         appPreferences.setImageEnhancementEnabled(enabled)
         _uiState.update { it.copy(imageEnhancementEnabled = enabled) }
+    }
+
+    fun setScanColorFilter(filter: ScanColorFilter) {
+        appPreferences.setScanColorFilter(filter)
+        _uiState.update { it.copy(scanColorFilter = filter) }
     }
 
     fun setDefaultOcrLanguage(language: OcrLanguage) {

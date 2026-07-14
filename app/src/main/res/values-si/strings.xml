@@ -113,6 +113,13 @@
     <string name="settings_auto_page_turn_description">පිටුවක් හැරවීම ස්ථිර වූ විට CameraX රාමු විශ්ලේෂණයෙන් ස්වයංක්‍රීයව අල්ලා ගනී.</string>
     <string name="settings_image_enhancement">සෙවනැලි සහ දීප්ති අඩු කිරීම</string>
     <string name="settings_image_enhancement_description">පිටු සුරකින පෙර සැහැල්ලු උපාංග-මට්ටමේ ටෝන සකස් කිරීම.</string>
+    <string name="settings_scan_color_filter">ස්කෑන් වර්ණ පෙරහන</string>
+    <string name="settings_scan_color_filter_description">රූප උසස් කිරීම සක්‍රීය විට පිටු පෙනෙන ආකාරය තෝරන්න.</string>
+    <string name="scan_color_filter_auto">ස්වයං</string>
+    <string name="scan_color_filter_original">මුල්</string>
+    <string name="scan_color_filter_grayscale">අළු පරාසය</string>
+    <string name="scan_color_filter_high_contrast">ඉහළ ප්‍රතිවිරෝධය</string>
+    <string name="scan_color_filter_magic_color">මැජික් වර්ණය</string>
     <string name="settings_default_ocr_language">පෙරනිමි OCR භාෂාව</string>
     <string name="settings_vault_title">ජෛවමිතික ගබඩාව</string>
     <string name="settings_vault_enabled_description">ඔබ පිටව යන විට ඔබගේ පුස්තකාලය අගුළු වේ. ඇඟිලි සලකුණ හෝ උපාංග PIN මගින් අගුළු හරින්න.</string>
@@ -184,6 +191,8 @@
     <string name="action_save">සුරකින්න</string>
     <string name="action_cancel">අවලංගු කරන්න</string>
     <string name="action_delete">මකන්න</string>
+    <string name="action_delete_permanently">සදහටම මකන්න</string>
+    <string name="action_restore">ප්‍රතිස්ථාපනය</string>
     <string name="action_rename">නැවත නම් කරන්න</string>
     <string name="action_share">බෙදාගන්න</string>
     <string name="action_merge">ඒකාබද්ධ කරන්න</string>
@@ -195,11 +204,16 @@
     <!-- Filters -->
     <string name="filter_all">සියල්ල</string>
     <string name="filter_favorites">ප්‍රියතම</string>
+    <string name="filter_trash">කුණු කූඩය</string>
+    <string name="library_empty_trash_title">කුණු කූඩය හිස්ය</string>
+    <string name="library_empty_trash_message">මකන ලද ස්කෑන් මෙහි දින 30ක් තබා පසුව ස්ථිරව ඉවත් කෙරේ.</string>
     <string name="folders_delete_message">\"%1$s\" ඉවත් කෙරේ. මෙම ෆෝල්ඩරයේ ලේඛන ඔබගේ පුස්තකාලයේ රැඳී සිටී.</string>
 
     <!-- Document detail -->
-    <string name="document_delete_title">ලේඛනය මකන්නද?</string>
-    <string name="document_delete_message">\"%1$s\" මෙම උපාංගයෙන් ස්ථිරවම ඉවත් කෙරේ.</string>
+    <string name="document_delete_title">කුණු කූඩයට යවන්නද?</string>
+    <string name="document_delete_message">\"%1$s\" කුණු කූඩයට යවනු ලැබේ. දින 30ක් තුළ ප්‍රතිස්ථාපනය කළ හැක.</string>
+    <string name="document_delete_permanently_title">සදහටම මකන්නද?</string>
+    <string name="document_delete_permanently_message">\"%1$s\" මෙම උපාංගයෙන් ස්ථිරවම ඉවත් කෙරේ.</string>
     <string name="document_rename_title">ලේඛනය නැවත නම් කරන්න</string>
     <string name="document_title_label">මාතෘකාව</string>
     <string name="document_possible_duplicate">සම්භාව්‍ය අනුපාතික පිටපත</string>
@@ -357,6 +371,18 @@
     <plurals name="msg_documents_deleted">
         <item quantity="one">ලේඛන 1ක් මකා ඇත.</item>
         <item quantity="other">ලේඛන %dක් මකා ඇත.</item>
+    </plurals>
+    <plurals name="msg_documents_moved_to_trash">
+        <item quantity="one">ලේඛන 1ක් කුණු කූඩයට යවන ලදී.</item>
+        <item quantity="other">ලේඛන %dක් කුණු කූඩයට යවන ලදී.</item>
+    </plurals>
+    <plurals name="msg_documents_restored">
+        <item quantity="one">ලේඛන 1ක් ප්‍රතිස්ථාපනය කෙරිණි.</item>
+        <item quantity="other">ලේඛන %dක් ප්‍රතිස්ථාපනය කෙරිණි.</item>
+    </plurals>
+    <plurals name="msg_documents_permanently_deleted">
+        <item quantity="one">ලේඛන 1ක් ස්ථිරවම මකා ඇත.</item>
+        <item quantity="other">ලේඛන %dක් ස්ථිරවම මකා ඇත.</item>
     </plurals>
     <string name="msg_vault_enabled_biometric">Vault සක්‍රියයි. ජෛවමිතික අගුළු හැරීම අවශ්‍ය වේ.</string>
     <string name="msg_vault_enabled">Vault සක්‍රියයි.</string>

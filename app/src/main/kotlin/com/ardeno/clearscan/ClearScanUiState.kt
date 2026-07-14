@@ -12,6 +12,7 @@ data class ClearScanUiState(
     val folders: List<DocumentFolder> = emptyList(),
     val selectedFolderId: String? = null,
     val showFavoritesOnly: Boolean = false,
+    val showTrashOnly: Boolean = false,
     val selectionMode: Boolean = false,
     val selectedDocumentIds: Set<String> = emptySet(),
     val duplicateDocumentIds: Set<String> = emptySet(),

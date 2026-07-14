@@ -24,6 +24,7 @@ import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material.icons.outlined.Image
 import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.icons.outlined.Print
+import androidx.compose.material.icons.outlined.Restore
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material.icons.outlined.TextSnippet
@@ -106,6 +107,7 @@ fun DocumentDetailSheet(
     onUploadToSelfHost: () -> Unit = {},
     onRedactIdFields: () -> Unit = {},
     onDelete: () -> Unit,
+    onRestore: () -> Unit = {},
     onRetryOcr: () -> Unit,
     onOcrLanguageChange: (OcrLanguage) -> Unit = {},
     onRename: (String) -> Unit = {},
@@ -151,9 +153,28 @@ fun DocumentDetailSheet(
     if (showDeleteDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
-            title = { Text(stringResource(R.string.document_delete_title)) },
+            title = {
+                Text(
+                    stringResource(
+                        if (document.isDeleted) {
+                            R.string.document_delete_permanently_title
+                        } else {
+                            R.string.document_delete_title
+                        }
+                    )
+                )
+            },
             text = {
-                Text(stringResource(R.string.document_delete_message, document.title))
+                Text(
+                    stringResource(
+                        if (document.isDeleted) {
+                            R.string.document_delete_permanently_message
+                        } else {
+                            R.string.document_delete_message
+                        },
+                        document.title
+                    )
+                )
             },
             confirmButton = {
                 TextButton(
@@ -164,7 +185,13 @@ fun DocumentDetailSheet(
                     }
                 ) {
                     Text(
-                        stringResource(R.string.action_delete),
+                        stringResource(
+                            if (document.isDeleted) {
+                                R.string.action_delete_permanently
+                            } else {
+                                R.string.action_delete
+                            }
+                        ),
                         color = MaterialTheme.colorScheme.error
                     )
                 }
@@ -347,32 +374,65 @@ fun DocumentDetailSheet(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(ClearScanSpacing.sm)
             ) {
-                Button(
-                    onClick = {
-                        performHaptic(ClearScanHaptic.Confirm)
-                        onShare()
-                    },
-                    modifier = Modifier
-                        .weight(1f)
-                        .defaultMinSize(minHeight = ClearScanSpacing.minTouchTarget),
-                    shape = MaterialTheme.shapes.medium
-                ) {
-                    Icon(Icons.Outlined.Share, contentDescription = stringResource(R.string.a11y_share_document))
-                    Text(modifier = Modifier.padding(start = ClearScanSpacing.sm), text = stringResource(R.string.action_share))
-                }
-                FilledTonalButton(
-                    onClick = { showDeleteDialog = true },
-                    modifier = Modifier
-                        .weight(1f)
-                        .defaultMinSize(minHeight = ClearScanSpacing.minTouchTarget),
-                    shape = MaterialTheme.shapes.medium,
-                    colors = ButtonDefaults.filledTonalButtonColors(
-                        containerColor = MaterialTheme.colorScheme.errorContainer,
-                        contentColor = MaterialTheme.colorScheme.onErrorContainer
-                    )
-                ) {
-                    Icon(Icons.Outlined.Delete, contentDescription = stringResource(R.string.a11y_delete_document))
-                    Text(modifier = Modifier.padding(start = ClearScanSpacing.sm), text = stringResource(R.string.action_delete))
+                if (document.isDeleted) {
+                    Button(
+                        onClick = {
+                            performHaptic(ClearScanHaptic.Confirm)
+                            onRestore()
+                        },
+                        modifier = Modifier
+                            .weight(1f)
+                            .defaultMinSize(minHeight = ClearScanSpacing.minTouchTarget),
+                        shape = MaterialTheme.shapes.medium
+                    ) {
+                        Icon(Icons.Outlined.Restore, contentDescription = stringResource(R.string.action_restore))
+                        Text(modifier = Modifier.padding(start = ClearScanSpacing.sm), text = stringResource(R.string.action_restore))
+                    }
+                    FilledTonalButton(
+                        onClick = { showDeleteDialog = true },
+                        modifier = Modifier
+                            .weight(1f)
+                            .defaultMinSize(minHeight = ClearScanSpacing.minTouchTarget),
+                        shape = MaterialTheme.shapes.medium,
+                        colors = ButtonDefaults.filledTonalButtonColors(
+                            containerColor = MaterialTheme.colorScheme.errorContainer,
+                            contentColor = MaterialTheme.colorScheme.onErrorContainer
+                        )
+                    ) {
+                        Icon(Icons.Outlined.Delete, contentDescription = stringResource(R.string.action_delete_permanently))
+                        Text(
+                            modifier = Modifier.padding(start = ClearScanSpacing.sm),
+                            text = stringResource(R.string.action_delete_permanently)
+                        )
+                    }
+                } else {
+                    Button(
+                        onClick = {
+                            performHaptic(ClearScanHaptic.Confirm)
+                            onShare()
+                        },
+                        modifier = Modifier
+                            .weight(1f)
+                            .defaultMinSize(minHeight = ClearScanSpacing.minTouchTarget),
+                        shape = MaterialTheme.shapes.medium
+                    ) {
+                        Icon(Icons.Outlined.Share, contentDescription = stringResource(R.string.a11y_share_document))
+                        Text(modifier = Modifier.padding(start = ClearScanSpacing.sm), text = stringResource(R.string.action_share))
+                    }
+                    FilledTonalButton(
+                        onClick = { showDeleteDialog = true },
+                        modifier = Modifier
+                            .weight(1f)
+                            .defaultMinSize(minHeight = ClearScanSpacing.minTouchTarget),
+                        shape = MaterialTheme.shapes.medium,
+                        colors = ButtonDefaults.filledTonalButtonColors(
+                            containerColor = MaterialTheme.colorScheme.errorContainer,
+                            contentColor = MaterialTheme.colorScheme.onErrorContainer
+                        )
+                    ) {
+                        Icon(Icons.Outlined.Delete, contentDescription = stringResource(R.string.a11y_delete_document))
+                        Text(modifier = Modifier.padding(start = ClearScanSpacing.sm), text = stringResource(R.string.action_delete))
+                    }
                 }
             }
 

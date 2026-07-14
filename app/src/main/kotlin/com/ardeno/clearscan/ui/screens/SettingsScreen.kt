@@ -44,12 +44,14 @@ import androidx.compose.ui.unit.dp
 import com.ardeno.clearscan.BuildConfig
 import com.ardeno.clearscan.R
 import com.ardeno.clearscan.data.SelfHostConfig
+import com.ardeno.clearscan.image.ScanColorFilter
 import com.ardeno.clearscan.ocr.OcrLanguage
 import com.ardeno.clearscan.ui.components.GroupedRowDivider
 import com.ardeno.clearscan.ui.components.GroupedSection
 import com.ardeno.clearscan.ui.components.OcrLanguagePicker
 import com.ardeno.clearscan.ui.components.PrivacyBadgeRow
 import com.ardeno.clearscan.ui.theme.ClearScanSpacing
+import androidx.compose.material3.ButtonDefaults
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -59,6 +61,7 @@ fun SettingsScreen(
     isBackupRunning: Boolean,
     autoPageTurnEnabled: Boolean,
     imageEnhancementEnabled: Boolean,
+    scanColorFilter: ScanColorFilter,
     defaultOcrLanguage: OcrLanguage,
     selfHostConfig: SelfHostConfig,
     onSelfHostConfigChange: (SelfHostConfig) -> Unit,
@@ -71,6 +74,7 @@ fun SettingsScreen(
     onImportBackup: () -> Unit,
     onAutoPageTurnChange: (Boolean) -> Unit,
     onImageEnhancementChange: (Boolean) -> Unit,
+    onScanColorFilterChange: (ScanColorFilter) -> Unit,
     onDefaultOcrLanguageChange: (OcrLanguage) -> Unit,
     passphraseBackupEnabled: Boolean,
     wifiOnlySelfHostUpload: Boolean,
@@ -132,8 +136,10 @@ fun SettingsScreen(
                 CaptureSettingsSection(
                     autoPageTurnEnabled = autoPageTurnEnabled,
                     imageEnhancementEnabled = imageEnhancementEnabled,
+                    scanColorFilter = scanColorFilter,
                     onAutoPageTurnChange = onAutoPageTurnChange,
-                    onImageEnhancementChange = onImageEnhancementChange
+                    onImageEnhancementChange = onImageEnhancementChange,
+                    onScanColorFilterChange = onScanColorFilterChange
                 )
                 GroupedRowDivider(startIndent = 16.dp)
                 OcrLanguageSettingsSection(
@@ -541,8 +547,10 @@ private fun AppUpdateSettingsRow(
 private fun CaptureSettingsSection(
     autoPageTurnEnabled: Boolean,
     imageEnhancementEnabled: Boolean,
+    scanColorFilter: ScanColorFilter,
     onAutoPageTurnChange: (Boolean) -> Unit,
-    onImageEnhancementChange: (Boolean) -> Unit
+    onImageEnhancementChange: (Boolean) -> Unit,
+    onScanColorFilterChange: (ScanColorFilter) -> Unit
 ) {
     Column(
         modifier = Modifier.padding(16.dp),
@@ -562,7 +570,49 @@ private fun CaptureSettingsSection(
             checked = imageEnhancementEnabled,
             onCheckedChange = onImageEnhancementChange
         )
+        if (imageEnhancementEnabled) {
+            Text(
+                text = stringResource(R.string.settings_scan_color_filter),
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.SemiBold
+            )
+            Text(
+                text = stringResource(R.string.settings_scan_color_filter_description),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                ScanColorFilter.entries.forEach { filter ->
+                    val selected = filter == scanColorFilter
+                    FilledTonalButton(
+                        onClick = { onScanColorFilterChange(filter) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .defaultMinSize(minHeight = ClearScanSpacing.minTouchTarget),
+                        shape = MaterialTheme.shapes.medium,
+                        colors = if (selected) {
+                            ButtonDefaults.filledTonalButtonColors(
+                                containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                                contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                            )
+                        } else {
+                            ButtonDefaults.filledTonalButtonColors()
+                        }
+                    ) {
+                        Text(text = stringResource(filter.labelRes()), modifier = Modifier.fillMaxWidth())
+                    }
+                }
+            }
+        }
     }
+}
+
+private fun ScanColorFilter.labelRes(): Int = when (this) {
+    ScanColorFilter.Auto -> R.string.scan_color_filter_auto
+    ScanColorFilter.Original -> R.string.scan_color_filter_original
+    ScanColorFilter.Grayscale -> R.string.scan_color_filter_grayscale
+    ScanColorFilter.HighContrast -> R.string.scan_color_filter_high_contrast
+    ScanColorFilter.MagicColor -> R.string.scan_color_filter_magic_color
 }
 
 @Composable

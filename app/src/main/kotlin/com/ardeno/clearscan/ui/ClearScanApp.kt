@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.biometric.BiometricManager
 import com.ardeno.clearscan.ClearScanUiState
 import com.ardeno.clearscan.R
+import com.ardeno.clearscan.image.ScanColorFilter
 import com.ardeno.clearscan.model.LibraryViewMode
 import com.ardeno.clearscan.model.PageAnnotation
 import com.ardeno.clearscan.model.ScanDocument
@@ -74,6 +75,8 @@ fun ClearScanApp(
     onExportText: (ScanDocument) -> Unit,
     onPrintDocument: (ScanDocument) -> Unit,
     onDeleteDocument: (ScanDocument) -> Unit,
+    onRestoreDocument: (ScanDocument) -> Unit,
+    onPermanentlyDeleteDocument: (ScanDocument) -> Unit,
     onRetryOcr: (ScanDocument) -> Unit,
     onDocumentOcrLanguageChange: (ScanDocument, OcrLanguage) -> Unit,
     onMergeAllDocuments: () -> Unit,
@@ -89,6 +92,7 @@ fun ClearScanApp(
     onCompressQualityChange: (PdfCompressQuality) -> Unit,
     onSelectFolder: (String?) -> Unit,
     onSelectFavorites: () -> Unit,
+    onSelectTrash: () -> Unit,
     onCreateFolder: (String) -> Unit,
     onRenameFolder: (String, String) -> Unit,
     onDeleteFolder: (String) -> Unit,
@@ -118,6 +122,7 @@ fun ClearScanApp(
     onRedactIdFields: (ScanDocument) -> Unit,
     onAutoPageTurnChange: (Boolean) -> Unit,
     onImageEnhancementChange: (Boolean) -> Unit,
+    onScanColorFilterChange: (ScanColorFilter) -> Unit,
     onDefaultOcrLanguageChange: (OcrLanguage) -> Unit,
     onPassphraseBackupChange: (Boolean) -> Unit,
     onWifiOnlySelfHostUploadChange: (Boolean) -> Unit,
@@ -145,11 +150,14 @@ fun ClearScanApp(
         state.documents,
         state.query,
         state.selectedFolderId,
-        state.showFavoritesOnly
+        state.showFavoritesOnly,
+        state.showTrashOnly
     ) {
         state.documents
             .filter { document ->
                 when {
+                    state.showTrashOnly -> document.isDeleted
+                    document.isDeleted -> false
                     state.showFavoritesOnly -> document.isFavorite
                     state.selectedFolderId != null -> document.folderId == state.selectedFolderId
                     else -> true
@@ -157,7 +165,9 @@ fun ClearScanApp(
             }
             .filter { it.matchesQuery(state.query) }
     }
-    val hasDocuments = state.documents.isNotEmpty()
+    val hasDocuments = state.documents.any { document ->
+        if (state.showTrashOnly) document.isDeleted else !document.isDeleted
+    }
     val hasSearchResults = visibleDocuments.isNotEmpty()
 
     LaunchedEffect(state.message) {
@@ -249,6 +259,7 @@ fun ClearScanApp(
                     folders = state.folders,
                     selectedFolderId = state.selectedFolderId,
                     showFavoritesOnly = state.showFavoritesOnly,
+                    showTrashOnly = state.showTrashOnly,
                     selectionMode = state.selectionMode,
                     selectedDocumentIds = state.selectedDocumentIds,
                     duplicateDocumentIds = state.duplicateDocumentIds,
@@ -271,6 +282,7 @@ fun ClearScanApp(
                     onSelectAllDocuments = { onSelectFolder(null) },
                     onSelectFolder = onSelectFolder,
                     onSelectFavorites = onSelectFavorites,
+                    onSelectTrash = onSelectTrash,
                     onCreateFolder = onCreateFolder,
                     onRenameFolder = onRenameFolder,
                     onDeleteFolder = onDeleteFolder,
@@ -294,7 +306,8 @@ fun ClearScanApp(
                             onToggleDocumentExpanded(document)
                         }
                     },
-                    onDeleteDocument = onDeleteDocument
+                    onDeleteDocument = onDeleteDocument,
+                    onRestoreDocument = onRestoreDocument
                 )
             }
             ClearScanTab.Settings -> {
@@ -305,6 +318,7 @@ fun ClearScanApp(
                     isBackupRunning = state.settings.isBackupRunning,
                     autoPageTurnEnabled = state.settings.autoPageTurnEnabled,
                     imageEnhancementEnabled = state.settings.imageEnhancementEnabled,
+                    scanColorFilter = state.settings.scanColorFilter,
                     defaultOcrLanguage = state.settings.defaultOcrLanguage,
                     selfHostConfig = state.settings.selfHostConfig,
                     onSelfHostConfigChange = onSelfHostConfigChange,
@@ -320,6 +334,7 @@ fun ClearScanApp(
                     onImportBackup = onImportBackup,
                     onAutoPageTurnChange = onAutoPageTurnChange,
                     onImageEnhancementChange = onImageEnhancementChange,
+                    onScanColorFilterChange = onScanColorFilterChange,
                     onDefaultOcrLanguageChange = onDefaultOcrLanguageChange,
                     passphraseBackupEnabled = state.settings.passphraseBackupEnabled,
                     wifiOnlySelfHostUpload = state.settings.wifiOnlySelfHostUpload,
@@ -362,7 +377,15 @@ fun ClearScanApp(
                 onRedactIdFields = { onRedactIdFields(currentDocument) },
                 onDelete = {
                     selectedDocument = null
-                    onDeleteDocument(currentDocument)
+                    if (currentDocument.isDeleted) {
+                        onPermanentlyDeleteDocument(currentDocument)
+                    } else {
+                        onDeleteDocument(currentDocument)
+                    }
+                },
+                onRestore = {
+                    selectedDocument = null
+                    onRestoreDocument(currentDocument)
                 },
                 onRetryOcr = { onRetryOcr(currentDocument) },
                 onOcrLanguageChange = { language ->

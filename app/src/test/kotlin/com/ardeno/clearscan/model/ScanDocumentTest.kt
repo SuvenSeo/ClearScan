@@ -25,6 +25,8 @@ class ScanDocumentTest : RobolectricUnitTest() {
         assertEquals(2, document.pageCount)
         assertEquals("", document.ocrText)
         assertEquals(document.createdAt, document.updatedAt)
+        assertFalse(document.isDeleted)
+        assertEquals(null, document.deletedAt)
     }
 
     @Test
