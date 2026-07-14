@@ -11,6 +11,7 @@ import com.ardeno.clearscan.ocr.DocumentOcrResult
 import com.ardeno.clearscan.ocr.IdRedactionSuggester
 import com.ardeno.clearscan.ocr.IdRedactionSuggestion
 import com.ardeno.clearscan.ocr.OcrEngine
+import com.ardeno.clearscan.ocr.OcrLanguage
 import com.ardeno.clearscan.pdf.SearchablePdfWriter
 import com.ardeno.clearscan.ui.UiStrings
 import kotlinx.coroutines.CoroutineScope
@@ -31,6 +32,17 @@ class OcrProcessor(
 
     fun close() {
         ocrEngine.close()
+    }
+
+    fun setDocumentOcrLanguage(document: ScanDocument, language: OcrLanguage) {
+        if (document.ocrLanguage == language) return
+        scope.launch {
+            val updated = repository.updateOcrLanguage(document.id, language)
+            if (updated != null) {
+                onReplaceDocument(updated)
+                runOcr(updated.copy(ocrStatus = OcrStatus.Queued))
+            }
+        }
     }
 
     fun runOcr(document: ScanDocument) {

@@ -22,9 +22,17 @@ class DocumentActionsHandler(
     private val onRefreshAfterDeletion: (Set<String>, Int) -> Unit,
     private val onMessage: (String) -> Unit,
     private val onSelfHostUploadingChanged: (Boolean) -> Unit,
-    private val exportPathFor: (ScanDocument) -> String?,
     private val logDocumentExport: (ScanDocument, String) -> Unit
 ) {
+    fun exportPathFor(document: ScanDocument): String? =
+        document.searchablePdfPath ?: document.pdfPath ?: document.pageImagePaths.firstOrNull()
+
+    fun exportMimeTypeFor(document: ScanDocument): String =
+        when {
+            document.searchablePdfPath != null || document.pdfPath != null -> "application/pdf"
+            else -> "image/jpeg"
+        }
+
     fun updateDocumentTags(document: ScanDocument, tags: List<String>) {
         scope.launch {
             repository.updateDocumentTags(document.id, tags)?.let {

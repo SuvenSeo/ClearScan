@@ -11,7 +11,17 @@ import com.ardeno.clearscan.pdf.PdfToolOutput
 import com.ardeno.clearscan.ui.UiStrings
 import java.io.File
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+
+data class PdfToolsUiState(
+    val signatureText: String = "",
+    val pdfPassword: String = "",
+    val compressQuality: PdfCompressQuality = PdfCompressQuality.Balanced
+)
 
 class PdfToolsProcessor(
     private val scope: CoroutineScope,
@@ -20,15 +30,27 @@ class PdfToolsProcessor(
     private val uiStrings: UiStrings,
     private val getDocuments: () -> List<ScanDocument>,
     private val getSelectedIds: () -> Set<String>,
-    private val getSignatureText: () -> String,
-    private val getPdfPassword: () -> String,
-    private val getCompressQuality: () -> PdfCompressQuality,
     private val getIdRedactionSuggestions: () -> Map<String, IdRedactionSuggestion>,
     private val onPdfToolRunningChanged: (Boolean) -> Unit,
     private val onDocumentsUpdated: (List<ScanDocument>, String?, String) -> Unit,
     private val onMessage: (String) -> Unit,
     private val onExitSelectionMode: () -> Unit
 ) {
+    private val _uiState = MutableStateFlow(PdfToolsUiState())
+    val uiState: StateFlow<PdfToolsUiState> = _uiState.asStateFlow()
+
+    fun updateSignatureText(signatureText: String) {
+        _uiState.update { it.copy(signatureText = signatureText) }
+    }
+
+    fun updatePdfPassword(pdfPassword: String) {
+        _uiState.update { it.copy(pdfPassword = pdfPassword) }
+    }
+
+    fun updateCompressQuality(quality: PdfCompressQuality) {
+        _uiState.update { it.copy(compressQuality = quality) }
+    }
+
     fun mergeSelectedDocuments() {
         val selectedDocuments = getDocuments().filter { it.id in getSelectedIds() }
         if (selectedDocuments.size < 2) {
@@ -63,7 +85,7 @@ class PdfToolsProcessor(
     }
 
     fun signDocument(document: ScanDocument) = runSingleDocumentTool(document, uiStrings.createdSignedCopy()) {
-        pdfToolEngine.sign(document, getSignatureText().ifBlank { "ClearScan" }, it)
+        pdfToolEngine.sign(document, _uiState.value.signatureText.ifBlank { "ClearScan" }, it)
     }
 
     fun redactDocument(document: ScanDocument) = runSingleDocumentTool(document, uiStrings.createdRedactedCopy()) {
@@ -97,7 +119,7 @@ class PdfToolsProcessor(
     }
 
     fun passwordProtectDocument(document: ScanDocument) = runSingleDocumentTool(document, uiStrings.createdPasswordProtected()) {
-        pdfToolEngine.passwordProtect(document, getPdfPassword(), it)
+        pdfToolEngine.passwordProtect(document, _uiState.value.pdfPassword, it)
     }
 
     fun reorderDocument(document: ScanDocument, pageOrder: List<Int>) = runSingleDocumentTool(document, uiStrings.createdReorderedCopy()) {
@@ -110,7 +132,7 @@ class PdfToolsProcessor(
         }
 
     fun compressDocument(document: ScanDocument) {
-        val quality = getCompressQuality()
+        val quality = _uiState.value.compressQuality
         runSingleDocumentTool(document, uiStrings.createdCompressedCopy(quality)) {
             pdfToolEngine.compress(document, quality, it)
         }

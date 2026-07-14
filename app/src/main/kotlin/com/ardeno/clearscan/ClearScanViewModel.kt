@@ -14,12 +14,10 @@ import com.ardeno.clearscan.domain.OcrProcessor
 import com.ardeno.clearscan.domain.PdfToolsProcessor
 import com.ardeno.clearscan.duplicate.DuplicateDetector
 import com.ardeno.clearscan.export.SelfHostExporter
-import com.ardeno.clearscan.model.DocumentFolder
 import com.ardeno.clearscan.model.LibraryViewMode
 import com.ardeno.clearscan.model.OcrStatus
 import com.ardeno.clearscan.model.PageAnnotation
 import com.ardeno.clearscan.model.ScanDocument
-import com.ardeno.clearscan.ocr.IdRedactionSuggestion
 import com.ardeno.clearscan.ocr.OcrEngine
 import com.ardeno.clearscan.ocr.OcrLanguage
 import com.ardeno.clearscan.pdf.PdfCompressQuality
@@ -27,7 +25,6 @@ import com.ardeno.clearscan.pdf.PdfToolEngine
 import com.ardeno.clearscan.pdf.SearchablePdfWriter
 import com.ardeno.clearscan.scanner.ScannerImport
 import com.ardeno.clearscan.ui.library.LibraryViewModel
-import com.ardeno.clearscan.ui.settings.SettingsUiState
 import com.ardeno.clearscan.ui.settings.SettingsViewModel
 import com.ardeno.clearscan.ui.UiStrings
 import com.ardeno.clearscan.update.ApkUpdateManager
@@ -41,32 +38,9 @@ import javax.crypto.Cipher
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-
-data class ClearScanUiState(
-    val documents: List<ScanDocument> = emptyList(),
-    val folders: List<DocumentFolder> = emptyList(),
-    val selectedFolderId: String? = null,
-    val showFavoritesOnly: Boolean = false,
-    val selectionMode: Boolean = false,
-    val selectedDocumentIds: Set<String> = emptySet(),
-    val duplicateDocumentIds: Set<String> = emptySet(),
-    val isSaving: Boolean = false,
-    val isOcrRunning: Boolean = false,
-    val isPdfToolRunning: Boolean = false,
-    val query: String = "",
-    val signatureText: String = "",
-    val pdfPassword: String = "",
-    val compressQuality: PdfCompressQuality = PdfCompressQuality.Balanced,
-    val expandedDocumentId: String? = null,
-    val settings: SettingsUiState = SettingsUiState(),
-    val message: String? = null,
-    val hasCompletedOnboarding: Boolean = false,
-    val libraryViewMode: LibraryViewMode = LibraryViewMode.List,
-    val isSelfHostUploading: Boolean = false,
-    val idRedactionSuggestions: Map<String, IdRedactionSuggestion> = emptyMap()
-)
 
 class ClearScanViewModel(application: Application) : AndroidViewModel(application) {
     private val vaultCrypto = VaultCrypto()
@@ -105,9 +79,7 @@ class ClearScanViewModel(application: Application) : AndroidViewModel(applicatio
         onOcrRunningChanged = { running -> _uiState.update { it.copy(isOcrRunning = running) } },
         onMessage = ::reportMessage,
         onIdRedactionSuggestion = { docId, suggestion ->
-            _uiState.update { current ->
-                current.copy(idRedactionSuggestions = current.idRedactionSuggestions + (docId to suggestion))
-            }
+            _uiState.update { it.copy(idRedactionSuggestions = it.idRedactionSuggestions + (docId to suggestion)) }
         }
     )
 
@@ -118,14 +90,9 @@ class ClearScanViewModel(application: Application) : AndroidViewModel(applicatio
         uiStrings = uiStrings,
         getDocuments = { libraryViewModel.uiState.value.documents },
         getSelectedIds = { libraryViewModel.uiState.value.selectedDocumentIds },
-        getSignatureText = { _uiState.value.signatureText },
-        getPdfPassword = { _uiState.value.pdfPassword },
-        getCompressQuality = { _uiState.value.compressQuality },
         getIdRedactionSuggestions = { _uiState.value.idRedactionSuggestions },
         onPdfToolRunningChanged = { running ->
-            _uiState.update { current ->
-                current.copy(isPdfToolRunning = running, message = if (running) null else current.message)
-            }
+            _uiState.update { it.copy(isPdfToolRunning = running, message = if (running) null else it.message) }
         },
         onDocumentsUpdated = { documents, expandedId, message ->
             libraryViewModel.setDocuments(documents, expandedId)
@@ -142,9 +109,7 @@ class ClearScanViewModel(application: Application) : AndroidViewModel(applicatio
         appPreferences = appPreferences,
         uiStrings = uiStrings,
         onSavingChanged = { saving ->
-            _uiState.update { current ->
-                current.copy(isSaving = saving, message = if (saving) null else current.message)
-            }
+            _uiState.update { it.copy(isSaving = saving, message = if (saving) null else it.message) }
         },
         onDocumentCaptured = { document, message ->
             libraryViewModel.addDocuments(listOf(document), document.id)
@@ -170,11 +135,8 @@ class ClearScanViewModel(application: Application) : AndroidViewModel(applicatio
         onRefreshAfterDeletion = libraryViewModel::refreshDocumentsAfterDeletion,
         onMessage = ::reportMessage,
         onSelfHostUploadingChanged = { uploading ->
-            _uiState.update { current ->
-                current.copy(isSelfHostUploading = uploading, message = if (uploading) null else current.message)
-            }
+            _uiState.update { it.copy(isSelfHostUploading = uploading, message = if (uploading) null else it.message) }
         },
-        exportPathFor = ::exportPathFor,
         logDocumentExport = { document, exportKind -> logDocumentExport(document, exportKind) }
     )
 
@@ -208,27 +170,30 @@ class ClearScanViewModel(application: Application) : AndroidViewModel(applicatio
         }
 
         viewModelScope.launch {
-            libraryViewModel.uiState.collect { library ->
-                _uiState.update { current ->
-                    current.copy(
-                        documents = library.documents,
-                        folders = library.folders,
-                        selectedFolderId = library.selectedFolderId,
-                        showFavoritesOnly = library.showFavoritesOnly,
-                        selectionMode = library.selectionMode,
-                        selectedDocumentIds = library.selectedDocumentIds,
-                        duplicateDocumentIds = library.duplicateDocumentIds,
-                        expandedDocumentId = library.expandedDocumentId,
-                        query = library.query
-                    )
+            combine(
+                libraryViewModel.uiState,
+                settingsViewModel.uiState,
+                pdfToolsProcessor.uiState
+            ) { library, settings, pdfTools -> Triple(library, settings, pdfTools) }
+                .collect { (library, settings, pdfTools) ->
+                    _uiState.update { current ->
+                        current.copy(
+                            documents = library.documents,
+                            folders = library.folders,
+                            selectedFolderId = library.selectedFolderId,
+                            showFavoritesOnly = library.showFavoritesOnly,
+                            selectionMode = library.selectionMode,
+                            selectedDocumentIds = library.selectedDocumentIds,
+                            duplicateDocumentIds = library.duplicateDocumentIds,
+                            expandedDocumentId = library.expandedDocumentId,
+                            query = library.query,
+                            settings = settings,
+                            signatureText = pdfTools.signatureText,
+                            pdfPassword = pdfTools.pdfPassword,
+                            compressQuality = pdfTools.compressQuality
+                        )
+                    }
                 }
-            }
-        }
-
-        viewModelScope.launch {
-            settingsViewModel.uiState.collect { settings ->
-                _uiState.update { it.copy(settings = settings) }
-            }
         }
 
         settingsViewModel.initializeVaultState()
@@ -265,7 +230,6 @@ class ClearScanViewModel(application: Application) : AndroidViewModel(applicatio
         appPreferences.setLibraryViewMode(mode)
         _uiState.update { it.copy(libraryViewMode = mode) }
     }
-
     fun setAutoPageTurnEnabled(enabled: Boolean) = settingsViewModel.setAutoPageTurnEnabled(enabled)
 
     fun setImageEnhancementEnabled(enabled: Boolean) = settingsViewModel.setImageEnhancementEnabled(enabled)
@@ -289,35 +253,28 @@ class ClearScanViewModel(application: Application) : AndroidViewModel(applicatio
 
     fun deleteFolder(folderId: String) = libraryViewModel.deleteFolder(folderId)
 
-    fun updateDocumentTags(document: ScanDocument, tags: List<String>) =
-        documentActionsHandler.updateDocumentTags(document, tags)
+    fun updateDocumentTags(document: ScanDocument, tags: List<String>) = documentActionsHandler.updateDocumentTags(document, tags)
 
-    fun toggleDocumentFavorite(document: ScanDocument) =
-        documentActionsHandler.toggleDocumentFavorite(document)
+    fun toggleDocumentFavorite(document: ScanDocument) = documentActionsHandler.toggleDocumentFavorite(document)
 
-    fun moveDocumentToFolder(document: ScanDocument, folderId: String?) =
-        documentActionsHandler.moveDocumentToFolder(document, folderId)
+    fun moveDocumentToFolder(document: ScanDocument, folderId: String?) = documentActionsHandler.moveDocumentToFolder(document, folderId)
 
     fun deleteSelectedDocuments() = documentActionsHandler.deleteSelectedDocuments()
 
     fun mergeSelectedDocuments() = pdfToolsProcessor.mergeSelectedDocuments()
 
-    fun exportPathsForSelectedDocuments(): List<Pair<String, String>> =
-        libraryViewModel.exportPathsForSelectedDocuments(::exportPathFor, ::exportMimeTypeFor)
+    fun exportPathsForSelectedDocuments() = libraryViewModel.exportPathsForSelectedDocuments(
+        documentActionsHandler::exportPathFor,
+        documentActionsHandler::exportMimeTypeFor
+    )
 
     fun updateQuery(query: String) = libraryViewModel.updateQuery(query)
 
-    fun updateSignatureText(signatureText: String) {
-        _uiState.update { it.copy(signatureText = signatureText) }
-    }
+    fun updateSignatureText(signatureText: String) = pdfToolsProcessor.updateSignatureText(signatureText)
 
-    fun updatePdfPassword(pdfPassword: String) {
-        _uiState.update { it.copy(pdfPassword = pdfPassword) }
-    }
+    fun updatePdfPassword(pdfPassword: String) = pdfToolsProcessor.updatePdfPassword(pdfPassword)
 
-    fun updateCompressQuality(quality: PdfCompressQuality) {
-        _uiState.update { it.copy(compressQuality = quality) }
-    }
+    fun updateCompressQuality(quality: PdfCompressQuality) = pdfToolsProcessor.updateCompressQuality(quality)
 
     fun toggleDocumentExpanded(document: ScanDocument) = libraryViewModel.toggleDocumentExpanded(document)
 
@@ -329,20 +286,11 @@ class ClearScanViewModel(application: Application) : AndroidViewModel(applicatio
 
     fun setWifiOnlySelfHostUpload(enabled: Boolean) = settingsViewModel.setWifiOnlySelfHostUpload(enabled)
 
-    fun setDocumentOcrLanguage(document: ScanDocument, language: OcrLanguage) {
-        if (document.ocrLanguage == language) return
-        viewModelScope.launch {
-            val updated = repository.updateOcrLanguage(document.id, language)
-            if (updated != null) {
-                libraryViewModel.replaceDocument(updated)
-                ocrProcessor.runOcr(updated.copy(ocrStatus = OcrStatus.Queued))
-            }
-        }
-    }
+    fun setDocumentOcrLanguage(document: ScanDocument, language: OcrLanguage) =
+        ocrProcessor.setDocumentOcrLanguage(document, language)
 
-    fun retryOcr(document: ScanDocument) {
+    fun retryOcr(document: ScanDocument) =
         ocrProcessor.runOcr(document.copy(ocrStatus = OcrStatus.Queued))
-    }
 
     fun setVaultEnabled(enabled: Boolean) = settingsViewModel.setVaultEnabled(enabled)
 
@@ -373,13 +321,8 @@ class ClearScanViewModel(application: Application) : AndroidViewModel(applicatio
 
     fun uploadToSelfHost(document: ScanDocument) = documentActionsHandler.uploadToSelfHost(document)
 
-    fun applyAnnotations(document: ScanDocument, annotationsByPage: Map<Int, List<PageAnnotation>>) {
-        pdfToolsProcessor.applyAnnotations(
-            document = document,
-            annotationsByPage = annotationsByPage,
-            onReplaceDocument = libraryViewModel::replaceDocument
-        )
-    }
+    fun applyAnnotations(document: ScanDocument, annotationsByPage: Map<Int, List<PageAnnotation>>) =
+        pdfToolsProcessor.applyAnnotations(document, annotationsByPage, libraryViewModel::replaceDocument)
 
     fun passwordProtectDocument(document: ScanDocument) = pdfToolsProcessor.passwordProtectDocument(document)
 
@@ -397,9 +340,8 @@ class ClearScanViewModel(application: Application) : AndroidViewModel(applicatio
 
     fun refreshPrivacyStatus() = settingsViewModel.refreshPrivacyStatus()
 
-    fun logDocumentExport(document: ScanDocument, exportKind: String = "share") {
+    fun logDocumentExport(document: ScanDocument, exportKind: String = "share") =
         settingsViewModel.logDocumentExport(document.id, document.title, exportKind)
-    }
 
     fun onBackupExportUriSelected(targetUri: Uri) = settingsViewModel.onBackupExportUriSelected(targetUri)
 
@@ -410,26 +352,17 @@ class ClearScanViewModel(application: Application) : AndroidViewModel(applicatio
 
     fun dismissBackupPassphrase() = settingsViewModel.dismissBackupPassphrase()
 
-    fun exportPathFor(document: ScanDocument): String? =
-        document.searchablePdfPath ?: document.pdfPath ?: document.pageImagePaths.firstOrNull()
+    fun exportPathFor(document: ScanDocument): String? = documentActionsHandler.exportPathFor(document)
 
-    fun exportMimeTypeFor(document: ScanDocument): String =
-        when {
-            document.searchablePdfPath != null || document.pdfPath != null -> "application/pdf"
-            else -> "image/jpeg"
-        }
+    fun exportMimeTypeFor(document: ScanDocument): String = documentActionsHandler.exportMimeTypeFor(document)
 
     fun saveScan(import: ScannerImport) = captureProcessor.saveScan(import)
 
     fun savePageTurnCapture(pagePaths: List<String>) = captureProcessor.savePageTurnCapture(pagePaths)
 
-    fun reportMessage(message: String) {
-        _uiState.update { it.copy(message = message) }
-    }
+    fun reportMessage(message: String) = _uiState.update { it.copy(message = message) }
 
-    fun clearMessage() {
-        _uiState.update { it.copy(message = null) }
-    }
+    fun clearMessage() = _uiState.update { it.copy(message = null) }
 
     fun checkForAppUpdate() = settingsViewModel.checkForAppUpdate()
 
