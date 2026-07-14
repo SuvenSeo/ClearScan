@@ -72,7 +72,7 @@
     <string name="vault_locked_body">ඔබගේ පෞද්ගලික ලේඛන පුස්තකාලයට ප්‍රවේශ වීමට සත්‍යාපනය කරන්න. සියල්ල මෙම උපාංගයේම රැඳී සිටී.</string>
     <string name="vault_unlock">ගබඩාව අගුළු හරින්න</string>
     <string name="vault_fingerprint">ඇඟිලි සලකුණ</string>
-    <string name="vault_no_biometric">ජෛවමිතික දෘඪාංග හමු නොවීය. අගුළු හැරීමට ඔබගේ උපාංග PIN හෝ රටාව භාවිතා කරන්න.</string>
+    <string name="vault_no_biometric">ජෛවමිතික හෝ තිර අගුලක් නොමැත. පද්ධති සැකසුම් තුළ උපාංග PIN, රටාව හෝ මුරපදයක් සකසා නැවත මෙහි එන්න.</string>
     <string name="vault_auth_failed">සත්‍යාපනය අසාර්ථකයි. නැවත උත්සාහ කරන්න හෝ ඔබගේ උපාංග PIN භාවිතා කරන්න.</string>
     <string name="self_host_title">ස්වයං-සත්කාරක නිර්යාතය</string>
     <string name="self_host_wifi_only">Wi-Fi පමණක් උඩුගත කිරීම්</string>

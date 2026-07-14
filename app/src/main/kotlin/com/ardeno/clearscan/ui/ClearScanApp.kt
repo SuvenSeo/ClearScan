@@ -27,8 +27,10 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.biometric.BiometricManager
 import com.ardeno.clearscan.ClearScanUiState
 import com.ardeno.clearscan.R
 import com.ardeno.clearscan.model.LibraryViewMode
@@ -172,8 +174,15 @@ fun ClearScanApp(
     }
 
     if (state.settings.vaultEnabled && !state.settings.vaultUnlocked) {
+        val context = LocalContext.current
+        val authenticators = BiometricManager.Authenticators.BIOMETRIC_STRONG or
+            BiometricManager.Authenticators.DEVICE_CREDENTIAL
+        val hasBiometric = BiometricManager.from(context)
+            .canAuthenticate(authenticators) == BiometricManager.BIOMETRIC_SUCCESS
         VaultLockScreen(
             onUnlockVault = onUnlockVault,
+            authError = state.settings.vaultAuthError,
+            hasBiometric = hasBiometric,
             modifier = Modifier.padding(0.dp)
         )
         return

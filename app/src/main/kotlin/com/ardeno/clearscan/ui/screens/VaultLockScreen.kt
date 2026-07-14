@@ -154,14 +154,13 @@ fun VaultLockScreen(
             Spacer(modifier = Modifier.height(16.dp))
             Text(
                 text = stringResource(R.string.vault_no_biometric),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.error,
                 textAlign = TextAlign.Center,
+                fontWeight = FontWeight.Medium,
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
-        }
-
-        if (authError) {
+        } else if (authError) {
             Spacer(modifier = Modifier.height(12.dp))
             Text(
                 text = stringResource(R.string.vault_auth_failed),

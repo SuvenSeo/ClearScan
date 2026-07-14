@@ -14,6 +14,9 @@ import androidx.biometric.BiometricPrompt
 import androidx.core.content.FileProvider
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import android.net.Uri
 import com.ardeno.clearscan.capture.PageTurnCaptureActivity
@@ -34,6 +37,16 @@ import java.io.File
 class MainActivity : FragmentActivity() {
     private val viewModel by viewModels<ClearScanViewModel>()
     private var pendingScanMode = ScanMode.Document
+    /** True while BiometricPrompt UI is showing — skip auto-lock on process ON_STOP. */
+    private var isBiometricPromptActive = false
+
+    private val processLifecycleObserver = LifecycleEventObserver { _, event ->
+        if (event != Lifecycle.Event.ON_STOP || isBiometricPromptActive) return@LifecycleEventObserver
+        val settings = viewModel.uiState.value.settings
+        if (settings.vaultEnabled && settings.vaultUnlocked) {
+            viewModel.lockVault(announce = false)
+        }
+    }
 
     private val scannerLauncher = registerForActivityResult(
         ActivityResultContracts.StartIntentSenderForResult()
@@ -97,6 +110,7 @@ class MainActivity : FragmentActivity() {
         installSplashScreen()
         super.onCreate(savedInstanceState)
 
+        ProcessLifecycleOwner.get().lifecycle.addObserver(processLifecycleObserver)
         handleIncomingIntent(intent)
 
         setContent {
@@ -172,6 +186,11 @@ class MainActivity : FragmentActivity() {
                 )
             }
         }
+    }
+
+    override fun onDestroy() {
+        ProcessLifecycleOwner.get().lifecycle.removeObserver(processLifecycleObserver)
+        super.onDestroy()
     }
 
     private fun startFileImport() {
@@ -399,10 +418,12 @@ class MainActivity : FragmentActivity() {
         when (biometricManager.canAuthenticate(authenticators)) {
             BiometricManager.BIOMETRIC_SUCCESS -> Unit
             BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED -> {
+                viewModel.reportVaultAuthError()
                 viewModel.reportMessage("Set up a screen lock or biometric first.")
                 return
             }
             else -> {
+                viewModel.reportVaultAuthError()
                 viewModel.reportMessage("Biometric vault is unavailable on this device.")
                 return
             }
@@ -410,27 +431,38 @@ class MainActivity : FragmentActivity() {
 
         val cipher: javax.crypto.Cipher = runCatching { viewModel.createVaultDecryptCipher() }
             .getOrElse { error ->
+                viewModel.reportVaultAuthError()
                 viewModel.reportMessage(error.localizedMessage ?: "Vault crypto is unavailable.")
                 return
             }
 
+        viewModel.clearVaultAuthError()
+        isBiometricPromptActive = true
         val prompt = BiometricPrompt(
             this,
             ContextCompat.getMainExecutor(this),
             object : BiometricPrompt.AuthenticationCallback() {
                 override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
                     super.onAuthenticationSucceeded(result)
+                    isBiometricPromptActive = false
                     viewModel.onVaultCryptoUnlocked()
                     onSuccess()
                 }
 
                 override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
                     super.onAuthenticationError(errorCode, errString)
+                    isBiometricPromptActive = false
                     if (errorCode != BiometricPrompt.ERROR_USER_CANCELED &&
                         errorCode != BiometricPrompt.ERROR_NEGATIVE_BUTTON
                     ) {
+                        viewModel.reportVaultAuthError()
                         viewModel.reportMessage(errString.toString())
                     }
+                }
+
+                override fun onAuthenticationFailed() {
+                    super.onAuthenticationFailed()
+                    viewModel.reportVaultAuthError()
                 }
             }
         )

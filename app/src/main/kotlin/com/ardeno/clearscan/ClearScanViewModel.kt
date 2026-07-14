@@ -340,7 +340,11 @@ class ClearScanViewModel(application: Application) : AndroidViewModel(applicatio
 
     fun unlockVault() = settingsViewModel.unlockVault()
 
-    fun lockVault() = settingsViewModel.lockVault()
+    fun lockVault(announce: Boolean = true) = settingsViewModel.lockVault(announce)
+
+    fun reportVaultAuthError() = settingsViewModel.reportVaultAuthError()
+
+    fun clearVaultAuthError() = settingsViewModel.clearVaultAuthError()
 
     fun mergeAllDocuments() = pdfToolsProcessor.mergeAllDocuments()
 

@@ -82,7 +82,7 @@
     <!-- Privacy -->
     <string name="privacy_title">Privacy</string>
     <string name="privacy_vault">Privacy vault</string>
-    <string name="privacy_vault_description">Lock the app behind biometrics</string>
+    <string name="privacy_vault_description">Lock the library behind biometrics; auto-locks when you leave</string>
     <string name="privacy_audit_log">Export audit log</string>
 
     <!-- Onboarding -->
@@ -105,7 +105,7 @@
     <string name="vault_locked_body">Authenticate to access your private document library. Everything stays on this device.</string>
     <string name="vault_unlock">Unlock vault</string>
     <string name="vault_fingerprint">Fingerprint</string>
-    <string name="vault_no_biometric">No biometric hardware detected. Use your device PIN or pattern to unlock.</string>
+    <string name="vault_no_biometric">No biometric or screen lock is available. Set up a device PIN, pattern, or password in system settings, then return here to unlock.</string>
     <string name="vault_auth_failed">Authentication failed. Try again or use your device PIN.</string>
 
     <!-- Self-host -->

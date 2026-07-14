@@ -9,6 +9,7 @@ import com.ardeno.clearscan.vault.PrivacyStatus
 data class SettingsUiState(
     val vaultEnabled: Boolean = false,
     val vaultUnlocked: Boolean = true,
+    val vaultAuthError: Boolean = false,
     val benchmarkSummary: String? = null,
     val isBackupRunning: Boolean = false,
     val selfHostConfig: SelfHostConfig = SelfHostConfig(),

@@ -148,7 +148,7 @@ class SettingsViewModel(
 
     fun onVaultCryptoUnlocked() {
         vaultCrypto.markSessionAuthorized()
-        _uiState.update { it.copy(vaultUnlocked = true) }
+        _uiState.update { it.copy(vaultUnlocked = true, vaultAuthError = false) }
         onMessage("Vault unlocked.")
         scope.launch {
             runCatching { vaultKeyMigration.migrateIfNeeded() }
@@ -158,12 +158,26 @@ class SettingsViewModel(
         }
     }
 
-    fun lockVault() {
+    fun reportVaultAuthError() {
+        _uiState.update { it.copy(vaultAuthError = true) }
+    }
+
+    fun clearVaultAuthError() {
+        _uiState.update { it.copy(vaultAuthError = false) }
+    }
+
+    fun lockVault(announce: Boolean = true) {
         vaultCrypto.clearSession()
         _uiState.update { current ->
-            if (!current.vaultEnabled) current else current.copy(vaultUnlocked = false)
+            if (!current.vaultEnabled) {
+                current
+            } else {
+                current.copy(vaultUnlocked = false, vaultAuthError = false)
+            }
         }
-        onMessage("Vault locked.")
+        if (announce) {
+            onMessage("Vault locked.")
+        }
         scope.launch {
             repository.clearReadableCache()
         }

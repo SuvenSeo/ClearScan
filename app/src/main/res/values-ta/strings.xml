@@ -72,7 +72,7 @@
     <string name="vault_locked_body">உங்கள் தனிப்பட்ட ஆவண நூலகத்தை அணுக அங்கீகரிக்கவும். அனைத்தும் இந்த சாதனத்திலேயே இருக்கும்.</string>
     <string name="vault_unlock">பாதுகாப்பறையைத் திற</string>
     <string name="vault_fingerprint">கைரேகை</string>
-    <string name="vault_no_biometric">பயோமெட்ரிக் வன்பொருள் கண்டறியப்படவில்லை. திறக்க உங்கள் சாதன PIN அல்லது வடிவத்தைப் பயன்படுத்தவும்.</string>
+    <string name="vault_no_biometric">பயோமெட்ரிக் அல்லது திரை பூட்டு இல்லை. கணினி அமைப்புகளில் PIN, வடிவம் அல்லது கடவுச்சொல்லை அமைத்து மீண்டும் இங்கே வரவும்.</string>
     <string name="vault_auth_failed">அங்கீகாரம் தோல்வியடைந்தது. மீண்டும் முயற்சிக்கவும் அல்லது உங்கள் சாதன PIN ஐப் பயன்படுத்தவும்.</string>
     <string name="self_host_title">சுய-ஹோஸ்ட் ஏற்றுமதி</string>
     <string name="self_host_wifi_only">Wi-Fi மட்டும் பதிவேற்றங்கள்</string>

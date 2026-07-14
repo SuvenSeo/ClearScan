@@ -111,6 +111,7 @@ dependencies {
     implementation(libs.compose.ui.text.google.fonts)
     implementation(libs.compose.ui.tooling.preview)
     implementation(libs.core.splashscreen)
+    implementation(libs.lifecycle.process)
     implementation(libs.lifecycle.runtime.compose)
     implementation(libs.lifecycle.runtime.ktx)
     implementation(libs.lifecycle.viewmodel.compose)
