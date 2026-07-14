@@ -28,10 +28,22 @@ foreach ($file in $entryFiles) {
         "tamil" { $tamilCount++ }
         default { Write-Warning "Unknown language in $($file.Name): $($content.language)" }
     }
+
+    if ($null -eq $content.imageFile -or [string]::IsNullOrWhiteSpace([string]$content.imageFile)) {
+        Write-Warning "OCR corpus entry $($file.Name) is missing imageFile."
+        exit 1
+    }
+
+    $imagePath = Join-Path $corpusDir ([string]$content.imageFile)
+    if (-not (Test-Path -LiteralPath $imagePath)) {
+        Write-Warning "OCR corpus image missing for $($file.Name): $imagePath"
+        exit 1
+    }
 }
 
 Write-Host "Sinhala entries: $sinhalaCount"
 Write-Host "Tamil entries: $tamilCount"
+Write-Host "OCR corpus imageFile references verified."
 
 if ($sinhalaCount -lt $minPerLanguage) {
     Write-Warning "OCR corpus has fewer than $minPerLanguage Sinhala entries ($sinhalaCount)."

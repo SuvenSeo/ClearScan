@@ -2,7 +2,8 @@
   "id": "sinhala-receipt-02",
   "language": "sinhala",
   "category": "receipt",
-  "description": "Pharmacy receipt with itemized medicines.",
+  "description": "Pharmacy receipt with itemized medicines. Synthetic rendered scan fixture (Unicode text → PNG).",
   "expectedText": "නුවර ඖෂධ ශාලාව\nරිසිට්පත අංකය: 8842\nපැරසිටමෝල් 500mg x2\tRs. 240.00\nවිටමින් සී\t\tRs. 650.00\nමුළු ගෙවීම\t\tRs. 890.00",
-  "actualText": "නුවර ඖෂධ ශාලාව\nරිසිට්පත අංකය: 8842\nපැරසිටමෝල් 500mg x2\tRs. 240.00\nවිටමින් සී\t\tRs. 650.00\nමුළු ගෙවීම\t\tRs. 890.00"
+  "actualText": "නුවර ඖෂධ ශාලාව\nරිසිට්පත අංකය: 8842\nපැරසිටමෝල් 500mg x2\tRs. 240.00\nවිටමින් සී\t\tRs. 650.00\nමුළු ගෙවීම\t\tRs. 890.00",
+  "imageFile": "sinhala-receipt-02.png"
 }

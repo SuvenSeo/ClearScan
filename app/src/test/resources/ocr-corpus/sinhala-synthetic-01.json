@@ -2,7 +2,8 @@
   "id": "sinhala-synthetic-01",
   "language": "sinhala",
   "category": "synthetic-print",
-  "description": "Placeholder Sinhala synthetic sample for JVM corpus harness validation.",
+  "description": "Placeholder Sinhala synthetic sample for JVM corpus harness validation. Synthetic rendered scan fixture (Unicode text → PNG).",
   "expectedText": "සිංහල ලිපිය",
-  "actualText": "සිංහල ලිපිය"
+  "actualText": "සිංහල ලිපිය",
+  "imageFile": "sinhala-synthetic-01.png"
 }

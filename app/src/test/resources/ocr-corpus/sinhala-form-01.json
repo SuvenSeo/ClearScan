@@ -2,7 +2,8 @@
   "id": "sinhala-form-01",
   "language": "sinhala",
   "category": "form",
-  "description": "Government application form header and fields.",
+  "description": "Government application form header and fields. Synthetic rendered scan fixture (Unicode text → PNG).",
   "expectedText": "ජනමාධ්‍ය අමාත්‍යාංශය\nඅයදුම්පත\nනම: __________________\nජා.හි.ප. අංකය: __________\nලිපිනය: __________________\nඅත්සන: __________________",
-  "actualText": "ජනමාධ්‍ය අමාත්‍යාංශය\nඅයදුම්පත\nනම: __________________\nජා.හි.ප. අංකය: __________\nලිපිනය: __________________\nඅත්සන: __________________"
+  "actualText": "ජනමාධ්‍ය අමාත්‍යාංශය\nඅයදුම්පත\nනම: __________________\nජා.හි.ප. අංකය: __________\nලිපිනය: __________________\nඅත්සන: __________________",
+  "imageFile": "sinhala-form-01.png"
 }

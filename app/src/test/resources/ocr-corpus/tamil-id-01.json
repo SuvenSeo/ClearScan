@@ -2,7 +2,8 @@
   "id": "tamil-id-01",
   "language": "tamil",
   "category": "form",
-  "description": "National identity card text snippet (synthetic, no real PII).",
+  "description": "National identity card text snippet (synthetic, no real PII). Synthetic rendered scan fixture (Unicode text → PNG).",
   "expectedText": "Ilankai democratic socialist republic\nnational identity card\nபெயர்: Nishantha Fernando\nNIC: 199512345678",
-  "actualText": "Ilankai democratic socialist republic\nnational identity card\nபெயர்: Nishantha Fernando\nNIC: 199512345678"
+  "actualText": "Ilankai democratic socialist republic\nnational identity card\nபெயர்: Nishantha Fernando\nNIC: 199512345678",
+  "imageFile": "tamil-id-01.png"
 }

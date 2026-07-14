@@ -2,7 +2,8 @@
   "id": "tamil-invoice-01",
   "language": "tamil",
   "category": "invoice",
-  "description": "Printed A4 tax invoice from a stationery supplier.",
+  "description": "Printed A4 tax invoice from a stationery supplier. Synthetic rendered scan fixture (Unicode text → PNG).",
   "expectedText": "Ilanka stationery (Pvt) Ltd\nInvoice எண்: INV-2026-0412\nவாங்குபவர்: Ardeno Solutions\nprinting paper 500\tRs. 12,500.00\nTax 18%\t\tRs. 2,250.00\nமொத்தம்\t\tRs. 14,750.00",
-  "actualText": "Ilanka stationery (Pvt) Ltd\nInvoice எண்: INV-2026-0412\nவாங்குபவர்: Ardeno Solutions\nprinting paper 500\tRs. 12,500.00\nTax 18%\t\tRs. 2,250.00\nமொத்தம்\t\tRs. 14,750.00"
+  "actualText": "Ilanka stationery (Pvt) Ltd\nInvoice எண்: INV-2026-0412\nவாங்குபவர்: Ardeno Solutions\nprinting paper 500\tRs. 12,500.00\nTax 18%\t\tRs. 2,250.00\nமொத்தம்\t\tRs. 14,750.00",
+  "imageFile": "tamil-invoice-01.png"
 }

@@ -2,7 +2,8 @@
   "id": "sinhala-doc-06",
   "language": "sinhala",
   "category": "handwritten",
-  "description": "Handwritten address label.",
+  "description": "Handwritten address label. Synthetic rendered scan fixture (Unicode text → PNG).",
   "expectedText": "ලැබිය යුතු:\nරංජith Perera\n123/4, Galle Road\nMount Lavinia",
-  "actualText": "ලැබිය යුතු:\nරංජith Perera\n123/4, Galle Road\nMount Lavinia"
+  "actualText": "ලැබිය යුතු:\nරංජith Perera\n123/4, Galle Road\nMount Lavinia",
+  "imageFile": "sinhala-doc-06.png"
 }

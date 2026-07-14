@@ -2,7 +2,8 @@
   "id": "sinhala-id-02",
   "language": "sinhala",
   "category": "form",
-  "description": "Driving license header and class.",
+  "description": "Driving license header and class. Synthetic rendered scan fixture (Unicode text → PNG).",
   "expectedText": "මෝටර් රථ පාලන අධිකාරී\nරියpermits\nපන්තිය: B\nකල් ඉකුත්: 2028-06-30",
-  "actualText": "මෝටර් රථ පාලන අධිකාරී\nරියpermits\nපන්තිය: B\nකල් ඉකුත්: 2028-06-30"
+  "actualText": "මෝටර් රථ පාලන අධිකාරී\nරියpermits\nපන්තිය: B\nකල් ඉකුත්: 2028-06-30",
+  "imageFile": "sinhala-id-02.png"
 }

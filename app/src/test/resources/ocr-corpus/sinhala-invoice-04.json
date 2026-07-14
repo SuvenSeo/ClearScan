@@ -2,7 +2,8 @@
   "id": "sinhala-invoice-04",
   "language": "sinhala",
   "category": "invoice",
-  "description": "School fees invoice with partial OCR mismatch for regression.",
+  "description": "School fees invoice with partial OCR mismatch for regression. Synthetic rendered scan fixture (Unicode text → PNG).",
   "expectedText": "නුවර පාසල\nපාඩම් ගාස්තු - අ.1\nශිෂ්‍ය: සමන් Perera\nමුළු: Rs. 25,000.00",
-  "actualText": "නුවර පාසල\nපාඩම් ගාස්තු - අ.1\nශිෂ්‍ය: සමන්\nමුළු: Rs. 25,000.00"
+  "actualText": "නුවර පාසල\nපාඩම් ගාස්තු - අ.1\nශිෂ්‍ය: සමන්\nමුළු: Rs. 25,000.00",
+  "imageFile": "sinhala-invoice-04.png"
 }

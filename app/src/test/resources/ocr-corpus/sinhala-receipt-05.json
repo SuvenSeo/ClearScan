@@ -2,7 +2,8 @@
   "id": "sinhala-receipt-05",
   "language": "sinhala",
   "category": "receipt",
-  "description": "Low-light mobile photo of a tea kiosk receipt.",
+  "description": "Low-light mobile photo of a tea kiosk receipt. Synthetic rendered scan fixture (Unicode text → PNG).",
   "expectedText": "කඩේ තේ කඩ\nතේ x2\t\tRs. 100.00\nරොටි\t\tRs. 60.00\nමුළු\t\tRs. 160.00",
-  "actualText": "කඩේ තේ කඩ\nතේ x2\t\tRs. 100.00\nරොටි\t\tRs. 60.00\nමුළු\t\tRs. 160.00"
+  "actualText": "කඩේ තේ කඩ\nතේ x2\t\tRs. 100.00\nරොටි\t\tRs. 60.00\nමුළු\t\tRs. 160.00",
+  "imageFile": "sinhala-receipt-05.png"
 }

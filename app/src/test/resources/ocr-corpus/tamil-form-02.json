@@ -2,7 +2,8 @@
   "id": "tamil-form-02",
   "language": "tamil",
   "category": "form",
-  "description": "Bank account opening form excerpt.",
+  "description": "Bank account opening form excerpt. Synthetic rendered scan fixture (Unicode text → PNG).",
   "expectedText": "Bank: Lanka commercial bank\naccount type: savings\nபெயர்: Kamal Silva\nphone: 077-1234567",
-  "actualText": "Bank: Lanka commercial bank\naccount type: savings\nபெயர்: Kamal Silva\nphone: 077-1234567"
+  "actualText": "Bank: Lanka commercial bank\naccount type: savings\nபெயர்: Kamal Silva\nphone: 077-1234567",
+  "imageFile": "tamil-form-02.png"
 }

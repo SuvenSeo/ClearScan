@@ -2,7 +2,8 @@
   "id": "tamil-doc-08",
   "language": "tamil",
   "category": "low-light",
-  "description": "Low-light photo of a bus timetable fragment.",
+  "description": "Low-light photo of a bus timetable fragment. Synthetic rendered scan fixture (Unicode text → PNG).",
   "expectedText": "bus timetable\ncolombo → kandy\n06:30 | 08:00 | 10:15 | 14:00",
-  "actualText": "bus timetable\ncolombo → kandy\n06:30 | 08:00 | 10:15 | 14:00"
+  "actualText": "bus timetable\ncolombo → kandy\n06:30 | 08:00 | 10:15 | 14:00",
+  "imageFile": "tamil-doc-08.png"
 }

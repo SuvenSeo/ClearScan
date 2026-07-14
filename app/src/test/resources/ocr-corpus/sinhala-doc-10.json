@@ -2,7 +2,8 @@
   "id": "sinhala-doc-10",
   "language": "sinhala",
   "category": "handwritten",
-  "description": "Handwritten classroom chalkboard excerpt.",
+  "description": "Handwritten classroom chalkboard excerpt. Synthetic rendered scan fixture (Unicode text → PNG).",
   "expectedText": "අද පාඩම: සිංහala වyakarana\n- නාම පද\n- ක්‍රියා පද\n- විශේෂණ",
-  "actualText": "අද පාඩම: සිංහala වyakarana\n- නාම පද\n- ක්‍රියා පද\n- විශේෂණ"
+  "actualText": "අද පාඩම: සිංහala වyakarana\n- නාම පද\n- ක්‍රියා පද\n- විශේෂණ",
+  "imageFile": "sinhala-doc-10.png"
 }

@@ -2,7 +2,8 @@
   "id": "tamil-doc-09",
   "language": "tamil",
   "category": "low-light",
-  "description": "Evening photo of a street sign with Tamil text.",
+  "description": "Evening photo of a street sign with Tamil text. Synthetic rendered scan fixture (Unicode text → PNG).",
   "expectedText": "city centre zone\nspeed limit: 40 km/h",
-  "actualText": "city centre zone\nspeed limit: 40 km/h"
+  "actualText": "city centre zone\nspeed limit: 40 km/h",
+  "imageFile": "tamil-doc-09.png"
 }

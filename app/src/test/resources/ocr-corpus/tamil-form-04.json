@@ -2,7 +2,8 @@
   "id": "tamil-form-04",
   "language": "tamil",
   "category": "form",
-  "description": "Handwritten job application form fields.",
+  "description": "Handwritten job application form fields. Synthetic rendered scan fixture (Unicode text → PNG).",
   "expectedText": "Job application\nposition: accountant\nexperience: 5 years\nDate: 2026-02-01",
-  "actualText": "Job application\nposition: accountant\nexperience: 5 years\nDate: 2026-02-01"
+  "actualText": "Job application\nposition: accountant\nexperience: 5 years\nDate: 2026-02-01",
+  "imageFile": "tamil-form-04.png"
 }

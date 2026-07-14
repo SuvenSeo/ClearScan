@@ -2,7 +2,8 @@
   "id": "sinhala-doc-03",
   "language": "sinhala",
   "category": "synthetic-print",
-  "description": "Product label with ingredients in Sinhala.",
+  "description": "Product label with ingredients in Sinhala. Synthetic rendered scan fixture (Unicode text → PNG).",
   "expectedText": "අමුද්‍රව්‍ය: සීනි, තේ කොළ, සුවඳ වර්ධක\nනිෂ්පාදන දිනය: 2026-01-10\nකල් ඉකut: 2027-01-10\nNet Wt: 200g",
-  "actualText": "අමුද්‍රව්‍ය: සීනි, තේ කොළ, සුවඳ වර්ධක\nනිෂ්පාදන දිනය: 2026-01-10\nකල් ඉකut: 2027-01-10\nNet Wt: 200g"
+  "actualText": "අමුද්‍රව්‍ය: සීනි, තේ කොළ, සුවඳ වර්ධක\nනිෂ්පාදන දිනය: 2026-01-10\nකල් ඉකut: 2027-01-10\nNet Wt: 200g",
+  "imageFile": "sinhala-doc-03.png"
 }

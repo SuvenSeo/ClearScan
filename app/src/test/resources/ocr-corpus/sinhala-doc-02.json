@@ -2,7 +2,8 @@
   "id": "sinhala-doc-02",
   "language": "sinhala",
   "category": "synthetic-print",
-  "description": "Office memo with date and subject line.",
+  "description": "Office memo with date and subject line. Synthetic rendered scan fixture (Unicode text → PNG).",
   "expectedText": "INTERNAL MEMO\nවිෂය: OCR පරීක්ෂණ corpus\nදිනය: 2026-07-13\nඅ内容: සිංහala ලේඛන OCR ගුණාත්මකභාවය මැනීම.",
-  "actualText": "INTERNAL MEMO\nවිෂය: OCR පරීක්ෂණ corpus\nදිනය: 2026-07-13\nඅ内容: සිංහala ලේඛන OCR ගුණාත්මකභාවය මැනීම."
+  "actualText": "INTERNAL MEMO\nවිෂය: OCR පරීක්ෂණ corpus\nදිනය: 2026-07-13\nඅ内容: සිංහala ලේඛන OCR ගුණාත්මකභාවය මැනීම.",
+  "imageFile": "sinhala-doc-02.png"
 }

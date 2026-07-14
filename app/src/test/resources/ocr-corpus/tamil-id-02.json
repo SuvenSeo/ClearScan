@@ -2,7 +2,8 @@
   "id": "tamil-id-02",
   "language": "tamil",
   "category": "form",
-  "description": "Driving license header and class.",
+  "description": "Driving license header and class. Synthetic rendered scan fixture (Unicode text → PNG).",
   "expectedText": "motor traffic department\ndriving license\nclass: B\nexpiry: 2028-06-30",
-  "actualText": "motor traffic department\ndriving license\nclass: B\nexpiry: 2028-06-30"
+  "actualText": "motor traffic department\ndriving license\nclass: B\nexpiry: 2028-06-30",
+  "imageFile": "tamil-id-02.png"
 }

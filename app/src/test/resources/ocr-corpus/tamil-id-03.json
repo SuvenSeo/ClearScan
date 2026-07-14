@@ -2,7 +2,8 @@
   "id": "tamil-id-03",
   "language": "tamil",
   "category": "form",
-  "description": "Passport biodata page excerpt (synthetic).",
+  "description": "Passport biodata page excerpt (synthetic). Synthetic rendered scan fixture (Unicode text → PNG).",
   "expectedText": "PASSPORT\nnationality: Sri Lankan\nbirth: 1990-08-14\nsex: F",
-  "actualText": "PASSPORT\nnationality: Sri Lankan\nbirth: 1990-08-14\nsex: F"
+  "actualText": "PASSPORT\nnationality: Sri Lankan\nbirth: 1990-08-14\nsex: F",
+  "imageFile": "tamil-id-03.png"
 }

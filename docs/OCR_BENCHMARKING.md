@@ -76,20 +76,22 @@ Samples: rendered PNG text (1280×360, 72pt) for:
 | Sinhala | sinhala-synthetic-print | Run self-check in app | — | Requires device/emulator |
 | Tamil | tamil-synthetic-print | Run self-check in app | — | Requires device/emulator |
 
-### Synthetic JVM corpus (Phase 4 — complete)
+### Synthetic JVM corpus with rendered scan PNGs (Phase 4 — complete)
 
-The test classpath corpus now includes **27 Sinhala** and **27 Tamil** labeled JSON entries with `expectedText` ground truth. Most entries include `actualText` for JVM CER/WER scoring; `imageFile` is optional (see `OcrCorpusBenchmark.evaluate`).
+The test classpath corpus includes **27 Sinhala** and **27 Tamil** labeled JSON entries with `expectedText` ground truth, `actualText` for JVM CER/WER scoring, and a rendered **PNG scan fixture** via `imageFile` (Unicode text → A4-like PNG using Noto Sans Sinhala/Tamil).
+
+Regenerate text entries via `tools/ocr-corpus/generate-synthetic-corpus.py`.
+Render/update PNGs via `tools/ocr-corpus/render-corpus-images.py`.
+CI validates `imageFile` presence through `scripts/check-ocr-corpus.ps1`.
 
 Categories covered: printed text, handwriting, receipts, invoices, forms, and low-light document descriptions.
 
-Regenerate or extend via `tools/ocr-corpus/generate-synthetic-corpus.py` and re-run `OcrCorpusBenchmarkTest` after each batch.
+### Camera-captured scan corpus (future)
 
-### Real scan corpus (future)
+Production OCR accuracy claims still benefit from labeled **real camera** scan PNGs paired with the same JSON schema:
 
-Production claims still benefit from labeled **real** scan PNGs paired with the same JSON schema:
-
-- Replace or supplement synthetic entries with camera captures.
-- Attach `imageFile` for on-device Tesseract scoring via `imageFile` without `actualText`.
+- Replace or supplement synthetic rendered fixtures with device camera captures.
+- Score on-device via Tesseract using `imageFile` without relying on stored `actualText`.
 
 Add entries via [tools/ocr-corpus/README.md](../tools/ocr-corpus/README.md).
 
@@ -109,6 +111,6 @@ Do not claim Sinhala/Tamil OCR is production-ready for all document types until 
 | Benchmark harness | `app/.../ocr/OcrBenchmark.kt` |
 | Corpus loader | `app/.../ocr/OcrCorpusBenchmark.kt` |
 | Corpus assets | `app/src/test/resources/ocr-corpus/` |
-| Corpus authoring | `tools/ocr-corpus/` |
+| Corpus renderer | `tools/ocr-corpus/render-corpus-images.py` |
 | Synthetic runner | `app/.../ocr/OcrEngine.kt` (`OcrBenchmarkRunner`) |
 | UI picker | `app/.../ui/components/OcrLanguagePicker.kt` |

@@ -2,7 +2,8 @@
   "id": "sinhala-form-03",
   "language": "sinhala",
   "category": "form",
-  "description": "Medical clinic registration form.",
+  "description": "Medical clinic registration form. Synthetic rendered scan fixture (Unicode text → PNG).",
   "expectedText": "නිරෝගී ලියාපදිංචි පත්‍රය\nවයස: 34\nරුධිර වර්ගය: O+\nසවදෘෂිය: නැත",
-  "actualText": "නිරෝගී ලියාපදිංචි පත්‍රය\nවයස: 34\nරුධිර වර්ගය: O+\nසවදෘෂිය: නැත"
+  "actualText": "නිරෝගී ලියාපදිංචි පත්‍රය\nවයස: 34\nරුධිර වර්ගය: O+\nසවදෘෂිය: නැත",
+  "imageFile": "sinhala-form-03.png"
 }

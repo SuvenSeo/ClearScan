@@ -2,7 +2,8 @@
   "id": "sinhala-form-02",
   "language": "sinhala",
   "category": "form",
-  "description": "Bank account opening form excerpt.",
+  "description": "Bank account opening form excerpt. Synthetic rendered scan fixture (Unicode text → PNG).",
   "expectedText": "බැංකුව: ලංකා වාණිජ බැංකුව\nගිණුම් වර්ගය: ඉතිරි කිරීම\nනම: කමල් Silva\nදුරකථන: 077-1234567",
-  "actualText": "බැංකුව: ලංකා වාණිජ බැංකුව\nගිණුම් වර්ගය: ඉතිරි කිරීම\nනම: කමල් Silva\nදුරකථන: 077-1234567"
+  "actualText": "බැංකුව: ලංකා වාණිජ බැංකුව\nගිණුම් වර්ගය: ඉතිරි කිරීම\nනම: කමල් Silva\nදුරකථන: 077-1234567",
+  "imageFile": "sinhala-form-02.png"
 }

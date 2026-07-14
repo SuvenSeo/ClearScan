@@ -2,7 +2,8 @@
   "id": "tamil-doc-10",
   "language": "tamil",
   "category": "handwritten",
-  "description": "Handwritten classroom chalkboard excerpt.",
+  "description": "Handwritten classroom chalkboard excerpt. Synthetic rendered scan fixture (Unicode text → PNG).",
   "expectedText": "இன்றைய பாடம்: தமிழ் grammar\n- noun\n- verb\n- adjective",
-  "actualText": "இன்றைய பாடம்: தமிழ் grammar\n- noun\n- verb\n- adjective"
+  "actualText": "இன்றைய பாடம்: தமிழ் grammar\n- noun\n- verb\n- adjective",
+  "imageFile": "tamil-doc-10.png"
 }

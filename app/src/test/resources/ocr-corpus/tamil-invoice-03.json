@@ -2,7 +2,8 @@
   "id": "tamil-invoice-03",
   "language": "tamil",
   "category": "invoice",
-  "description": "Utility bill header snippet.",
+  "description": "Utility bill header snippet. Synthetic rendered scan fixture (Unicode text → PNG).",
   "expectedText": "Minni bill\naccount: 44-882-991\nperiod: 2026 Jan\nusage: 245 kWh\nமொத்தம்: Rs. 18,420.00",
-  "actualText": "Minni bill\naccount: 44-882-991\nperiod: 2026 Jan\nusage: 245 kWh\nமொத்தம்: Rs. 18,420.00"
+  "actualText": "Minni bill\naccount: 44-882-991\nperiod: 2026 Jan\nusage: 245 kWh\nமொத்தம்: Rs. 18,420.00",
+  "imageFile": "tamil-invoice-03.png"
 }

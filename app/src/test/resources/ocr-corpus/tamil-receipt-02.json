@@ -2,7 +2,8 @@
   "id": "tamil-receipt-02",
   "language": "tamil",
   "category": "receipt",
-  "description": "Pharmacy receipt with itemized medicines.",
+  "description": "Pharmacy receipt with itemized medicines. Synthetic rendered scan fixture (Unicode text → PNG).",
   "expectedText": "நகar மarundagam\nரசீது எண்: 8842\nParacetamol 500mg x2\tRs. 240.00\nVitamin C\t\tRs. 650.00\nமொத்தம்\t\tRs. 890.00",
-  "actualText": "நகar மarundagam\nரசீது எண்: 8842\nParacetamol 500mg x2\tRs. 240.00\nVitamin C\t\tRs. 650.00\nமொத்தம்\t\tRs. 890.00"
+  "actualText": "நகar மarundagam\nரசீது எண்: 8842\nParacetamol 500mg x2\tRs. 240.00\nVitamin C\t\tRs. 650.00\nமொத்தம்\t\tRs. 890.00",
+  "imageFile": "tamil-receipt-02.png"
 }

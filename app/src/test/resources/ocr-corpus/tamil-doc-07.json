@@ -2,7 +2,8 @@
   "id": "tamil-doc-07",
   "language": "tamil",
   "category": "low-light",
-  "description": "Dim indoor scan of a printed notice.",
+  "description": "Dim indoor scan of a printed notice. Synthetic rendered scan fixture (Unicode text → PNG).",
   "expectedText": "PUBLIC NOTICE\n2026 April 05 office மூடப்பட்டுள்ளது.\nமுன்கூட்டியே தெரிவிக்கவும்.",
-  "actualText": "PUBLIC NOTICE\n2026 April 05 office மூடப்பட்டுள்ளது.\nமுன்கூட்டியே தெரிவிக்கவும்."
+  "actualText": "PUBLIC NOTICE\n2026 April 05 office மூடப்பட்டுள்ளது.\nமுன்கூட்டியே தெரிவிக்கவும்.",
+  "imageFile": "tamil-doc-07.png"
 }

@@ -2,7 +2,8 @@
   "id": "sinhala-invoice-03",
   "language": "sinhala",
   "category": "invoice",
-  "description": "Utility bill header snippet.",
+  "description": "Utility bill header snippet. Synthetic rendered scan fixture (Unicode text → PNG).",
   "expectedText": "විදුලි බිල්පත\nගිණුම් අංකය: 44-882-991\nකාලය: 2026 ජනවාරි\nභාවිතය: 245 kWh\nමුළු ගෙවීම: Rs. 18,420.00",
-  "actualText": "විදුලි බිල්පත\nගිණුම් අංකය: 44-882-991\nකාලය: 2026 ජනවාරි\nභාවිතය: 245 kWh\nමුළු ගෙවීම: Rs. 18,420.00"
+  "actualText": "විදුලි බිල්පත\nගිණුම් අංකය: 44-882-991\nකාලය: 2026 ජනවාරි\nභාවිතය: 245 kWh\nමුළු ගෙවීම: Rs. 18,420.00",
+  "imageFile": "sinhala-invoice-03.png"
 }

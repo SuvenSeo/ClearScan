@@ -2,7 +2,8 @@
   "id": "sinhala-doc-05",
   "language": "sinhala",
   "category": "handwritten",
-  "description": "Handwritten shopping list.",
+  "description": "Handwritten shopping list. Synthetic rendered scan fixture (Unicode text → PNG).",
   "expectedText": "සාප්පු ලැයිස්තුව\n- පාන්\n- කිරි\n- බිත්තara\n- සබන්",
-  "actualText": "සාප්පු ලැයිස්තුව\n- පාන්\n- කිරි\n- බිත්තara\n- සබන්"
+  "actualText": "සාප්පු ලැයිස්තුව\n- පාන්\n- කිරි\n- බිත්තara\n- සබන්",
+  "imageFile": "sinhala-doc-05.png"
 }

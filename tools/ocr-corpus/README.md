@@ -9,8 +9,17 @@ tools/ocr-corpus/              # Authoring docs and schema reference (this folde
 app/src/test/resources/ocr-corpus/   # JVM benchmark corpus (checked into git)
   index.json                   # Lists entry JSON files
   *.json                       # One metadata file per labeled sample
-  *.png                        # Optional scan image paired with an entry
+  *.png                        # Rendered (or camera) scan image paired via imageFile
 ```
+
+## Regenerating Synthetic Fixtures
+
+```bash
+python3 tools/ocr-corpus/generate-synthetic-corpus.py   # JSON ground truth
+python3 tools/ocr-corpus/render-corpus-images.py         # PNG scan fixtures + imageFile
+```
+
+Every entry in the checked-in corpus must include `imageFile` pointing at an existing PNG. `scripts/check-ocr-corpus.ps1` enforces this in CI.
 
 ## Adding a Labeled Sample
 

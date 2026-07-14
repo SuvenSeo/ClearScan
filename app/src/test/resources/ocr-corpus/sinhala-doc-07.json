@@ -2,7 +2,8 @@
   "id": "sinhala-doc-07",
   "language": "sinhala",
   "category": "low-light",
-  "description": "Dim indoor scan of a printed notice.",
+  "description": "Dim indoor scan of a printed notice. Synthetic rendered scan fixture (Unicode text → PNG).",
   "expectedText": "PUBLIC NOTICE\n2026 අප්‍රේල් 05 දින office වසා ඇත.\nකරුණාකර කලින් දැනුම් දෙන්න.",
-  "actualText": "PUBLIC NOTICE\n2026 අප්‍රේල් 05 දින office වසා ඇත.\nකරුණාකර කලින් දැනුම් දෙන්න."
+  "actualText": "PUBLIC NOTICE\n2026 අප්‍රේල් 05 දින office වසා ඇත.\nකරුණාකර කලින් දැනුම් දෙන්න.",
+  "imageFile": "sinhala-doc-07.png"
 }

@@ -2,7 +2,8 @@
   "id": "tamil-doc-04",
   "language": "tamil",
   "category": "handwritten",
-  "description": "Handwritten meeting notes photographed on desk.",
+  "description": "Handwritten meeting notes photographed on desk. Synthetic rendered scan fixture (Unicode text → PNG).",
   "expectedText": "கூட்டம் - 2026-03-01\n1. OCR corpus details\n2. Tesseract traineddata update\n3. QA tools",
-  "actualText": "கூட்டம் - 2026-03-01\n1. OCR corpus details\n2. Tesseract traineddata update\n3. QA tools"
+  "actualText": "கூட்டம் - 2026-03-01\n1. OCR corpus details\n2. Tesseract traineddata update\n3. QA tools",
+  "imageFile": "tamil-doc-04.png"
 }

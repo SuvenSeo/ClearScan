@@ -2,7 +2,8 @@
   "id": "tamil-doc-05",
   "language": "tamil",
   "category": "handwritten",
-  "description": "Handwritten shopping list.",
+  "description": "Handwritten shopping list. Synthetic rendered scan fixture (Unicode text → PNG).",
   "expectedText": "shopping list\n- Roti\n- Paal\n- Bitterai\n- soap",
-  "actualText": "shopping list\n- Roti\n- Paal\n- Bitterai\n- soap"
+  "actualText": "shopping list\n- Roti\n- Paal\n- Bitterai\n- soap",
+  "imageFile": "tamil-doc-05.png"
 }

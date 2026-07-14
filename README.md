@@ -16,7 +16,9 @@ See [docs/PHASES.md](docs/PHASES.md) for done-when criteria per phase.
 
 ## Current Release
 
-**v0.2.3** — Full remediation pass: metadata encryption, biometric-bound vault keys, ViewModel split, si/ta localization foundation, expanded OCR corpus (27 entries per language), CamScanner competitive research, Robolectric unit-test harness.
+**v0.2.4** — Complete remaining remediations: full Compose + snackbar localization (en/si/ta), folder rename/delete UI, vault auto-lock + recovery messaging, 54 rendered OCR PNG fixtures with `imageFile`, ViewModel façade under 380 lines.
+
+Previous: **v0.2.3** — metadata encryption, biometric-bound vault keys, ViewModel split, OCR corpus JSON expansion, CamScanner research.
 
 Download: [GitHub Releases](https://github.com/SuvenSeo/ClearScan/releases/latest)
 

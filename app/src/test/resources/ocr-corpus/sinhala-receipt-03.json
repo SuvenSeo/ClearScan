@@ -2,7 +2,8 @@
   "id": "sinhala-receipt-03",
   "language": "sinhala",
   "category": "receipt",
-  "description": "Restaurant bill with service charge.",
+  "description": "Restaurant bill with service charge. Synthetic rendered scan fixture (Unicode text → PNG).",
   "expectedText": "මිහිරු කුස්මී\nමේසය: 12\nරයිස් කරි\t\tRs. 650.00\nනූඩ්ල්ස්\t\tRs. 480.00\nසේවා ගාස්තුව 10%\tRs. 113.00\nඑකතුව\t\tRs. 1,243.00",
-  "actualText": "මිහිරු කුස්මී\nමේසය: 12\nරයිස් කරි\t\tRs. 650.00\nනූඩ්ල්ස්\t\tRs. 480.00\nසේවා ගාස්තුව 10%\tRs. 113.00\nඑකතුව\t\tRs. 1,243.00"
+  "actualText": "මිහිරු කුස්මී\nමේසය: 12\nරයිස් කරි\t\tRs. 650.00\nනූඩ්ල්ස්\t\tRs. 480.00\nසේවා ගාස්තුව 10%\tRs. 113.00\nඑකතුව\t\tRs. 1,243.00",
+  "imageFile": "sinhala-receipt-03.png"
 }

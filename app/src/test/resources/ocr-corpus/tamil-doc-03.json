@@ -2,7 +2,8 @@
   "id": "tamil-doc-03",
   "language": "tamil",
   "category": "synthetic-print",
-  "description": "Product label with ingredients in Tamil.",
+  "description": "Product label with ingredients in Tamil. Synthetic rendered scan fixture (Unicode text → PNG).",
   "expectedText": "Ingredients: Sugar, tea leaves, flavour\nmanufactured: 2026-01-10\nexpiry: 2027-01-10\nNet Wt: 200g",
-  "actualText": "Ingredients: Sugar, tea leaves, flavour\nmanufactured: 2026-01-10\nexpiry: 2027-01-10\nNet Wt: 200g"
+  "actualText": "Ingredients: Sugar, tea leaves, flavour\nmanufactured: 2026-01-10\nexpiry: 2027-01-10\nNet Wt: 200g",
+  "imageFile": "tamil-doc-03.png"
 }

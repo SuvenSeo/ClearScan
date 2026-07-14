@@ -2,7 +2,8 @@
   "id": "tamil-receipt-01",
   "language": "tamil",
   "category": "receipt",
-  "description": "Printed grocery receipt, indoor fluorescent lighting.",
+  "description": "Printed grocery receipt, indoor fluorescent lighting. Synthetic rendered scan fixture (Unicode text → PNG).",
   "expectedText": "தமிழ் சupermarket\nதேதி: 2026-03-15\nஅரிசி 5kg\t\tRs. 850.00\nபால் 1L\t\tRs. 420.00\nரொட்டி\t\tRs. 180.00\nமொத்தம்\t\tRs. 1,450.00\nநன்றி",
-  "actualText": "தமிழ் சupermarket\nதேதி: 2026-03-15\nஅரிசி 5kg\t\tRs. 850.00\nபால் 1L\t\tRs. 420.00\nரொட்டி\t\tRs. 180.00\nமொத்தம்\t\tRs. 1,450.00\nநன்றி"
+  "actualText": "தமிழ் சupermarket\nதேதி: 2026-03-15\nஅரிசி 5kg\t\tRs. 850.00\nபால் 1L\t\tRs. 420.00\nரொட்டி\t\tRs. 180.00\nமொத்தம்\t\tRs. 1,450.00\nநன்றி",
+  "imageFile": "tamil-receipt-01.png"
 }

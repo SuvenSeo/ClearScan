@@ -15,6 +15,15 @@ class OcrCorpusBenchmarkTest : RobolectricUnitTest() {
         assertTrue("Expected at least 25 Tamil entries", entries.count { it.language == BenchmarkLanguage.Tamil } >= 25)
         assertTrue(entries.any { it.id == "sinhala-synthetic-01" })
         assertTrue(entries.any { it.id == "tamil-synthetic-01" })
+        assertTrue(
+            "Every corpus entry must reference a PNG fixture",
+            entries.all { !it.imageFile.isNullOrBlank() }
+        )
+        entries.forEach { entry ->
+            val stream = javaClass.classLoader!!.getResourceAsStream("ocr-corpus/${entry.imageFile}")
+            assertTrue("Missing PNG for ${entry.id}: ${entry.imageFile}", stream != null)
+            stream?.close()
+        }
     }
 
     @Test
