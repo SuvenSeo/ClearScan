@@ -44,3 +44,8 @@ Unit tests and `assembleDebug` are the reliable green signals for env health.
 ### Scope reminder
 
 No backend, no compose stack, no Makefile. Lint/test/assemble via `./gradlew`; interactive QA via emulator + Import when camera/ML Kit is unavailable.
+
+### ATD emulator + Play Services
+
+- Google ATD images often ship an **older Play Services** than ML Kit expects. ClearScan may stay on the **splash screen** on ATD (logcat: Play services out of date). Treat that as an emulator-image limitation, not a broken build.
+- Prefer JVM unit tests (`:app:testDebugUnitTest`) for core hello-world proof (OCR corpus, PDF tools, vault/crypto, Room). Use a full `google_apis` / Play Store image only when you need past-splash UI or ML Kit scanner.
