@@ -22,15 +22,22 @@ Canonical Linux smoke (CI’s PowerShell policy scripts are Windows-oriented; Gr
 ./gradlew :app:lintDebug :app:testDebugUnitTest :app:assembleDebug
 ```
 
-### Known lint noise (do not “fix” as env breakage)
+**No `pwsh` on Cloud** — bash locale-parity script is sufficient; `free-policy *.ps1` needs PowerShell only if you opt into those scripts.
 
-`:app:lintDebug` may fail with **pre-existing** code findings (e.g. `NewApi`/`readNBytes`, `LocalContextGetResourceValueCall`, Sinhala `ImpliedQuantity` plurals, `PermissionImpliesUnsupportedChromeOsHardware`). Treat those as product debt, not a broken Cloud environment. Unit tests and `assembleDebug` are the reliable green signals for env health.
+### Known lint / test noise (do not “fix” as env breakage)
+
+`:app:lintDebug` may fail with **pre-existing** code findings (e.g. `NewApi`/`readNBytes`, `LocalContextGetResourceValueCall`, Sinhala `ImpliedQuantity` plurals, `PermissionImpliesUnsupportedChromeOsHardware`). Treat those as product debt, not a broken Cloud environment.
+
+**`LibrarySmokeTest`** may fail when multiple `"Library"` text nodes exist (pre-existing flakiness) even when the Library UI is visible.
+
+Unit tests and `assembleDebug` are the reliable green signals for env health.
 
 ### Emulator / device caveats
 
-- Cloud VMs typically have **no `/dev/kvm`**. Start the emulator with **`-accel off`** (software accel only — slow).
-- Prefer a light AVD: **Google ATD `x86_64` API 30** over heavy Google APIs images.
-- **Camera + ML Kit Document Scanner** are unreliable/hard in this environment. For end-to-end “hello world”, use the app’s **Import** path instead of live scan.
+- Cloud VMs have **no `/dev/kvm`** — start the emulator with **`-accel off`** (software accel only; slow).
+- **Google ATD `x86_64` API 30** is light but may ship **GMS too old** for ClearScan — cold start can stick on splash (`Google Play services out of date`). Prefer **`google_apis`** images for interactive UI; **`testDebugUnitTest` + `assembleDebug`** prove env without GMS.
+- **Camera + ML Kit Document Scanner** are unreliable here. For end-to-end “hello world”, use the app’s **Import** path instead of live scan.
+- **`adb` `ACTION_SEND` of MediaStore URIs** often hits `SecurityException` in `FileImportResolver` — use on-device **SAF Import UI** or instrumentation instead.
 - Sample PNGs: `app/src/test/resources/ocr-corpus/` (or create a folder from device storage and import).
 - **Vault** flows need a configured **screen lock** on the emulator/device (biometric/device-credential gate).
 
